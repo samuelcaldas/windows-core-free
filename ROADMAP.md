@@ -17,7 +17,7 @@ flowchart LR
 
 | Phase | Milestone | Focus Area | Primary Deliverables | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **Phase 1** | Host Setup & Virtualization Tooling | Ubuntu Host Readiness | `setup-host.sh` / `.ps1`, VirtIO ISO downloader | `[ ] Planned` |
+| **Phase 1** | Host Setup & Virtualization Tooling | Ubuntu Host Readiness | `setup-host.sh` / `.ps1`, VirtIO ISO downloader | `[x] Completed` |
 | **Phase 2** | Unattended Media & QEMU Boot | Dual-Drive Boot Pipeline | `build-iso.sh` / `.ps1`, `run-vm.sh` / `.ps1`, QCOW2 sparse disk | `[ ] Planned` |
 | **Phase 3** | Core Bootstrap & Hyper-V Deactivation | FirstBoot & Guest Specialization | `Specialize.ps1`, OpenSSH, pwsh 7, Hyper-V removal | `[ ] Planned` |
 | **Phase 4** | Remote Toolchains & SSH Keys | Post-Boot Remote Orchestration | `provision-remote.sh` / `.ps1`, `Install-Tools.ps1` (Git, Node, Python) | `[ ] Planned` |
@@ -31,14 +31,14 @@ flowchart LR
 **Objective**: Ensure the headless Ubuntu Desktop host is fully configured with KVM kernel modules, QEMU virtualization binaries, UEFI/OVMF firmware, ISO manipulation utilities, and PowerShell 7.
 
 ### Deliverables & Tasks
-- [ ] **Host Dependency Script** ([`scripts/host/setup-host.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/setup-host.sh) / [`scripts/host/setup-host.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/setup-host.ps1)):
-  - [ ] Check KVM hardware virtualization support (`kvm-ok` / `/dev/kvm`).
-  - [ ] Install QEMU packages (`qemu-system-x86`, `qemu-utils`, `ovmf`, `bridge-utils`).
-  - [ ] Install ISO & disk tooling (`cloud-image-utils`, `genisoimage` / `xorriso`, `wimtools`, `mtools`).
-  - [ ] Verify or install PowerShell Core (`pwsh`) on Ubuntu host.
-- [ ] **VirtIO Drivers Fetcher**:
-  - [ ] Automate download and hash verification of the latest stable Red Hat VirtIO Windows drivers (`virtio-win.iso`).
-  - [ ] Cache downloaded ISO under `iso/virtio-win.iso` (gitignored).
+- [x] **Host Dependency Script** ([`scripts/host/setup-host.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/setup-host.sh) / [`scripts/host/setup-host.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/setup-host.ps1)):
+  - [x] Check KVM hardware virtualization support (`kvm-ok` / `/dev/kvm`).
+  - [x] Install QEMU packages (`qemu-system-x86`, `qemu-utils`, `ovmf`, `bridge-utils`).
+  - [x] Install ISO & disk tooling (`cloud-image-utils`, `genisoimage` / `xorriso`, `wimtools`, `mtools`).
+  - [x] Verify or install PowerShell Core (`pwsh`) on Ubuntu host.
+- [x] **VirtIO Drivers Fetcher**:
+  - [x] Automate download and hash verification of the latest stable Red Hat VirtIO Windows drivers (`virtio-win.iso`).
+  - [x] Cache downloaded ISO under `iso/virtio-win.iso` (gitignored).
 
 ### Acceptance Criteria & Verification
 ```bash
