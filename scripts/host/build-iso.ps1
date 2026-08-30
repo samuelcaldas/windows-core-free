@@ -66,6 +66,8 @@ function Build-InstallerIso {
         $opensshZip  = Join-Path $IsoDir "OpenSSH-Win64.zip"
         $winxZip     = Join-Path $IsoDir "winxshell_x64.zip"
         $explorerZip = Join-Path $IsoDir "explorerpp_x64.zip"
+        $terminalZip = Join-Path $IsoDir "terminal_x64.zip"
+        $vcRedist    = Join-Path $IsoDir "vc_redist.x64.exe"
 
         if (Test-Path $opensshZip) {
             Write-Step "Embedding offline Win32-OpenSSH package into ISO..."
@@ -78,6 +80,8 @@ function Build-InstallerIso {
         New-Item -ItemType Directory -Path $packagesTarget -Force | Out-Null
         if (Test-Path $winxZip) { Copy-Item -Path $winxZip -Destination $packagesTarget -Force }
         if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $packagesTarget -Force }
+        if (Test-Path $terminalZip) { Copy-Item -Path $terminalZip -Destination $packagesTarget -Force }
+        if (Test-Path $vcRedist) { Copy-Item -Path $vcRedist -Destination $packagesTarget -Force }
 
         Write-Step "Packaging bootable unattended ISO ($InstallerIso)..."
         if (Test-Path $InstallerIso) { Remove-Item -Path $InstallerIso -Force }
@@ -121,6 +125,8 @@ function Build-OemdrvIso {
         $opensshZip  = Join-Path $IsoDir "OpenSSH-Win64.zip"
         $winxZip     = Join-Path $IsoDir "winxshell_x64.zip"
         $explorerZip = Join-Path $IsoDir "explorerpp_x64.zip"
+        $terminalZip = Join-Path $IsoDir "terminal_x64.zip"
+        $vcRedist    = Join-Path $IsoDir "vc_redist.x64.exe"
 
         if (Test-Path $opensshZip) {
             $oemOpensshTarget = Join-Path $oemStaging "openssh"
@@ -132,6 +138,8 @@ function Build-OemdrvIso {
         New-Item -ItemType Directory -Path $oemPackagesTarget -Force | Out-Null
         if (Test-Path $winxZip) { Copy-Item -Path $winxZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $oemPackagesTarget -Force }
+        if (Test-Path $terminalZip) { Copy-Item -Path $terminalZip -Destination $oemPackagesTarget -Force }
+        if (Test-Path $vcRedist) { Copy-Item -Path $vcRedist -Destination $oemPackagesTarget -Force }
 
         if (Test-Path $OemdrvIso) { Remove-Item -Path $OemdrvIso -Force }
         & xorriso -as mkisofs -quiet -o $OemdrvIso -V "OEMDRV" -J -r -iso-level 3 $oemStaging

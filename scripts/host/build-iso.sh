@@ -112,6 +112,14 @@ build_unattended_installer_iso() {
         log_info "Embedding Explorer++ package into ISO..."
         cp "${ISO_DIR}/explorerpp_x64.zip" "${STAGING_DIR}/packages/"
     fi
+    if [ -f "${ISO_DIR}/terminal_x64.zip" ]; then
+        log_info "Embedding Windows Terminal package into ISO..."
+        cp "${ISO_DIR}/terminal_x64.zip" "${STAGING_DIR}/packages/"
+    fi
+    if [ -f "${ISO_DIR}/vc_redist.x64.exe" ]; then
+        log_info "Embedding Visual C++ Redistributable into ISO..."
+        cp "${ISO_DIR}/vc_redist.x64.exe" "${STAGING_DIR}/packages/"
+    fi
 
     # 7. Build bootable ISO with UEFI + BIOS support
     log_info "Packaging bootable unattended ISO (${INSTALLER_ISO})..."
@@ -161,6 +169,12 @@ build_oemdrv_media() {
     fi
     if [ -f "${ISO_DIR}/explorerpp_x64.zip" ]; then
         cp "${ISO_DIR}/explorerpp_x64.zip" "${OEM_STAGING}/packages/"
+    fi
+    if [ -f "${ISO_DIR}/terminal_x64.zip" ]; then
+        cp "${ISO_DIR}/terminal_x64.zip" "${OEM_STAGING}/packages/"
+    fi
+    if [ -f "${ISO_DIR}/vc_redist.x64.exe" ]; then
+        cp "${ISO_DIR}/vc_redist.x64.exe" "${OEM_STAGING}/packages/"
     fi
 
     rm -f "${OEMDRV_ISO}"
