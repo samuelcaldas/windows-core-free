@@ -135,7 +135,8 @@ config.initial_rows = 32
 config.enable_tab_bar = true
 config.hide_tab_bar_if_only_one_tab = false
 config.use_fancy_tab_bar = true
-config.window_background_opacity = 0.95
+config.front_end = 'OpenGL'
+config.prefer_egl = true
 
 return config
 "@
@@ -206,12 +207,41 @@ function Install-TerminalPackage {
         $sub = Get-ChildItem -Path $tempExtract -Directory | Where-Object { $_.Name -like "WezTerm-*" -or $_.Name -like "terminal-*" } | Select-Object -First 1
         if ($null -ne $sub) { $srcDir = $sub.FullName }
 
+        # Stop any running terminal instances to prevent file lock
+        Get-Process -Name "wezterm", "wezterm-gui", "wt" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds 500
+
         # Clean old incompatible binaries if upgrading
         if (Test-Path "$targetDir\WindowsTerminal.exe") {
             Remove-Item -Path "$targetDir\*" -Recurse -Force -ErrorAction SilentlyContinue
         }
 
-        Copy-Item -Path "$srcDir\*" -Destination $targetDir -Recurse -Force
+        # Copy files with error handling for in-use binaries
+        Get-ChildItem -Path $srcDir -Recurse | ForEach-Object {
+            $rel = $_.FullName.Substring($srcDir.Length).TrimStart('\', '/')
+            $dest = Join-Path $targetDir $rel
+            if ($_.PSIsContainer) {
+                if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }
+            } else {
+                try {
+                    Copy-Item -Path $_.FullName -Destination $dest -Force -ErrorAction Stop
+                } catch {
+                    Write-WarnMsg "Could not overwrite $dest (file in use): $_"
+                }
+            }
+        }
+
+        # Ensure Mesa OpenGL rasterizer (opengl32.dll) is in root application dir and System32
+        $mesaOpengl = Join-Path $targetDir "mesa\opengl32.dll"
+        if (Test-Path $mesaOpengl) {
+            Copy-Item -Path $mesaOpengl -Destination (Join-Path $targetDir "opengl32.dll") -Force
+            try {
+                Copy-Item -Path $mesaOpengl -Destination "$env:WINDIR\System32\opengl32.dll" -Force
+                Write-Success "Deployed Mesa OpenGL (opengl32.dll) to application root and System32."
+            } catch {
+                Write-WarnMsg "Could not copy opengl32.dll to System32: $_"
+            }
+        }
     }
     finally {
         Remove-Item -Path $tempExtract -Recurse -Force -ErrorAction SilentlyContinue
