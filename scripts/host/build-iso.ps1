@@ -63,13 +63,21 @@ function Build-InstallerIso {
         New-Item -ItemType Directory -Path $guestScriptsTarget -Force | Out-Null
         Copy-Item -Path (Join-Path $RepoRoot "scripts/guest/*") -Destination $guestScriptsTarget -Force
 
-        $opensshZip = Join-Path $IsoDir "OpenSSH-Win64.zip"
+        $opensshZip  = Join-Path $IsoDir "OpenSSH-Win64.zip"
+        $winxZip     = Join-Path $IsoDir "winxshell_x64.zip"
+        $explorerZip = Join-Path $IsoDir "explorerpp_x64.zip"
+
         if (Test-Path $opensshZip) {
             Write-Step "Embedding offline Win32-OpenSSH package into ISO..."
             $opensshTarget = Join-Path $stagingDir "openssh"
             New-Item -ItemType Directory -Path $opensshTarget -Force | Out-Null
             Copy-Item -Path $opensshZip -Destination $opensshTarget -Force
         }
+
+        $packagesTarget = Join-Path $stagingDir "packages"
+        New-Item -ItemType Directory -Path $packagesTarget -Force | Out-Null
+        if (Test-Path $winxZip) { Copy-Item -Path $winxZip -Destination $packagesTarget -Force }
+        if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $packagesTarget -Force }
 
         Write-Step "Packaging bootable unattended ISO ($InstallerIso)..."
         if (Test-Path $InstallerIso) { Remove-Item -Path $InstallerIso -Force }
@@ -110,12 +118,20 @@ function Build-OemdrvIso {
         New-Item -ItemType Directory -Path $oemScriptsTarget -Force | Out-Null
         Copy-Item -Path (Join-Path $RepoRoot "scripts/guest/*") -Destination $oemScriptsTarget -Force
 
-        $opensshZip = Join-Path $IsoDir "OpenSSH-Win64.zip"
+        $opensshZip  = Join-Path $IsoDir "OpenSSH-Win64.zip"
+        $winxZip     = Join-Path $IsoDir "winxshell_x64.zip"
+        $explorerZip = Join-Path $IsoDir "explorerpp_x64.zip"
+
         if (Test-Path $opensshZip) {
             $oemOpensshTarget = Join-Path $oemStaging "openssh"
             New-Item -ItemType Directory -Path $oemOpensshTarget -Force | Out-Null
             Copy-Item -Path $opensshZip -Destination $oemOpensshTarget -Force
         }
+
+        $oemPackagesTarget = Join-Path $oemStaging "packages"
+        New-Item -ItemType Directory -Path $oemPackagesTarget -Force | Out-Null
+        if (Test-Path $winxZip) { Copy-Item -Path $winxZip -Destination $oemPackagesTarget -Force }
+        if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $oemPackagesTarget -Force }
 
         if (Test-Path $OemdrvIso) { Remove-Item -Path $OemdrvIso -Force }
         & xorriso -as mkisofs -quiet -o $OemdrvIso -V "OEMDRV" -J -r -iso-level 3 $oemStaging

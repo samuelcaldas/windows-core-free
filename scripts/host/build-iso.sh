@@ -97,11 +97,20 @@ build_unattended_installer_iso() {
     mkdir -p "${STAGING_DIR}/scripts/guest"
     cp -r "${REPO_ROOT}/scripts/guest/"* "${STAGING_DIR}/scripts/guest/"
 
-    # 6. Embed offline Win32-OpenSSH package
+    # 6. Embed offline packages (OpenSSH, WinXShell, Explorer++)
+    mkdir -p "${STAGING_DIR}/packages"
     if [ -f "${ISO_DIR}/OpenSSH-Win64.zip" ]; then
         log_info "Embedding offline Win32-OpenSSH package into ISO..."
         mkdir -p "${STAGING_DIR}/openssh"
         cp "${ISO_DIR}/OpenSSH-Win64.zip" "${STAGING_DIR}/openssh/"
+    fi
+    if [ -f "${ISO_DIR}/winxshell_x64.zip" ]; then
+        log_info "Embedding WinXShell desktop package into ISO..."
+        cp "${ISO_DIR}/winxshell_x64.zip" "${STAGING_DIR}/packages/"
+    fi
+    if [ -f "${ISO_DIR}/explorerpp_x64.zip" ]; then
+        log_info "Embedding Explorer++ package into ISO..."
+        cp "${ISO_DIR}/explorerpp_x64.zip" "${STAGING_DIR}/packages/"
     fi
 
     # 7. Build bootable ISO with UEFI + BIOS support
@@ -142,9 +151,16 @@ build_oemdrv_media() {
     mkdir -p "${OEM_STAGING}/scripts/guest"
     cp -r "${REPO_ROOT}/scripts/guest/"* "${OEM_STAGING}/scripts/guest/"
 
+    mkdir -p "${OEM_STAGING}/packages"
     if [ -f "${ISO_DIR}/OpenSSH-Win64.zip" ]; then
         mkdir -p "${OEM_STAGING}/openssh"
         cp "${ISO_DIR}/OpenSSH-Win64.zip" "${OEM_STAGING}/openssh/"
+    fi
+    if [ -f "${ISO_DIR}/winxshell_x64.zip" ]; then
+        cp "${ISO_DIR}/winxshell_x64.zip" "${OEM_STAGING}/packages/"
+    fi
+    if [ -f "${ISO_DIR}/explorerpp_x64.zip" ]; then
+        cp "${ISO_DIR}/explorerpp_x64.zip" "${OEM_STAGING}/packages/"
     fi
 
     rm -f "${OEMDRV_ISO}"

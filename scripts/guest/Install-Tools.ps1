@@ -149,6 +149,17 @@ function Main {
     Install-NodeJs
     Install-Python
     Refresh-EnvironmentPath
+
+    $desktopShellScript = Join-Path $PSScriptRoot "Install-DesktopShell.ps1"
+    if (Test-Path $desktopShellScript) {
+        try {
+            & $desktopShellScript
+        }
+        catch {
+            Write-WarnMsg "Install-DesktopShell warning: $_"
+        }
+    }
+
     Write-Success "Developer toolchains installed and configured successfully."
 }
 
