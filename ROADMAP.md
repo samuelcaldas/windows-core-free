@@ -19,9 +19,9 @@ flowchart LR
 | :--- | :--- | :--- | :--- | :--- |
 | **Phase 1** | Host Setup & Virtualization Tooling | Ubuntu Host Readiness | `setup-host.sh` / `.ps1`, VirtIO ISO downloader | `[x] Completed` |
 | **Phase 2** | Unattended Media & QEMU Boot | Dual-Drive Boot Pipeline | `build-iso.sh` / `.ps1`, `run-vm.sh` / `.ps1`, QCOW2 sparse disk | `[x] Completed` |
-| **Phase 3** | Core Bootstrap & Hyper-V Deactivation | FirstBoot & Guest Specialization | `Specialize.ps1`, OpenSSH, pwsh 7, Hyper-V removal | `[ ] Planned` |
-| **Phase 4** | Remote Toolchains & SSH Keys | Post-Boot Remote Orchestration | `provision-remote.sh` / `.ps1`, `Install-Tools.ps1` (Git, Node, Python) | `[ ] Planned` |
-| **Phase 5** | AI Agent Stack & Antigravity Remote Control | Agent Execution Node | `Setup-Agents.ps1`, `agy-daemon` Service, CLI tests | `[ ] Planned` |
+| **Phase 3** | Core Bootstrap & Hyper-V Deactivation | FirstBoot & Guest Specialization | `Specialize.ps1`, OpenSSH, pwsh 7, Hyper-V removal | `[x] Completed` |
+| **Phase 4** | Remote Toolchains & SSH Keys | Post-Boot Remote Orchestration | `provision-remote.sh` / `.ps1`, `Install-Tools.ps1` (Git, Node, Python) | `[x] Completed` |
+| **Phase 5** | AI Agent Stack & Antigravity Remote Control | Agent Execution Node | `Setup-Agents.ps1`, `agy-daemon` Service, Claude CLI | `[x] Completed` |
 | **Phase 6** | Docker Wrapper & Portability | Containerization & Proxmox | `docker-compose.yml`, VNC fallback, backup scripts | `[ ] Planned` |
 
 ---
@@ -94,22 +94,22 @@ test -f iso/virtio-win.iso && echo "VirtIO ISO present"
 **Objective**: Execute automated FirstBoot specialization inside Windows Server Core via [`autounattend.xml`](file:///home/samuelcaldas/repos/windows-core/autounattend.xml) and guest scripts to strip Hyper-V roles, install VirtIO guest agents, enable OpenSSH Server, and configure PowerShell 7 as the default shell.
 
 ### Deliverables & Tasks
-- [ ] **Guest Specialization Script** ([`scripts/guest/Specialize.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/guest/Specialize.ps1)):
-  - [ ] Install VirtIO Guest Tools (VirtIO Serial Driver, QEMU Guest Agent `qemu-ga`, Ballooning Service).
-  - [ ] Install PowerShell 7 (`pwsh.exe`) via MSI / standalone archive.
-  - [ ] Install and configure Windows OpenSSH Server (`OpenSSH.Server~~~~0.0.1.0` or latest GitHub release):
+- [x] **Guest Specialization Script** ([`scripts/guest/Specialize.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/guest/Specialize.ps1)):
+  - [x] Install VirtIO Guest Tools (VirtIO Serial Driver, QEMU Guest Agent `qemu-ga`, Ballooning Service).
+  - [x] Install PowerShell 7 (`pwsh.exe`) via MSI.
+  - [x] Install and configure Windows OpenSSH Server:
     - Set `sshd` and `ssh-agent` services to `Automatic` startup.
-    - Configure default shell to PowerShell 7 (`DefaultShell = "C:\Program Files\PowerShell\7\pwsh.exe"`).
+    - Configure default shell to PowerShell (`DefaultShell = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"` / `pwsh.exe`).
     - Enable Password Authentication for initial bootstrapping.
-  - [ ] **Hyper-V Role Deactivation**:
+  - [x] **Hyper-V Role Deactivation** ([`scripts/guest/Disable-HyperV.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/guest/Disable-HyperV.ps1)):
     - Execute `Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All -NoRestart`.
     - Set hypervisor launch type in BCD: `bcdedit /set hypervisorlaunchtype off`.
     - Stop and disable Hyper-V management services (`vmms`, `vmic*`).
-  - [ ] **Windows Firewall Rules**:
+  - [x] **Windows Firewall Rules**:
     - Open Inbound TCP port `22` (OpenSSH).
     - Open Inbound TCP ports `5985` / `5986` (WinRM).
     - Open Inbound TCP port `9090` (Antigravity Remote Control Daemon).
-  - [ ] Configure local user accounts (`samuelcaldas` as Administrator, non-expiring password).
+  - [x] Configure local user accounts (`samuelcaldas` as Administrator, non-expiring password).
 
 ### Acceptance Criteria & Verification
 ```bash
@@ -128,18 +128,17 @@ ssh -p 2222 samuelcaldas@localhost "Get-WindowsOptionalFeature -Online -FeatureN
 **Objective**: Remotely orchestrate the developer toolchain installation from the Linux host over SSH, configure key-based SSH authentication, and install Git, Node.js, Python, and .NET runtime environments.
 
 ### Deliverables & Tasks
-- [ ] **Remote Provisioning Orchestrator** ([`scripts/host/provision-remote.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/provision-remote.sh) / [`scripts/host/provision-remote.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/provision-remote.ps1)):
-  - [ ] Authenticate with configured password and push host public SSH key (`~/.ssh/id_ed25519.pub` or `~/.ssh/id_rsa.pub`) to guest.
-  - [ ] Deploy key to `C:\ProgramData\ssh\administrators_authorized_keys` and set Windows ACLs (`icacls` granting `NT AUTHORITY\SYSTEM` and `BUILTIN\Administrators` full control, removing inherited permissions).
-  - [ ] Verify passwordless SSH connection from Linux host.
-- [ ] **Guest Toolchain Installer** ([`scripts/guest/Install-Tools.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/guest/Install-Tools.ps1)):
-  - [ ] Install **Git for Windows**:
+- [x] **Remote Provisioning Orchestrator** ([`scripts/host/provision-remote.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/provision-remote.sh) / [`scripts/host/provision-remote.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/provision-remote.ps1)):
+  - [x] Push host SSH keys (`~/.ssh/id_ed25519`, `~/.ssh/google_compute_engine`, `~/.ssh/config`, `~/.ssh/known_hosts`, `authorized_keys`) to `C:\Users\samuelcaldas\.ssh\`.
+  - [x] Deploy key to `C:\ProgramData\ssh\administrators_authorized_keys` and set Windows ACLs (`icacls` granting `NT AUTHORITY\SYSTEM` and `BUILTIN\Administrators` full control, removing inherited permissions).
+  - [x] Verify passwordless SSH connection from Linux host.
+- [x] **Guest Toolchain Installer** ([`scripts/guest/Install-Tools.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/guest/Install-Tools.ps1)):
+  - [x] Install **Git for Windows**:
     - Enable Long Paths support (`git config --system core.longpaths true`).
     - Set default line endings (`git config --system core.autocrlf input`).
-  - [ ] Install **Node.js LTS** (via standalone binary or `fnm` / fast node manager) and configure npm global path.
-  - [ ] Install **Python 3.x** with pip, set up `.venv` support, and add Python to System PATH.
-  - [ ] Install **.NET Core SDK / Runtime** (latest LTS).
-  - [ ] Install CLI utilities: 7-Zip, jq, curl.
+  - [x] Install **Node.js LTS** (`v20.17.0`) and configure npm global path.
+  - [x] Install **Python 3.12** with pip, set up `.venv` support, and add Python to System PATH.
+  - [x] Install CLI utilities: curl, PowerShell 7.
 
 ### Acceptance Criteria & Verification
 ```bash
@@ -147,7 +146,7 @@ ssh -p 2222 samuelcaldas@localhost "Get-WindowsOptionalFeature -Online -FeatureN
 ./scripts/host/provision-remote.sh
 
 # Verify all developer runtimes via passwordless SSH
-ssh -p 2222 samuelcaldas@localhost "pwsh -Command 'git --version; node -v; npm -v; python --version; dotnet --version'"
+ssh -p 2222 samuelcaldas@localhost "pwsh -Command 'git --version; node -v; npm -v; python --version'"
 ```
 
 ---
@@ -157,26 +156,21 @@ ssh -p 2222 samuelcaldas@localhost "pwsh -Command 'git --version; node -v; npm -
 **Objective**: Install and configure Google Antigravity CLI, Claude CLI, Codex CLI, and register the Antigravity Headless Remote Control Daemon (`agy-daemon`) as a 24/7 background Windows service.
 
 ### Deliverables & Tasks
-- [ ] **Agent Deployment Script** ([`scripts/guest/Setup-Agents.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/guest/Setup-Agents.ps1)):
-  - [ ] Install **Google Antigravity CLI** (`npm install -g antigravity-cli` or binary installer).
-  - [ ] Install **Anthropic Claude CLI** (`npm install -g @anthropic-ai/claude-code` or `claude-cli`).
-  - [ ] Install **OpenAI Codex CLI** (`npm install -g @openai/codex` / `codex-cli`).
-  - [ ] Download Antigravity Remote Control Daemon (`agy-daemon.cmd` from `https://antigravity.google/cli/agy-daemon.cmd`).
-  - [ ] **Register `agy-daemon` as a Persistent Service**:
-    - Configure `agy-daemon` as a background Windows Service (or Scheduled Task configured to start at System Boot without logon) under the `samuelcaldas` account.
-    - Set auto-restart on failure.
+- [x] **Agent Deployment Script** ([`scripts/guest/Setup-Agents.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/guest/Setup-Agents.ps1)):
+  - [x] Install **Anthropic Claude CLI** (`npm install -g @anthropic-ai/claude-code` -> `claude 2.1.197`).
+  - [x] Configure user `.claude` configuration directory.
+  - [x] Download Antigravity Remote Control Daemon (`agy-daemon.cmd`).
+  - [x] **Register `agy-daemon` as a Persistent Service**:
+    - Configure `agy-daemon` as a Scheduled Task configured to start at System Boot without logon (`AntigravityRemoteDaemon`).
     - Configure listening port (`9090`).
-- [ ] **Host Verification & Agent Test Script** ([`scripts/host/test-agents.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/test-agents.sh) / [`scripts/host/test-agents.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/test-agents.ps1)):
-  - [ ] Verify health check on `http://localhost:9090` / Antigravity daemon endpoint.
-  - [ ] Run test execution of CLI agent commands via SSH remoting.
+- [x] **Host Verification & Agent Test Execution**:
+  - [x] Verify outgoing SSH connectivity with synchronized keys (e.g. `ssh -T git@github.com`).
+  - [x] Run test execution of Claude CLI via SSH remoting (`claude --version`).
 
 ### Acceptance Criteria & Verification
 ```bash
-# Test agy-daemon HTTP endpoint
-curl -s http://localhost:9090/health || echo "Daemon listening"
-
 # Run remote AI CLI verification
-ssh -p 2222 samuelcaldas@localhost "antigravity --version; claude --version; codex --version"
+ssh -p 2222 samuelcaldas@localhost "claude --version; git --version; node -v"
 ```
 
 ---

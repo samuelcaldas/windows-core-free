@@ -58,6 +58,19 @@ function Build-InstallerIso {
         New-Item -ItemType Directory -Path $virtioDir -Force | Out-Null
         & 7z x -y $VirtioIso "-o$virtioDir" "viostor/2k19/amd64/*" "vioscsi/2k19/amd64/*" "NetKVM/2k19/amd64/*" "virtio-win-guest-tools.exe" | Out-Null
 
+        Write-Step "Embedding guest provisioning scripts into ISO..."
+        $guestScriptsTarget = Join-Path $stagingDir "scripts/guest"
+        New-Item -ItemType Directory -Path $guestScriptsTarget -Force | Out-Null
+        Copy-Item -Path (Join-Path $RepoRoot "scripts/guest/*") -Destination $guestScriptsTarget -Force
+
+        $opensshZip = Join-Path $IsoDir "OpenSSH-Win64.zip"
+        if (Test-Path $opensshZip) {
+            Write-Step "Embedding offline Win32-OpenSSH package into ISO..."
+            $opensshTarget = Join-Path $stagingDir "openssh"
+            New-Item -ItemType Directory -Path $opensshTarget -Force | Out-Null
+            Copy-Item -Path $opensshZip -Destination $opensshTarget -Force
+        }
+
         Write-Step "Packaging bootable unattended ISO ($InstallerIso)..."
         if (Test-Path $InstallerIso) { Remove-Item -Path $InstallerIso -Force }
 
@@ -92,6 +105,18 @@ function Build-OemdrvIso {
         Write-Step "Building OEMDRV secondary ISO ($OemdrvIso)..."
         Copy-Item -Path $UnattendXml -Destination (Join-Path $oemStaging "autounattend.xml") -Force
         & 7z x -y $VirtioIso "-o$oemStaging" "viostor/2k19/amd64/*" "vioscsi/2k19/amd64/*" "NetKVM/2k19/amd64/*" "virtio-win-guest-tools.exe" | Out-Null
+
+        $oemScriptsTarget = Join-Path $oemStaging "scripts/guest"
+        New-Item -ItemType Directory -Path $oemScriptsTarget -Force | Out-Null
+        Copy-Item -Path (Join-Path $RepoRoot "scripts/guest/*") -Destination $oemScriptsTarget -Force
+
+        $opensshZip = Join-Path $IsoDir "OpenSSH-Win64.zip"
+        if (Test-Path $opensshZip) {
+            $oemOpensshTarget = Join-Path $oemStaging "openssh"
+            New-Item -ItemType Directory -Path $oemOpensshTarget -Force | Out-Null
+            Copy-Item -Path $opensshZip -Destination $oemOpensshTarget -Force
+        }
+
         if (Test-Path $OemdrvIso) { Remove-Item -Path $OemdrvIso -Force }
         & xorriso -as mkisofs -quiet -o $OemdrvIso -V "OEMDRV" -J -r -iso-level 3 $oemStaging
         Write-Success "OEMDRV secondary ISO generated successfully."

@@ -92,7 +92,19 @@ build_unattended_installer_iso() {
         "virtio-win-guest-tools.exe" \
         "virtio-win-gt-x64.msi" >/dev/null
 
-    # 5. Build bootable ISO with UEFI + BIOS support
+    # 5. Copy guest provisioning scripts
+    log_info "Embedding guest provisioning scripts into ISO image..."
+    mkdir -p "${STAGING_DIR}/scripts/guest"
+    cp -r "${REPO_ROOT}/scripts/guest/"* "${STAGING_DIR}/scripts/guest/"
+
+    # 6. Embed offline Win32-OpenSSH package
+    if [ -f "${ISO_DIR}/OpenSSH-Win64.zip" ]; then
+        log_info "Embedding offline Win32-OpenSSH package into ISO..."
+        mkdir -p "${STAGING_DIR}/openssh"
+        cp "${ISO_DIR}/OpenSSH-Win64.zip" "${STAGING_DIR}/openssh/"
+    fi
+
+    # 7. Build bootable ISO with UEFI + BIOS support
     log_info "Packaging bootable unattended ISO (${INSTALLER_ISO})..."
     rm -f "${INSTALLER_ISO}"
 
@@ -126,6 +138,14 @@ build_oemdrv_media() {
         "vioscsi/2k19/amd64/*" \
         "NetKVM/2k19/amd64/*" \
         "virtio-win-guest-tools.exe" >/dev/null
+
+    mkdir -p "${OEM_STAGING}/scripts/guest"
+    cp -r "${REPO_ROOT}/scripts/guest/"* "${OEM_STAGING}/scripts/guest/"
+
+    if [ -f "${ISO_DIR}/OpenSSH-Win64.zip" ]; then
+        mkdir -p "${OEM_STAGING}/openssh"
+        cp "${ISO_DIR}/OpenSSH-Win64.zip" "${OEM_STAGING}/openssh/"
+    fi
 
     rm -f "${OEMDRV_ISO}"
     xorriso -as mkisofs \

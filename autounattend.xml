@@ -549,14 +549,60 @@ Get-ChildItem -Path 'Registry::HKU\DefaultUser\AppEvents\Schemes\Apps\*\*' |
 		<File path="C:\Windows\Setup\Scripts\VirtIoGuestTools.ps1">
 &amp; {
 	foreach( $letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray() ) {
+		$msi = "${letter}:\virtio-win-gt-x64.msi";
+		if( Test-Path -LiteralPath $msi ) {
+			Start-Process -FilePath 'msiexec.exe' -ArgumentList "/i `"$msi`" /qn /norestart" -Wait;
+			return;
+		}
 		$exe = "${letter}:\virtio-win-guest-tools.exe";
 		if( Test-Path -LiteralPath $exe ) {
-			Start-Process -FilePath $exe -ArgumentList '/passive', '/norestart' -Wait;
+			Start-Process -FilePath $exe -ArgumentList '/install', '/quiet', '/norestart' -Wait;
 			return;
 		}
 	}
 	'VirtIO Guest Tools image (virtio-win-*.iso) is not attached to this VM.';
 } *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; 'C:\Windows\Setup\Scripts\VirtIoGuestTools.log';
+		</File>
+		<File path="C:\Windows\Setup\Scripts\OpenSSH.ps1">
+&amp; {
+	$targetDir = 'C:\Program Files\OpenSSH';
+	if (-not (Test-Path "$targetDir\sshd.exe")) {
+		foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+			foreach ($candidate in @("${letter}:\openssh\OpenSSH-Win64.zip", "${letter}:\OpenSSH-Win64.zip")) {
+				if (Test-Path -LiteralPath $candidate) {
+					Expand-Archive -Path $candidate -DestinationPath 'C:\Program Files' -Force;
+					if (Test-Path 'C:\Program Files\OpenSSH-Win64') {
+						Move-Item -Path 'C:\Program Files\OpenSSH-Win64' -Destination $targetDir -Force;
+					}
+					break;
+				}
+			}
+		}
+		if (Test-Path "$targetDir\install-sshd.ps1") {
+			&amp; powershell.exe -ExecutionPolicy Bypass -File "$targetDir\install-sshd.ps1";
+		}
+	}
+	$currPath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine');
+	if ($currPath -notlike "*$targetDir*") {
+		[System.Environment]::SetEnvironmentVariable('Path', "$targetDir;$currPath", 'Machine');
+	}
+	if (Test-Path "$targetDir\ssh-keygen.exe") {
+		if (-not (Test-Path 'C:\ProgramData\ssh\ssh_host_ed25519_key')) {
+			&amp; "$targetDir\ssh-keygen.exe" -A;
+		}
+	}
+	Set-Service -Name sshd -StartupType Automatic;
+	Start-Service sshd;
+	Set-Service -Name ssh-agent -StartupType Automatic;
+	Start-Service ssh-agent;
+	if (-not (Test-Path 'HKLM:\SOFTWARE\OpenSSH')) {
+		New-Item -Path 'HKLM:\SOFTWARE\OpenSSH' -Force | Out-Null;
+	}
+	Set-ItemProperty -Path 'HKLM:\SOFTWARE\OpenSSH' -Name 'DefaultShell' -Value "$env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe" -Force;
+	New-Item -ItemType Directory -Path 'C:\ProgramData\ssh' -Force | Out-Null;
+	New-Item -ItemType File -Path 'C:\ProgramData\ssh\administrators_authorized_keys' -Force | Out-Null;
+	&amp; icacls.exe 'C:\ProgramData\ssh\administrators_authorized_keys' /inheritance:r /grant 'NT AUTHORITY\SYSTEM:(F)' /grant 'BUILTIN\Administrators:(F)';
+} *&gt;&amp;1 | Out-String -Width 1KB -Stream &gt;&gt; 'C:\Windows\Setup\Scripts\OpenSSH.log';
 		</File>
 		<File path="C:\Windows\Setup\Scripts\MakeEdgeUninstallable.ps1">
 $ErrorActionPreference = 'Stop';
@@ -1104,6 +1150,15 @@ $scripts = @(
 	};
 	{
 		cmd.exe /c "rmdir C:\Windows.old";
+	};
+	{
+		&amp; 'C:\Windows\Setup\Scripts\OpenSSH.ps1';
+	};
+	{
+		$drive = Get-Volume | Where-Object { $_.DriveLetter -and (Test-Path "$($_.DriveLetter):\scripts\guest\Specialize.ps1") } | Select-Object -First 1;
+		if ($null -ne $drive) {
+			&amp; "$($drive.DriveLetter):\scripts\guest\Specialize.ps1";
+		}
 	};
 );
 
