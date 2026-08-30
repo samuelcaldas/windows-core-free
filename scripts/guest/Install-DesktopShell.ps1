@@ -59,44 +59,44 @@ function Create-DesktopShortcut {
 function Install-ExplorerPlusPlus {
     Write-Step "Installing Explorer++ tabbed file manager..."
     $targetDir = "C:\Program Files\Explorer++"
-    if (Test-Path "$targetDir\Explorer++.exe") {
-        Write-Success "Explorer++ is already installed in $targetDir."
-        return
-    }
-
     if (-not (Test-Path $targetDir)) {
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     }
 
-    $zipFile = Join-Path $SourceDir "explorerpp_x64.zip"
-    if (-not (Test-Path $zipFile)) {
-        # Check attached drive letters
-        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
-            $cand = "${letter}:\explorerpp_x64.zip"
-            if (Test-Path $cand) { $zipFile = $cand; break }
-            $cand = "${letter}:\packages\explorerpp_x64.zip"
-            if (Test-Path $cand) { $zipFile = $cand; break }
+    if (-not (Test-Path "$targetDir\Explorer++.exe")) {
+        $zipFile = Join-Path $SourceDir "explorerpp_x64.zip"
+        if (-not (Test-Path $zipFile)) {
+            # Check attached drive letters
+            foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+                $cand = "${letter}:\explorerpp_x64.zip"
+                if (Test-Path $cand) { $zipFile = $cand; break }
+                $cand = "${letter}:\packages\explorerpp_x64.zip"
+                if (Test-Path $cand) { $zipFile = $cand; break }
+            }
         }
-    }
 
-    if (Test-Path $zipFile) {
-        Write-Step "Extracting Explorer++ from $zipFile..."
-        Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
-        Write-Success "Explorer++ installed to $targetDir."
+        if (Test-Path $zipFile) {
+            Write-Step "Extracting Explorer++ from $zipFile..."
+            Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
+            Write-Success "Explorer++ installed to $targetDir."
+        }
+        elseif (-not (Test-Path "$targetDir\Explorer++.exe")) {
+            Write-Step "Downloading Explorer++ 64-bit..."
+            $url = "https://github.com/derceg/explorerplusplus/releases/download/version-1.4.0/explorerpp_x64.zip"
+            $tempZip = "$env:TEMP\explorerpp_x64.zip"
+            $curl = "$env:WINDIR\System32\curl.exe"
+            if (Test-Path $curl) {
+                & $curl -fSL "$url" -o "$tempZip"
+            }
+            else {
+                (New-Object System.Net.WebClient).DownloadFile($url, $tempZip)
+            }
+            Expand-Archive -Path $tempZip -DestinationPath $targetDir -Force
+            Write-Success "Explorer++ downloaded and installed to $targetDir."
+        }
     }
-    elseif (-not (Test-Path "$targetDir\Explorer++.exe")) {
-        Write-Step "Downloading Explorer++ 64-bit..."
-        $url = "https://github.com/derceg/explorerplusplus/releases/download/version-1.4.0/explorerpp_x64.zip"
-        $tempZip = "$env:TEMP\explorerpp_x64.zip"
-        $curl = "$env:WINDIR\System32\curl.exe"
-        if (Test-Path $curl) {
-            & $curl -fSL "$url" -o "$tempZip"
-        }
-        else {
-            (New-Object System.Net.WebClient).DownloadFile($url, $tempZip)
-        }
-        Expand-Archive -Path $tempZip -DestinationPath $targetDir -Force
-        Write-Success "Explorer++ downloaded and installed to $targetDir."
+    else {
+        Write-Success "Explorer++ is already installed in $targetDir."
     }
 
     # Deploy pre-configured portable config.xml
@@ -113,6 +113,42 @@ function Install-ExplorerPlusPlus {
         Copy-Item -Path $configSrc -Destination "$targetDir\config.xml" -Force
         Write-Success "Deployed pre-configured Explorer++ portable config.xml."
     }
+
+    # Link C:\Windows\explorer.exe to Explorer++.exe
+    $winExplorer = "$env:WINDIR\explorer.exe"
+    try {
+        if (Test-Path $winExplorer) {
+            Remove-Item $winExplorer -Force -ErrorAction SilentlyContinue
+        }
+        New-Item -ItemType HardLink -Path $winExplorer -Target "$targetDir\Explorer++.exe" -Force | Out-Null
+        Write-Success "Linked $winExplorer to $targetDir\Explorer++.exe (HardLink)."
+    }
+    catch {
+        Write-WarnMsg "HardLink failed, attempting copy fallback: $_"
+        Copy-Item -Path "$targetDir\Explorer++.exe" -Destination $winExplorer -Force
+        Write-Success "Copied Explorer++.exe to $winExplorer."
+    }
+
+    # Also place config.xml in C:\Windows for explorer.exe invocations
+    if (Test-Path "$targetDir\config.xml") {
+        Copy-Item -Path "$targetDir\config.xml" -Destination "$env:WINDIR\config.xml" -Force
+    }
+
+    # Register Explorer++ as default system file manager in Registry
+    Write-Step "Registering Explorer++ as default system file explorer..."
+    $classesBase = "HKLM:\SOFTWARE\Classes"
+    $regAssociations = @(
+        "$classesBase\Folder\shell\open\command",
+        "$classesBase\Directory\shell\open\command",
+        "$classesBase\Drive\shell\open\command"
+    )
+    foreach ($regKey in $regAssociations) {
+        if (-not (Test-Path $regKey)) {
+            New-Item -Path $regKey -Force | Out-Null
+        }
+        Set-ItemProperty -Path $regKey -Name "(Default)" -Value "`"$targetDir\Explorer++.exe`" `"%1`"" -Force
+    }
+    Write-Success "Explorer++ registered as default file manager in registry."
 
     # Add to Machine PATH
     $currPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
@@ -146,6 +182,10 @@ function Install-WinXShell {
             Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
             Write-Success "WinXShell installed to $targetDir."
         }
+        elseif (-not (Test-Path "$targetDir\WinXShell.exe")) {
+            Write-ErrMsg "WinXShell archive not found."
+            return
+        }
 
         $exePath = "$targetDir\WinXShell.exe"
         if (-not (Test-Path $exePath)) {
@@ -156,6 +196,36 @@ function Install-WinXShell {
     }
     else {
         Write-Success "WinXShell is already installed in $targetDir."
+    }
+
+    # Deploy customized WinXShell.lua if provided
+    $luaSrc = Join-Path $SourceDir "WinXShell.lua"
+    if (-not (Test-Path $luaSrc)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\packages\WinXShell.lua"
+            if (Test-Path $cand) { $luaSrc = $cand; break }
+            $cand = "${letter}:\WinXShell.lua"
+            if (Test-Path $cand) { $luaSrc = $cand; break }
+        }
+    }
+    if (Test-Path $luaSrc) {
+        Copy-Item -Path $luaSrc -Destination "$targetDir\WinXShell.lua" -Force
+        Write-Success "Deployed customized WinXShell.lua."
+    }
+
+    # Apply Shell registry settings
+    $regSrc = Join-Path $SourceDir "shell-settings.reg"
+    if (-not (Test-Path $regSrc)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\packages\shell-settings.reg"
+            if (Test-Path $cand) { $regSrc = $cand; break }
+            $cand = "${letter}:\shell-settings.reg"
+            if (Test-Path $cand) { $regSrc = $cand; break }
+        }
+    }
+    if (Test-Path $regSrc) {
+        & reg import "$regSrc"
+        Write-Success "Applied customized shell and taskbar registry settings."
     }
 
     # Configure Winlogon Shell

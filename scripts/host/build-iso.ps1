@@ -84,6 +84,10 @@ function Build-InstallerIso {
         if (Test-Path $vcRedist) { Copy-Item -Path $vcRedist -Destination $packagesTarget -Force }
         $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"
         if (Test-Path $configXml) { Copy-Item -Path $configXml -Destination $packagesTarget -Force }
+        $wxsLua = Join-Path $RepoRoot "config/winxshell/WinXShell.lua"
+        if (Test-Path $wxsLua) { Copy-Item -Path $wxsLua -Destination $packagesTarget -Force }
+        $wxsReg = Join-Path $RepoRoot "config/winxshell/shell-settings.reg"
+        if (Test-Path $wxsReg) { Copy-Item -Path $wxsReg -Destination $packagesTarget -Force }
 
         Write-Step "Packaging bootable unattended ISO ($InstallerIso)..."
         if (Test-Path $InstallerIso) { Remove-Item -Path $InstallerIso -Force }
@@ -144,6 +148,10 @@ function Build-OemdrvIso {
         if (Test-Path $vcRedist) { Copy-Item -Path $vcRedist -Destination $oemPackagesTarget -Force }
         $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"
         if (Test-Path $configXml) { Copy-Item -Path $configXml -Destination $oemPackagesTarget -Force }
+        $wxsLua = Join-Path $RepoRoot "config/winxshell/WinXShell.lua"
+        if (Test-Path $wxsLua) { Copy-Item -Path $wxsLua -Destination $oemPackagesTarget -Force }
+        $wxsReg = Join-Path $RepoRoot "config/winxshell/shell-settings.reg"
+        if (Test-Path $wxsReg) { Copy-Item -Path $wxsReg -Destination $oemPackagesTarget -Force }
 
         if (Test-Path $OemdrvIso) { Remove-Item -Path $OemdrvIso -Force }
         & xorriso -as mkisofs -quiet -o $OemdrvIso -V "OEMDRV" -J -r -iso-level 3 $oemStaging

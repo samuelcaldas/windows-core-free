@@ -124,6 +124,14 @@ build_unattended_installer_iso() {
         log_info "Embedding Explorer++ portable config.xml into ISO..."
         cp "${REPO_ROOT}/config/explorerpp/config.xml" "${STAGING_DIR}/packages/"
     fi
+    if [ -f "${REPO_ROOT}/config/winxshell/WinXShell.lua" ]; then
+        log_info "Embedding WinXShell.lua into ISO..."
+        cp "${REPO_ROOT}/config/winxshell/WinXShell.lua" "${STAGING_DIR}/packages/"
+    fi
+    if [ -f "${REPO_ROOT}/config/winxshell/shell-settings.reg" ]; then
+        log_info "Embedding shell-settings.reg into ISO..."
+        cp "${REPO_ROOT}/config/winxshell/shell-settings.reg" "${STAGING_DIR}/packages/"
+    fi
 
     # 7. Build bootable ISO with UEFI + BIOS support
     log_info "Packaging bootable unattended ISO (${INSTALLER_ISO})..."
@@ -182,6 +190,12 @@ build_oemdrv_media() {
     fi
     if [ -f "${REPO_ROOT}/config/explorerpp/config.xml" ]; then
         cp "${REPO_ROOT}/config/explorerpp/config.xml" "${OEM_STAGING}/packages/"
+    fi
+    if [ -f "${REPO_ROOT}/config/winxshell/WinXShell.lua" ]; then
+        cp "${REPO_ROOT}/config/winxshell/WinXShell.lua" "${OEM_STAGING}/packages/"
+    fi
+    if [ -f "${REPO_ROOT}/config/winxshell/shell-settings.reg" ]; then
+        cp "${REPO_ROOT}/config/winxshell/shell-settings.reg" "${OEM_STAGING}/packages/"
     fi
 
     rm -f "${OEMDRV_ISO}"

@@ -46,6 +46,14 @@ function Main {
     if (Test-Path $configXml) {
         & scp -P $VmPort -o StrictHostKeyChecking=accept-new $configXml "${VmUser}@${VmHost}:C:/Provisioning/packages/config.xml"
     }
+    $wxsLua = Join-Path $RepoRoot "config/winxshell/WinXShell.lua"
+    if (Test-Path $wxsLua) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $wxsLua "${VmUser}@${VmHost}:C:/Provisioning/packages/WinXShell.lua"
+    }
+    $wxsReg = Join-Path $RepoRoot "config/winxshell/shell-settings.reg"
+    if (Test-Path $wxsReg) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $wxsReg "${VmUser}@${VmHost}:C:/Provisioning/packages/shell-settings.reg"
+    }
     & scp -P $VmPort -o StrictHostKeyChecking=accept-new (Join-Path $RepoRoot "scripts/guest/Install-DesktopShell.ps1") "${VmUser}@${VmHost}:C:/Provisioning/scripts/Install-DesktopShell.ps1"
 
     Write-Step "Executing Install-DesktopShell.ps1..."
