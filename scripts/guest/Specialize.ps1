@@ -193,6 +193,11 @@ function Main {
         & $disableHyperVScript
     }
 
+    $optimizeScript = Join-Path $PSScriptRoot "Optimize-System.ps1"
+    if (Test-Path $optimizeScript) {
+        & $optimizeScript
+    }
+
     Write-Success "Guest specialization completed successfully."
 }
 
