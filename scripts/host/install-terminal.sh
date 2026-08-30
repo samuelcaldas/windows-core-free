@@ -58,8 +58,8 @@ main() {
 
     # 1. Verify package availability on host
     if [ ! -f "${ISO_DIR}/terminal_x64.zip" ]; then
-        log_info "Downloading Windows Terminal portable zip..."
-        curl -fSL "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_x64.zip" -o "${ISO_DIR}/terminal_x64.zip"
+        log_info "Downloading WezTerm portable zip..."
+        curl -fSL "https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/WezTerm-windows-20240203-110809-5046fc22.zip" -o "${ISO_DIR}/terminal_x64.zip"
     fi
     if [ ! -f "${ISO_DIR}/vc_redist.x64.exe" ]; then
         log_info "Downloading Visual C++ Redistributable..."

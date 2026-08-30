@@ -118,47 +118,32 @@ function Install-Fonts {
 
 function Configure-TerminalSettings {
     param([string]$TerminalDir)
-    Write-Step "Configuring Windows Terminal profiles and settings..."
+    Write-Step "Configuring Terminal profiles and WezTerm settings..."
     $pwshPath = "C:\Program Files\PowerShell\7\pwsh.exe"
-    $defaultPwsh = if (Test-Path $pwshPath) { $pwshPath } else { "$env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe" }
-    
-    $settingsContent = @"
-{
-    "`$schema": "https://aka.ms/terminal-profiles-schema",
-    "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-    "initialCols": 120,
-    "initialRows": 30,
-    "theme": "dark",
-    "profiles": {
-        "defaults": {
-            "font": {
-                "face": "Cascadia Code",
-                "size": 11
-            },
-            "padding": "8, 8, 8, 8",
-            "useAcrylic": false
-        },
-        "list": [
-            {
-                "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-                "name": "PowerShell",
-                "commandline": "$($defaultPwsh -replace '\\', '\\\\')",
-                "hidden": false
-            },
-            {
-                "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
-                "name": "Command Prompt",
-                "commandline": "cmd.exe",
-                "hidden": false
-            }
-        ]
-    }
-}
+    $defaultProg = if (Test-Path $pwshPath) { "C:\\Program Files\\PowerShell\\7\\pwsh.exe" } else { "powershell.exe" }
+
+    $weztermConfig = @"
+local wezterm = require 'wezterm'
+local config = wezterm.config_builder()
+
+config.default_prog = { '$defaultProg' }
+config.color_scheme = 'OneDark (Gogh)'
+config.font = wezterm.font('Cascadia Code')
+config.font_size = 11.0
+config.initial_cols = 120
+config.initial_rows = 32
+config.enable_tab_bar = true
+config.hide_tab_bar_if_only_one_tab = false
+config.use_fancy_tab_bar = true
+config.window_background_opacity = 0.95
+
+return config
 "@
 
     $targetDirs = @(
-        "$env:LOCALAPPDATA\Microsoft\Windows Terminal",
-        "C:\Users\samuelcaldas\AppData\Local\Microsoft\Windows Terminal",
+        "$env:USERPROFILE",
+        "C:\Users\samuelcaldas",
+        "C:\Users\Administrator",
         $TerminalDir
     )
 
@@ -167,9 +152,9 @@ function Configure-TerminalSettings {
             if (-not (Test-Path $dir)) {
                 New-Item -ItemType Directory -Path $dir -Force | Out-Null
             }
-            $settingsFile = Join-Path $dir "settings.json"
-            $settingsContent | Out-File -FilePath $settingsFile -Encoding utf8 -Force
-            Write-Success "Settings deployed to: $settingsFile"
+            $cfgFile = Join-Path $dir ".wezterm.lua"
+            $weztermConfig | Out-File -FilePath $cfgFile -Encoding utf8 -Force
+            Write-Success "WezTerm configuration deployed to: $cfgFile"
         }
         catch {
             Write-WarnMsg "Could not write settings to $dir : $_"
@@ -178,7 +163,7 @@ function Configure-TerminalSettings {
 }
 
 function Install-TerminalPackage {
-    Write-Step "Installing Windows Terminal package..."
+    Write-Step "Installing Terminal package..."
     $targetDir = "C:\Program Files\WindowsTerminal"
     if (-not (Test-Path $targetDir)) {
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
@@ -200,12 +185,12 @@ function Install-TerminalPackage {
 
     try {
         if (Test-Path $zipFile) {
-            Write-Step "Extracting Windows Terminal from $zipFile..."
+            Write-Step "Extracting Terminal from $zipFile..."
             Expand-Archive -Path $zipFile -DestinationPath $tempExtract -Force
         }
-        elseif (-not (Test-Path "$targetDir\wt.exe")) {
-            Write-Step "Downloading Windows Terminal portable release..."
-            $url = "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_x64.zip"
+        elseif (-not (Test-Path "$targetDir\wezterm.exe")) {
+            Write-Step "Downloading WezTerm portable release..."
+            $url = "https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/WezTerm-windows-20240203-110809-5046fc22.zip"
             $tempZip = "$env:TEMP\terminal_x64.zip"
             $curl = "$env:WINDIR\System32\curl.exe"
             if (Test-Path $curl) {
@@ -218,13 +203,32 @@ function Install-TerminalPackage {
         }
 
         $srcDir = $tempExtract
-        $sub = Get-ChildItem -Path $tempExtract -Directory | Where-Object { $_.Name -like "terminal-*" } | Select-Object -First 1
+        $sub = Get-ChildItem -Path $tempExtract -Directory | Where-Object { $_.Name -like "WezTerm-*" -or $_.Name -like "terminal-*" } | Select-Object -First 1
         if ($null -ne $sub) { $srcDir = $sub.FullName }
+
+        # Clean old incompatible binaries if upgrading
+        if (Test-Path "$targetDir\WindowsTerminal.exe") {
+            Remove-Item -Path "$targetDir\*" -Recurse -Force -ErrorAction SilentlyContinue
+        }
 
         Copy-Item -Path "$srcDir\*" -Destination $targetDir -Recurse -Force
     }
     finally {
         Remove-Item -Path $tempExtract -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    # Create wt.exe compatibility link
+    $wtLink = Join-Path $targetDir "wt.exe"
+    $mainExe = if (Test-Path "$targetDir\wezterm-gui.exe") { "$targetDir\wezterm-gui.exe" } elseif (Test-Path "$targetDir\wezterm.exe") { "$targetDir\wezterm.exe" } else { "" }
+    if ($mainExe -and (-not (Test-Path $wtLink))) {
+        try {
+            New-Item -ItemType HardLink -Path $wtLink -Target $mainExe -Force | Out-Null
+            Write-Success "Created wt.exe compatibility link -> $mainExe"
+        }
+        catch {
+            Copy-Item -Path $mainExe -Destination $wtLink -Force
+            Write-Success "Copied $mainExe to wt.exe"
+        }
     }
 
     # Add to Machine PATH
@@ -238,11 +242,6 @@ function Install-TerminalPackage {
     Configure-TerminalSettings -TerminalDir $targetDir
 
     # Create Desktop Shortcut in Public Desktop
-    $iconPath = Join-Path $targetDir "Images\terminal_contrast-black.ico"
-    if (-not (Test-Path $iconPath)) {
-        $iconPath = "$targetDir\wt.exe,0"
-    }
-
     $publicDesktop = "C:\Users\Public\Desktop"
     if (-not (Test-Path $publicDesktop)) {
         New-Item -ItemType Directory -Path $publicDesktop -Force | Out-Null
@@ -257,12 +256,13 @@ function Install-TerminalPackage {
         }
     }
 
+    $targetExe = if (Test-Path "$targetDir\wt.exe") { "$targetDir\wt.exe" } elseif (Test-Path "$targetDir\wezterm-gui.exe") { "$targetDir\wezterm-gui.exe" } else { "$targetDir\wezterm.exe" }
+
     Create-DesktopShortcut `
         -ShortcutPath "$publicDesktop\Windows Terminal.lnk" `
-        -TargetPath "$targetDir\wt.exe" `
+        -TargetPath $targetExe `
         -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
-        -IconLocation $iconPath `
-        -Description "Microsoft Windows Terminal"
+        -Description "Windows Terminal (WezTerm Engine)"
 
     Write-Success "Windows Terminal installed and configured successfully."
 }

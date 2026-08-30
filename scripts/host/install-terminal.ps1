@@ -31,9 +31,9 @@ function Main {
     $vcRedist    = Join-Path $IsoDir "vc_redist.x64.exe"
 
     if (-not (Test-Path $terminalZip)) {
-        Write-Step "Downloading Windows Terminal portable zip..."
+        Write-Step "Downloading WezTerm portable zip..."
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Invoke-WebRequest -Uri "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_x64.zip" -OutFile $terminalZip -UseBasicParsing
+        Invoke-WebRequest -Uri "https://github.com/wezterm/wezterm/releases/download/20240203-110809-5046fc22/WezTerm-windows-20240203-110809-5046fc22.zip" -OutFile $terminalZip -UseBasicParsing
     }
     if (-not (Test-Path $vcRedist)) {
         Write-Step "Downloading Visual C++ Redistributable..."
