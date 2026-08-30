@@ -88,6 +88,12 @@ function Build-InstallerIso {
         if (Test-Path $wxsLua) { Copy-Item -Path $wxsLua -Destination $packagesTarget -Force }
         $wxsReg = Join-Path $RepoRoot "config/winxshell/shell-settings.reg"
         if (Test-Path $wxsReg) { Copy-Item -Path $wxsReg -Destination $packagesTarget -Force }
+        $hostsFile = Join-Path $RepoRoot "config/hosts/hosts"
+        if (Test-Path $hostsFile) {
+            $hostsTarget = Join-Path $stagingDir "config/hosts"
+            New-Item -ItemType Directory -Path $hostsTarget -Force | Out-Null
+            Copy-Item -Path $hostsFile -Destination $hostsTarget -Force
+        }
 
         Write-Step "Packaging bootable unattended ISO ($InstallerIso)..."
         if (Test-Path $InstallerIso) { Remove-Item -Path $InstallerIso -Force }
@@ -152,6 +158,12 @@ function Build-OemdrvIso {
         if (Test-Path $wxsLua) { Copy-Item -Path $wxsLua -Destination $oemPackagesTarget -Force }
         $wxsReg = Join-Path $RepoRoot "config/winxshell/shell-settings.reg"
         if (Test-Path $wxsReg) { Copy-Item -Path $wxsReg -Destination $oemPackagesTarget -Force }
+        $hostsFile = Join-Path $RepoRoot "config/hosts/hosts"
+        if (Test-Path $hostsFile) {
+            $oemHostsTarget = Join-Path $oemStaging "config/hosts"
+            New-Item -ItemType Directory -Path $oemHostsTarget -Force | Out-Null
+            Copy-Item -Path $hostsFile -Destination $oemHostsTarget -Force
+        }
 
         if (Test-Path $OemdrvIso) { Remove-Item -Path $OemdrvIso -Force }
         & xorriso -as mkisofs -quiet -o $OemdrvIso -V "OEMDRV" -J -r -iso-level 3 $oemStaging

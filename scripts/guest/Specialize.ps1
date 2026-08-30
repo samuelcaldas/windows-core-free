@@ -198,6 +198,11 @@ function Main {
         & $optimizeScript
     }
 
+    $hostsScript = Join-Path $PSScriptRoot "Update-HostsBlocklist.ps1"
+    if (Test-Path $hostsScript) {
+        & $hostsScript
+    }
+
     Write-Success "Guest specialization completed successfully."
 }
 

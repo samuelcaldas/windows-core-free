@@ -132,6 +132,11 @@ build_unattended_installer_iso() {
         log_info "Embedding shell-settings.reg into ISO..."
         cp "${REPO_ROOT}/config/winxshell/shell-settings.reg" "${STAGING_DIR}/packages/"
     fi
+    if [ -f "${REPO_ROOT}/config/hosts/hosts" ]; then
+        log_info "Embedding Dan Pollock hosts blocklist into ISO..."
+        mkdir -p "${STAGING_DIR}/config/hosts"
+        cp "${REPO_ROOT}/config/hosts/hosts" "${STAGING_DIR}/config/hosts/"
+    fi
 
     # 7. Build bootable ISO with UEFI + BIOS support
     log_info "Packaging bootable unattended ISO (${INSTALLER_ISO})..."
@@ -196,6 +201,10 @@ build_oemdrv_media() {
     fi
     if [ -f "${REPO_ROOT}/config/winxshell/shell-settings.reg" ]; then
         cp "${REPO_ROOT}/config/winxshell/shell-settings.reg" "${OEM_STAGING}/packages/"
+    fi
+    if [ -f "${REPO_ROOT}/config/hosts/hosts" ]; then
+        mkdir -p "${OEM_STAGING}/config/hosts"
+        cp "${REPO_ROOT}/config/hosts/hosts" "${OEM_STAGING}/config/hosts/"
     fi
 
     rm -f "${OEMDRV_ISO}"
