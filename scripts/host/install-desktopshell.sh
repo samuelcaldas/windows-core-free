@@ -84,9 +84,8 @@ main() {
     log_info "Verifying desktop shell deployment..."
     run_ssh "powershell -Command \"
         Write-Host '--- Shell Configuration ---'
-        (Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon').Shell
-        Write-Host '--- Desktop Shortcuts ---'
-        Get-ChildItem 'C:\\Users\\Public\\Desktop', 'C:\\Users\\samuelcaldas\\Desktop' -ErrorAction SilentlyContinue | Select-Object Name
+        Write-Host '--- Desktop Shortcuts in Public Desktop ---'
+        Get-ChildItem 'C:\Users\Public\Desktop' -ErrorAction SilentlyContinue | Select-Object Name
     \""
 
     log_success "WinXShell & Explorer++ successfully installed without modifying existing data."

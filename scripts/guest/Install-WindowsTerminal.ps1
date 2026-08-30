@@ -237,26 +237,32 @@ function Install-TerminalPackage {
     Install-Fonts -TerminalDir $targetDir
     Configure-TerminalSettings -TerminalDir $targetDir
 
-    # Create Desktop Shortcuts
+    # Create Desktop Shortcut in Public Desktop
     $iconPath = Join-Path $targetDir "Images\terminal_contrast-black.ico"
     if (-not (Test-Path $iconPath)) {
         $iconPath = "$targetDir\wt.exe,0"
     }
 
-    $desktopDirs = @(
-        "C:\Users\Public\Desktop",
-        "C:\Users\samuelcaldas\Desktop",
-        "C:\Users\Administrator\Desktop"
-    )
-
-    foreach ($desk in $desktopDirs) {
-        Create-DesktopShortcut `
-            -ShortcutPath "$desk\Windows Terminal.lnk" `
-            -TargetPath "$targetDir\wt.exe" `
-            -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
-            -IconLocation $iconPath `
-            -Description "Microsoft Windows Terminal"
+    $publicDesktop = "C:\Users\Public\Desktop"
+    if (-not (Test-Path $publicDesktop)) {
+        New-Item -ItemType Directory -Path $publicDesktop -Force | Out-Null
     }
+
+    # Clean up duplicate shortcuts from individual user desktop directories
+    $userDirs = @("C:\Users\samuelcaldas\Desktop", "C:\Users\Administrator\Desktop")
+    foreach ($uDir in $userDirs) {
+        $dup = Join-Path $uDir "Windows Terminal.lnk"
+        if (Test-Path $dup) {
+            Remove-Item -Path $dup -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    Create-DesktopShortcut `
+        -ShortcutPath "$publicDesktop\Windows Terminal.lnk" `
+        -TargetPath "$targetDir\wt.exe" `
+        -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
+        -IconLocation $iconPath `
+        -Description "Microsoft Windows Terminal"
 
     Write-Success "Windows Terminal installed and configured successfully."
 }

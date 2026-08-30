@@ -360,25 +360,33 @@ function Deploy-DesktopShortcut {
         Copy-Item -Path $PSCommandPath -Destination $installedScript -Force
     }
 
-    $desktopDirs = @(
-        "C:\Users\Public\Desktop",
-        "C:\Users\samuelcaldas\Desktop"
-    )
+    $publicDesktop = "C:\Users\Public\Desktop"
+    if (-not (Test-Path $publicDesktop)) {
+        New-Item -ItemType Directory -Path $publicDesktop -Force | Out-Null
+    }
+
+    # Clean up duplicate shortcuts from individual user desktop directories
+    $userDirs = @("C:\Users\samuelcaldas\Desktop", "C:\Users\Administrator\Desktop")
+    foreach ($uDir in $userDirs) {
+        if (Test-Path $uDir) {
+            Get-ChildItem -Path $uDir -Filter "Ninite App Store*.lnk" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+        }
+    }
+    # Also remove legacy names in Public Desktop if present
+    $legacyPublic = Join-Path $publicDesktop "Ninite App Store (TUI).lnk"
+    if (Test-Path $legacyPublic) { Remove-Item -Path $legacyPublic -Force -ErrorAction SilentlyContinue }
 
     $pwsh7 = "C:\Program Files\PowerShell\7\pwsh.exe"
     $targetExe = if (Test-Path $pwsh7) { $pwsh7 } else { "$env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe" }
     $wshShell = New-Object -ComObject WScript.Shell
 
-    foreach ($dir in $desktopDirs) {
-        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
-        $shortcutPath = Join-Path $dir "Ninite App Store (TUI).lnk"
-        $shortcut = $wshShell.CreateShortcut($shortcutPath)
-        $shortcut.TargetPath = $targetExe
-        $shortcut.Arguments = "-NoExit -ExecutionPolicy Bypass -File `"$installedScript`""
-        $shortcut.WorkingDirectory = "C:\Program Files\Ninite"
-        $shortcut.Description = "Ninite Interactive Package Manager"
-        $shortcut.Save()
-    }
+    $shortcutPath = Join-Path $publicDesktop "Ninite App Store.lnk"
+    $shortcut = $wshShell.CreateShortcut($shortcutPath)
+    $shortcut.TargetPath = $targetExe
+    $shortcut.Arguments = "-NoExit -ExecutionPolicy Bypass -File `"$installedScript`""
+    $shortcut.WorkingDirectory = "C:\Program Files\Ninite"
+    $shortcut.Description = "Ninite Interactive Package Manager"
+    $shortcut.Save()
 }
 
 function Main {

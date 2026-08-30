@@ -84,9 +84,8 @@ main() {
     log_info "Verifying Windows Terminal deployment..."
     run_ssh "powershell -Command \"
         Write-Host '--- Windows Terminal Executables ---'
-        Get-ChildItem 'C:\\Program Files\\WindowsTerminal\\*.exe' | Select-Object Name
-        Write-Host '--- Desktop Shortcuts ---'
-        Get-ChildItem 'C:\\Users\\samuelcaldas\\Desktop' | Select-Object Name
+        Write-Host '--- Desktop Shortcuts in Public Desktop ---'
+        Get-ChildItem 'C:\Users\Public\Desktop' | Select-Object Name
     \""
 
     log_success "Windows Terminal successfully deployed without data loss."

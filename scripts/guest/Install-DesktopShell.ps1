@@ -59,6 +59,11 @@ function Create-DesktopShortcut {
 function Install-ExplorerPlusPlus {
     Write-Step "Installing Explorer++ tabbed file manager..."
     $targetDir = "C:\Program Files\Explorer++"
+    if (Test-Path "$targetDir\Explorer++.exe") {
+        Write-Success "Explorer++ is already installed in $targetDir."
+        return
+    }
+
     if (-not (Test-Path $targetDir)) {
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     }
@@ -109,28 +114,33 @@ function Install-WinXShell {
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     }
 
-    $zipFile = Join-Path $SourceDir "winxshell_x64.zip"
-    if (-not (Test-Path $zipFile)) {
-        # Check attached drive letters
-        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
-            $cand = "${letter}:\winxshell_x64.zip"
-            if (Test-Path $cand) { $zipFile = $cand; break }
-            $cand = "${letter}:\packages\winxshell_x64.zip"
-            if (Test-Path $cand) { $zipFile = $cand; break }
+    if (-not (Test-Path "$targetDir\WinXShell.exe")) {
+        $zipFile = Join-Path $SourceDir "winxshell_x64.zip"
+        if (-not (Test-Path $zipFile)) {
+            # Check attached drive letters
+            foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+                $cand = "${letter}:\winxshell_x64.zip"
+                if (Test-Path $cand) { $zipFile = $cand; break }
+                $cand = "${letter}:\packages\winxshell_x64.zip"
+                if (Test-Path $cand) { $zipFile = $cand; break }
+            }
+        }
+
+        if (Test-Path $zipFile) {
+            Write-Step "Extracting WinXShell from $zipFile..."
+            Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
+            Write-Success "WinXShell installed to $targetDir."
+        }
+
+        $exePath = "$targetDir\WinXShell.exe"
+        if (-not (Test-Path $exePath)) {
+            if (Test-Path "$targetDir\WinXShell_x64.exe") {
+                Copy-Item -Path "$targetDir\WinXShell_x64.exe" -Destination $exePath -Force
+            }
         }
     }
-
-    if (Test-Path $zipFile) {
-        Write-Step "Extracting WinXShell from $zipFile..."
-        Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
-        Write-Success "WinXShell installed to $targetDir."
-    }
-
-    $exePath = "$targetDir\WinXShell.exe"
-    if (-not (Test-Path $exePath)) {
-        if (Test-Path "$targetDir\WinXShell_x64.exe") {
-            Copy-Item -Path "$targetDir\WinXShell_x64.exe" -Destination $exePath -Force
-        }
+    else {
+        Write-Success "WinXShell is already installed in $targetDir."
     }
 
     # Configure Winlogon Shell
@@ -162,76 +172,93 @@ function Install-WinXShell {
 }
 
 function Deploy-DesktopShortcuts {
-    Write-Step "Creating desktop shortcuts for user and public profiles..."
-    $desktopDirs = @(
-        "C:\Users\Public\Desktop",
+    Write-Step "Creating desktop shortcuts in Public Desktop..."
+    $publicDir = "C:\Users\Public\Desktop"
+    if (-not (Test-Path $publicDir)) {
+        New-Item -ItemType Directory -Path $publicDir -Force | Out-Null
+    }
+
+    # Clean up duplicate shortcuts from individual user desktop directories
+    $userDirs = @(
         "C:\Users\samuelcaldas\Desktop",
         "C:\Users\Administrator\Desktop"
     )
+    $shortcutNames = @(
+        "Command Prompt.lnk",
+        "PowerShell 7.lnk",
+        "Windows PowerShell.lnk",
+        "Explorer++.lnk",
+        "Server Configuration (sconfig).lnk",
+        "Claude Code CLI.lnk"
+    )
+    foreach ($uDir in $userDirs) {
+        if (Test-Path $uDir) {
+            foreach ($sName in $shortcutNames) {
+                $dup = Join-Path $uDir $sName
+                if (Test-Path $dup) {
+                    Remove-Item -Path $dup -Force -ErrorAction SilentlyContinue
+                }
+            }
+        }
+    }
 
     $cmdExe   = "$env:WINDIR\System32\cmd.exe"
     $pwsh7Exe = "C:\Program Files\PowerShell\7\pwsh.exe"
     $expExe   = "C:\Program Files\Explorer++\Explorer++.exe"
     $sconfig  = "$env:WINDIR\System32\sconfig.cmd"
 
-    foreach ($dir in $desktopDirs) {
-        if (-not (Test-Path $dir)) {
-            New-Item -ItemType Directory -Path $dir -Force | Out-Null
-        }
+    # 1. Command Prompt
+    Create-DesktopShortcut `
+        -ShortcutPath "$publicDir\Command Prompt.lnk" `
+        -TargetPath $cmdExe `
+        -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
+        -Description "Windows Command Prompt"
 
-        # 1. Command Prompt
+    # 2. PowerShell 7
+    if (Test-Path $pwsh7Exe) {
         Create-DesktopShortcut `
-            -ShortcutPath "$dir\Command Prompt.lnk" `
-            -TargetPath $cmdExe `
+            -ShortcutPath "$publicDir\PowerShell 7.lnk" `
+            -TargetPath $pwsh7Exe `
             -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
-            -Description "Windows Command Prompt"
-
-        # 2. PowerShell 7
-        if (Test-Path $pwsh7Exe) {
-            Create-DesktopShortcut `
-                -ShortcutPath "$dir\PowerShell 7.lnk" `
-                -TargetPath $pwsh7Exe `
-                -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
-                -Description "PowerShell 7 (pwsh)"
-        }
-        else {
-            Create-DesktopShortcut `
-                -ShortcutPath "$dir\Windows PowerShell.lnk" `
-                -TargetPath "$env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe" `
-                -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
-                -Description "Windows PowerShell"
-        }
-
-        # 3. Explorer++
-        if (Test-Path $expExe) {
-            Create-DesktopShortcut `
-                -ShortcutPath "$dir\Explorer++.lnk" `
-                -TargetPath $expExe `
-                -WorkingDirectory "C:\Program Files\Explorer++" `
-                -Description "Explorer++ File Manager"
-        }
-
-        # 4. Server Configuration (sconfig)
-        if (Test-Path $sconfig) {
-            Create-DesktopShortcut `
-                -ShortcutPath "$dir\Server Configuration (sconfig).lnk" `
-                -TargetPath $cmdExe `
-                -Arguments "/k `"$sconfig`"" `
-                -Description "Windows Server Configuration Utility"
-        }
-
-        # 5. Claude Code CLI
-        $claudeTarget = if (Test-Path $pwsh7Exe) { $pwsh7Exe } else { $cmdExe }
-        $claudeArgs   = if (Test-Path $pwsh7Exe) { "-NoExit -Command `"claude`"" } else { "/k claude" }
+            -Description "PowerShell 7 (pwsh)"
+    }
+    else {
         Create-DesktopShortcut `
-            -ShortcutPath "$dir\Claude Code CLI.lnk" `
-            -TargetPath $claudeTarget `
-            -Arguments $claudeArgs `
+            -ShortcutPath "$publicDir\Windows PowerShell.lnk" `
+            -TargetPath "$env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe" `
             -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
-            -Description "Anthropic Claude Code CLI"
+            -Description "Windows PowerShell"
     }
 
-    Write-Success "Desktop shortcuts deployed successfully."
+    # 3. Explorer++
+    if (Test-Path $expExe) {
+        Create-DesktopShortcut `
+            -ShortcutPath "$publicDir\Explorer++.lnk" `
+            -TargetPath $expExe `
+            -WorkingDirectory "C:\Program Files\Explorer++" `
+            -Description "Explorer++ File Manager"
+    }
+
+    # 4. Server Configuration (sconfig)
+    if (Test-Path $sconfig) {
+        Create-DesktopShortcut `
+            -ShortcutPath "$publicDir\Server Configuration (sconfig).lnk" `
+            -TargetPath $cmdExe `
+            -Arguments "/k `"$sconfig`"" `
+            -Description "Windows Server Configuration Utility"
+    }
+
+    # 5. Claude Code CLI
+    $claudeTarget = if (Test-Path $pwsh7Exe) { $pwsh7Exe } else { $cmdExe }
+    $claudeArgs   = if (Test-Path $pwsh7Exe) { "-NoExit -Command `"claude`"" } else { "/k claude" }
+    Create-DesktopShortcut `
+        -ShortcutPath "$publicDir\Claude Code CLI.lnk" `
+        -TargetPath $claudeTarget `
+        -Arguments $claudeArgs `
+        -WorkingDirectory "$env:SystemDrive\Users\samuelcaldas" `
+        -Description "Anthropic Claude Code CLI"
+
+    Write-Success "Desktop shortcuts deployed successfully to Public Desktop."
 }
 
 function Main {
