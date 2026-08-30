@@ -160,6 +160,26 @@ function Main {
         }
     }
 
+    $terminalScript = Join-Path $PSScriptRoot "Install-WindowsTerminal.ps1"
+    if (Test-Path $terminalScript) {
+        try {
+            & $terminalScript
+        }
+        catch {
+            Write-WarnMsg "Install-WindowsTerminal warning: $_"
+        }
+    }
+
+    $niniteScript = Join-Path $PSScriptRoot "Install-NiniteApps.ps1"
+    if (Test-Path $niniteScript) {
+        try {
+            & $niniteScript -DeployOnly
+        }
+        catch {
+            Write-WarnMsg "Install-NiniteApps warning: $_"
+        }
+    }
+
     Write-Success "Developer toolchains installed and configured successfully."
 }
 
