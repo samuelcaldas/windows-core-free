@@ -18,7 +18,7 @@ flowchart LR
 | Phase | Milestone | Focus Area | Primary Deliverables | Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **Phase 1** | Host Setup & Virtualization Tooling | Ubuntu Host Readiness | `setup-host.sh` / `.ps1`, VirtIO ISO downloader | `[x] Completed` |
-| **Phase 2** | Unattended Media & QEMU Boot | Dual-Drive Boot Pipeline | `build-iso.sh` / `.ps1`, `run-vm.sh` / `.ps1`, QCOW2 sparse disk | `[ ] Planned` |
+| **Phase 2** | Unattended Media & QEMU Boot | Dual-Drive Boot Pipeline | `build-iso.sh` / `.ps1`, `run-vm.sh` / `.ps1`, QCOW2 sparse disk | `[x] Completed` |
 | **Phase 3** | Core Bootstrap & Hyper-V Deactivation | FirstBoot & Guest Specialization | `Specialize.ps1`, OpenSSH, pwsh 7, Hyper-V removal | `[ ] Planned` |
 | **Phase 4** | Remote Toolchains & SSH Keys | Post-Boot Remote Orchestration | `provision-remote.sh` / `.ps1`, `Install-Tools.ps1` (Git, Node, Python) | `[ ] Planned` |
 | **Phase 5** | AI Agent Stack & Antigravity Remote Control | Agent Execution Node | `Setup-Agents.ps1`, `agy-daemon` Service, CLI tests | `[ ] Planned` |
@@ -59,22 +59,22 @@ test -f iso/virtio-win.iso && echo "VirtIO ISO present"
 **Objective**: Create the secondary virtual drive (OEMDRV) containing [`autounattend.xml`](file:///home/samuelcaldas/repos/windows-core/autounattend.xml) and VirtIO drivers, provision a dynamic sparse QCOW2 virtual disk, and launch QEMU in dual-drive mode for zero-touch OS installation.
 
 ### Deliverables & Tasks
-- [ ] **Secondary Drive Generator** ([`scripts/host/build-iso.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/build-iso.sh) / [`scripts/host/build-iso.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/build-iso.ps1)):
-  - [ ] Extract required VirtIO storage (`viostor`), network (`NetKVM`), and serial (`vioserial`) drivers from `virtio-win.iso`.
-  - [ ] Package [`autounattend.xml`](file:///home/samuelcaldas/repos/windows-core/autounattend.xml), extracted drivers, and guest scripts into a secondary FAT/ISO image labeled `OEMDRV` (`iso/oemdrv.iso`).
-- [ ] **Virtual Disk Creation**:
-  - [ ] Script sparse QCOW2 disk allocation (`qemu-img create -f qcow2 windows-core.qcow2 64G`).
-- [ ] **QEMU VM Orchestrator** ([`scripts/host/run-vm.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/run-vm.sh) / [`scripts/host/run-vm.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/run-vm.ps1)):
-  - [ ] Configure QEMU execution parameters:
-    - KVM acceleration (`-enable-kvm -cpu host,hv_relaxed,hv_spinlocks=0x1fff,hv_vapic,hv_time`).
-    - Multi-core CPU (`-smp 4`) and RAM (`-m 4G` or dynamic ballooning).
-    - VirtIO SCSI/Block storage controller with TRIM (`discard=unmap`).
+- [x] **Secondary Drive & Installer Generator** ([`scripts/host/build-iso.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/build-iso.sh) / [`scripts/host/build-iso.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/build-iso.ps1)):
+  - [x] Extract required VirtIO storage (`viostor`), network (`NetKVM`), and serial (`vioserial`) drivers from `virtio-win.iso`.
+  - [x] Package [`autounattend.xml`](file:///home/samuelcaldas/repos/windows-core/autounattend.xml), extracted drivers, and guest scripts into bootable unattended installer ISO and OEMDRV media (`iso/windows-core-installer.iso` & `iso/oemdrv.iso`).
+- [x] **Virtual Disk Creation**:
+  - [x] Script sparse QCOW2 disk allocation (`qemu-img create -f qcow2 windows-core.qcow2 64G`).
+- [x] **QEMU VM Orchestrator** ([`scripts/host/run-vm.sh`](file:///home/samuelcaldas/repos/windows-core/scripts/host/run-vm.sh) / [`scripts/host/run-vm.ps1`](file:///home/samuelcaldas/repos/windows-core/scripts/host/run-vm.ps1)):
+  - [x] Configure QEMU execution parameters:
+    - KVM acceleration (`-enable-kvm -cpu host,hv_relaxed,hv_spinlocks=0x1fff,hv_vapic,hv_time,hv_vpindex,hv_synic,hv_stimer,hv_frequencies`).
+    - Multi-core CPU (`-smp 4`) and RAM (`-m 4096`).
+    - VirtIO SCSI controller with TRIM (`discard=unmap`).
     - VirtIO Network device with user-mode port forwarding:
       - SSH: Host `2222` ➔ Guest `22`
       - WinRM: Host `5985` ➔ Guest `5985` / Host `5986` ➔ Guest `5986`
       - Antigravity Daemon: Host `9090` ➔ Guest `9090`
-    - Dual CD-ROM attachment (Drive 1: Windows Hyper-V Server base ISO; Drive 2: `oemdrv.iso`).
-    - Headless operation with QEMU monitor socket and optional VNC debug port (`-display none -vnc :1` or `-nographic`).
+    - OVMF UEFI firmware integration.
+    - Headless operation with QEMU monitor socket and VNC debug port (`-display none -vnc 127.0.0.1:1`).
 
 ### Acceptance Criteria & Verification
 ```bash

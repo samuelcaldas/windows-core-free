@@ -3,8 +3,46 @@
 	<!--https://schneegans.de/windows/unattend-generator/?LanguageMode=Unattended&UILanguage=en-US&Locale=pt-BR&Keyboard=00000416&GeoLocation=32&PEMode=Default&WindowsEditionMode=Firmware&ProcessorArchitecture=amd64&BypassRequirementsCheck=true&BypassNetworkCheck=true&UseConfigurationSet=true&KeepSensitiveFiles=true&ComputerNameMode=Custom&ComputerName=windows-core&TimeZoneMode=Explicit&TimeZone=E.+South+America+Standard+Time&UserAccountMode=Unattended&AccountName0=samuelcaldas&AccountDisplayName0=&AccountPassword0=hebroN%401994&AccountGroup0=Administrators&AutoLogonMode=Builtin&BuiltinAdministratorPassword=hebroN%401994&PasswordExpirationMode=Unlimited&LockoutMode=Disabled&HideFiles=None&ShowFileExtensions=true&ClassicContextMenu=true&HideInfoTip=true&LaunchToThisPC=true&ShowEndTask=true&TaskbarSearch=Hide&TaskbarIconsMode=Empty&DisableWidgets=true&LeftTaskbar=true&HideTaskViewButton=true&ShowAllTrayIcons=true&DisableBingResults=true&StartTilesMode=Empty&StartPinsMode=Empty&DisableUac=true&DisableSac=true&DisableSmartScreen=true&DisableFastStartup=true&DisableSystemRestore=true&EnableLongPaths=true&EnableRemoteDesktop=true&DeleteJunctions=true&AllowPowerShellScripts=true&DisableLastAccess=true&TurnOffSystemSounds=true&DisableAppSuggestions=true&PreventDeviceEncryption=true&HideEdgeFre=true&DisableEdgeStartupBoost=true&MakeEdgeUninstallable=true&DisablePointerPrecision=true&DeleteWindowsOld=true&EffectsMode=Performance&DeleteEdgeDesktopIcon=true&DesktopIconsMode=Custom&IconControlPanel=true&IconDownloads=true&IconHome=true&IconThisPC=true&IconUserFiles=true&StartFoldersMode=Custom&CoreIsolationMode=Disabled&VirtIoGuestTools=true&WifiMode=Skip&ExpressSettings=DisableAll&LockKeysMode=Configure&CapsLockInitial=Off&CapsLockBehavior=Toggle&NumLockInitial=On&NumLockBehavior=Toggle&ScrollLockInitial=Off&ScrollLockBehavior=Toggle&StickyKeysMode=Disabled&ColorMode=Custom&SystemColorTheme=Dark&AppsColorTheme=Dark&AccentColor=%230064aa&WallpaperMode=Solid&WallpaperColor=%230064aa&LockScreenMode=Default&Remove3DViewer=true&RemoveBingSearch=true&RemoveCamera=true&RemoveClipchamp=true&RemoveClock=true&RemoveCopilot=true&RemoveCortana=true&RemoveDevHome=true&RemoveWindowsHello=true&RemoveFamily=true&RemoveFeedbackHub=true&RemoveGameAssist=true&RemoveGetHelp=true&RemoveHandwriting=true&RemoveInternetExplorer=true&RemoveMailCalendar=true&RemoveMaps=true&RemoveMathInputPanel=true&RemoveMediaFeatures=true&RemoveStore=true&RemoveMixedReality=true&RemoveZuneVideo=true&RemoveNews=true&RemoveOffice365=true&RemoveOneDrive=true&RemoveOneNote=true&RemoveOneSync=true&RemoveOutlook=true&RemovePaint=true&RemovePaint3D=true&RemovePeople=true&RemovePhotos=true&RemovePowerAutomate=true&RemoveQuickAssist=true&RemoveRecall=true&RemoveSkype=true&RemoveSnippingTool=true&RemoveSolitaire=true&RemoveStepsRecorder=true&RemoveStickyNotes=true&RemoveTeams=true&RemoveGetStarted=true&RemoveToDo=true&RemoveVoiceRecorder=true&RemoveWallet=true&RemoveWeather=true&RemoveWindowsMediaPlayer=true&RemoveZuneMusic=true&RemoveWindowsTerminal=true&RemoveWordPad=true&RemoveXboxApps=true&RemoveYourPhone=true&AppLockerMode=Skip-->
 	<settings pass="offlineServicing"></settings>
 	<settings pass="windowsPE">
+		<component name="Microsoft-Windows-PnpCustomizationsWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<DriverPaths>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="1">
+					<Path>D:\viostor\2k19\amd64</Path>
+				</PathAndCredentials>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="2">
+					<Path>D:\vioscsi\2k19\amd64</Path>
+				</PathAndCredentials>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="3">
+					<Path>D:\NetKVM\2k19\amd64</Path>
+				</PathAndCredentials>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="4">
+					<Path>E:\viostor\2k19\amd64</Path>
+				</PathAndCredentials>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="5">
+					<Path>E:\vioscsi\2k19\amd64</Path>
+				</PathAndCredentials>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="6">
+					<Path>E:\NetKVM\2k19\amd64</Path>
+				</PathAndCredentials>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="7">
+					<Path>F:\viostor\2k19\amd64</Path>
+				</PathAndCredentials>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="8">
+					<Path>F:\vioscsi\2k19\amd64</Path>
+				</PathAndCredentials>
+				<PathAndCredentials wcm:action="add" wcm:keyValue="9">
+					<Path>F:\NetKVM\2k19\amd64</Path>
+				</PathAndCredentials>
+			</DriverPaths>
+		</component>
 		<component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+			<SetupUILanguage>
+				<UILanguage>en-US</UILanguage>
+			</SetupUILanguage>
+			<InputLocale>0416:00000416</InputLocale>
+			<SystemLocale>pt-BR</SystemLocale>
 			<UILanguage>en-US</UILanguage>
+			<UILanguageFallback>en-US</UILanguageFallback>
+			<UserLocale>pt-BR</UserLocale>
 		</component>
 		<component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
 			<UserData>
@@ -13,7 +51,59 @@
 				</ProductKey>
 				<AcceptEula>true</AcceptEula>
 			</UserData>
-			<UseConfigurationSet>true</UseConfigurationSet>
+			<DiskConfiguration>
+				<Disk wcm:action="add">
+					<DiskID>0</DiskID>
+					<WillWipeDisk>true</WillWipeDisk>
+					<CreatePartitions>
+						<CreatePartition wcm:action="add">
+							<Order>1</Order>
+							<Type>EFI</Type>
+							<Size>100</Size>
+						</CreatePartition>
+						<CreatePartition wcm:action="add">
+							<Order>2</Order>
+							<Type>MSR</Type>
+							<Size>16</Size>
+						</CreatePartition>
+						<CreatePartition wcm:action="add">
+							<Order>3</Order>
+							<Type>Primary</Type>
+							<Extend>true</Extend>
+						</CreatePartition>
+					</CreatePartitions>
+					<ModifyPartitions>
+						<ModifyPartition wcm:action="add">
+							<Order>1</Order>
+							<PartitionID>1</PartitionID>
+							<Label>System</Label>
+							<Format>FAT32</Format>
+						</ModifyPartition>
+						<ModifyPartition wcm:action="add">
+							<Order>2</Order>
+							<PartitionID>3</PartitionID>
+							<Label>Windows</Label>
+							<Letter>C</Letter>
+							<Format>NTFS</Format>
+						</ModifyPartition>
+					</ModifyPartitions>
+				</Disk>
+			</DiskConfiguration>
+			<ImageInstall>
+				<OSImage>
+					<InstallFrom>
+						<MetaData wcm:action="add">
+							<Key>/IMAGE/INDEX</Key>
+							<Value>1</Value>
+						</MetaData>
+					</InstallFrom>
+					<InstallTo>
+						<DiskID>0</DiskID>
+						<PartitionID>3</PartitionID>
+					</InstallTo>
+					<WillShowUI>OnError</WillShowUI>
+				</OSImage>
+			</ImageInstall>
 			<RunSynchronous>
 				<RunSynchronousCommand wcm:action="add">
 					<Order>1</Order>

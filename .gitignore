@@ -1,3 +1,11 @@
 # ISO images and directory
 iso/
 *.iso
+*.img
+*.vfd
+
+# VM disk images and runtime files
+*.qcow2
+*.pid
+*.sock
+.windows-core*
