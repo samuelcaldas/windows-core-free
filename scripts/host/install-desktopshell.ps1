@@ -42,6 +42,10 @@ function Main {
     Write-Step "Transferring packages..."
     & scp -P $VmPort -o StrictHostKeyChecking=accept-new $winxshellZip "${VmUser}@${VmHost}:C:/Provisioning/packages/winxshell_x64.zip"
     & scp -P $VmPort -o StrictHostKeyChecking=accept-new $explorerZip "${VmUser}@${VmHost}:C:/Provisioning/packages/explorerpp_x64.zip"
+    $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"
+    if (Test-Path $configXml) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $configXml "${VmUser}@${VmHost}:C:/Provisioning/packages/config.xml"
+    }
     & scp -P $VmPort -o StrictHostKeyChecking=accept-new (Join-Path $RepoRoot "scripts/guest/Install-DesktopShell.ps1") "${VmUser}@${VmHost}:C:/Provisioning/scripts/Install-DesktopShell.ps1"
 
     Write-Step "Executing Install-DesktopShell.ps1..."

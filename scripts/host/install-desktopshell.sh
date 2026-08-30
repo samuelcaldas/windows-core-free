@@ -74,6 +74,9 @@ main() {
     log_info "Transferring WinXShell and Explorer++ packages to guest..."
     run_scp "${ISO_DIR}/winxshell_x64.zip" "C:/Provisioning/packages/winxshell_x64.zip"
     run_scp "${ISO_DIR}/explorerpp_x64.zip" "C:/Provisioning/packages/explorerpp_x64.zip"
+    if [ -f "${REPO_ROOT}/config/explorerpp/config.xml" ]; then
+        run_scp "${REPO_ROOT}/config/explorerpp/config.xml" "C:/Provisioning/packages/config.xml"
+    fi
     run_scp "${REPO_ROOT}/scripts/guest/Install-DesktopShell.ps1" "C:/Provisioning/scripts/Install-DesktopShell.ps1"
 
     # 4. Execute Guest Installation Script

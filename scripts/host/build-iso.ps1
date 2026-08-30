@@ -82,6 +82,8 @@ function Build-InstallerIso {
         if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $packagesTarget -Force }
         if (Test-Path $terminalZip) { Copy-Item -Path $terminalZip -Destination $packagesTarget -Force }
         if (Test-Path $vcRedist) { Copy-Item -Path $vcRedist -Destination $packagesTarget -Force }
+        $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"
+        if (Test-Path $configXml) { Copy-Item -Path $configXml -Destination $packagesTarget -Force }
 
         Write-Step "Packaging bootable unattended ISO ($InstallerIso)..."
         if (Test-Path $InstallerIso) { Remove-Item -Path $InstallerIso -Force }
@@ -140,6 +142,8 @@ function Build-OemdrvIso {
         if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $terminalZip) { Copy-Item -Path $terminalZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $vcRedist) { Copy-Item -Path $vcRedist -Destination $oemPackagesTarget -Force }
+        $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"
+        if (Test-Path $configXml) { Copy-Item -Path $configXml -Destination $oemPackagesTarget -Force }
 
         if (Test-Path $OemdrvIso) { Remove-Item -Path $OemdrvIso -Force }
         & xorriso -as mkisofs -quiet -o $OemdrvIso -V "OEMDRV" -J -r -iso-level 3 $oemStaging

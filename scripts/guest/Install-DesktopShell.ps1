@@ -99,6 +99,21 @@ function Install-ExplorerPlusPlus {
         Write-Success "Explorer++ downloaded and installed to $targetDir."
     }
 
+    # Deploy pre-configured portable config.xml
+    $configSrc = Join-Path $SourceDir "config.xml"
+    if (-not (Test-Path $configSrc)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\packages\config.xml"
+            if (Test-Path $cand) { $configSrc = $cand; break }
+            $cand = "${letter}:\config.xml"
+            if (Test-Path $cand) { $configSrc = $cand; break }
+        }
+    }
+    if (Test-Path $configSrc) {
+        Copy-Item -Path $configSrc -Destination "$targetDir\config.xml" -Force
+        Write-Success "Deployed pre-configured Explorer++ portable config.xml."
+    }
+
     # Add to Machine PATH
     $currPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
     if ($currPath -notlike "*$targetDir*") {

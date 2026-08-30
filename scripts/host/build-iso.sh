@@ -120,6 +120,10 @@ build_unattended_installer_iso() {
         log_info "Embedding Visual C++ Redistributable into ISO..."
         cp "${ISO_DIR}/vc_redist.x64.exe" "${STAGING_DIR}/packages/"
     fi
+    if [ -f "${REPO_ROOT}/config/explorerpp/config.xml" ]; then
+        log_info "Embedding Explorer++ portable config.xml into ISO..."
+        cp "${REPO_ROOT}/config/explorerpp/config.xml" "${STAGING_DIR}/packages/"
+    fi
 
     # 7. Build bootable ISO with UEFI + BIOS support
     log_info "Packaging bootable unattended ISO (${INSTALLER_ISO})..."
@@ -175,6 +179,9 @@ build_oemdrv_media() {
     fi
     if [ -f "${ISO_DIR}/vc_redist.x64.exe" ]; then
         cp "${ISO_DIR}/vc_redist.x64.exe" "${OEM_STAGING}/packages/"
+    fi
+    if [ -f "${REPO_ROOT}/config/explorerpp/config.xml" ]; then
+        cp "${REPO_ROOT}/config/explorerpp/config.xml" "${OEM_STAGING}/packages/"
     fi
 
     rm -f "${OEMDRV_ISO}"
