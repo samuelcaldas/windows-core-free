@@ -9,13 +9,16 @@ Welcome to the technical documentation for the **Windows Core Headless Developme
 | Document | Description |
 | :--- | :--- |
 | **[SSH Configuration Guide](file:///home/samuelcaldas/repos/windows-core/docs/ssh-configuration.md)** | Client `~/.ssh/config` setups, ProxyJump tunnels, and port forwards for `winvm`. |
+| **[Systemd Autostart & Service Guide](file:///home/samuelcaldas/repos/windows-core/docs/systemd-autostart.md)** | Host-level systemd service setup, boot autostart on Ubuntu, process supervision, and ACPI shutdown. |
 | **[System Architecture & Overview](file:///home/samuelcaldas/repos/windows-core/GEMINI.md)** | Full infrastructure blueprint, QEMU/KVM tuning, memory optimizations, and component breakdown. |
+
 
 ---
 
 ## 🚀 Key Features & Stack Overview
 
 - **OS**: Windows Server Core 2019 (RS5 build 17763), stripped and memory-optimized to **~530 MB RAM idle**.
+- **Host Autostart & Supervision**: Native systemd service (`windows-core.service`) with boot autostart and graceful ACPI powerdown.
 - **Remote Access**: Win32-OpenSSH with PowerShell 7 (`pwsh.exe`) default shell.
 - **Desktop Shell**: **WinXShell** (`WinXShell.exe -winpe`) default Win32 explorer shell and **WinFile** (`Winfile.exe`) default file explorer (ReactShell, ReactFM, and Explorer++ available as modular options).
 - **Package Management**: **OmniGet (og)** multi-source universal package manager (`C:\Program Files\OmniGet`).
