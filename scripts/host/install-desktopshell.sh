@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/host/install-desktopshell.sh
-# Non-destructive Live Setup of WinXShell & Explorer++ on Windows Core Guest
+# Non-destructive Live Setup of ReactShell Desktop Environment on Windows Core
 # ==============================================================================
 set -euo pipefail
 
@@ -13,6 +13,9 @@ VM_HOST="${VM_HOST:-127.0.0.1}"
 VM_PORT="${VM_PORT:-2222}"
 VM_USER="${VM_USER:-samuelcaldas}"
 VM_PASS="${VM_PASS:-hebroN@1994}"
+
+SHELL_PROVIDER="${1:-ReactShell}"
+FILE_MANAGER="${2:-ReactFM}"
 
 SSH_OPTS="-p ${VM_PORT} -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"
 SCP_OPTS="-P ${VM_PORT} -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"
@@ -51,29 +54,49 @@ run_scp() {
     fi
 }
 
+ensure_reactshell_package() {
+    if [ ! -f "${ISO_DIR}/reactshell_x64.zip" ]; then
+        log_info "Packaging ReactShell binaries into ${ISO_DIR}/reactshell_x64.zip..."
+        mkdir -p "${ISO_DIR}"
+        local RS_BIN_DIR=""
+        if [ -d "${REPO_ROOT}/external/ReactShell/build/bin" ] && [ -f "${REPO_ROOT}/external/ReactShell/build/bin/react-shell.exe" ]; then
+            RS_BIN_DIR="${REPO_ROOT}/external/ReactShell/build/bin"
+        elif [ -d "/home/samuelcaldas/repos/ReactShell/build/bin" ] && [ -f "/home/samuelcaldas/repos/ReactShell/build/bin/react-shell.exe" ]; then
+            RS_BIN_DIR="/home/samuelcaldas/repos/ReactShell/build/bin"
+        fi
+
+        if [ -n "${RS_BIN_DIR}" ]; then
+            7z a -tzip "${ISO_DIR}/reactshell_x64.zip" "${RS_BIN_DIR}/"* >/dev/null
+            log_success "ReactShell package generated successfully."
+        else
+            log_error "ReactShell binaries not found. Please build ReactShell first."
+            exit 1
+        fi
+    fi
+}
+
 main() {
     echo "=============================================================================="
-    echo "  Windows Core - WinXShell & Explorer++ Desktop Shell Deployment"
+    echo "  Windows Core - Desktop Shell (${SHELL_PROVIDER} / ${FILE_MANAGER}) Deployment"
     echo "=============================================================================="
 
-    # 1. Verify package availability on host
-    if [ ! -f "${ISO_DIR}/winxshell_x64.zip" ]; then
-        log_error "Missing ${ISO_DIR}/winxshell_x64.zip. Please build or download it first."
-        exit 1
-    fi
-    if [ ! -f "${ISO_DIR}/explorerpp_x64.zip" ]; then
-        log_error "Missing ${ISO_DIR}/explorerpp_x64.zip. Please build or download it first."
-        exit 1
-    fi
+    ensure_reactshell_package
 
-    # 2. Prepare remote staging directories
+    # 1. Prepare remote staging directories
     log_info "Preparing guest provisioning directories..."
     run_ssh "powershell -Command \"New-Item -ItemType Directory -Path 'C:\\Provisioning\\packages', 'C:\\Provisioning\\scripts' -Force | Out-Null\""
 
-    # 3. Transfer packages and script
-    log_info "Transferring WinXShell and Explorer++ packages to guest..."
-    run_scp "${ISO_DIR}/winxshell_x64.zip" "C:/Provisioning/packages/winxshell_x64.zip"
-    run_scp "${ISO_DIR}/explorerpp_x64.zip" "C:/Provisioning/packages/explorerpp_x64.zip"
+    # 2. Transfer packages and script
+    log_info "Transferring desktop shell packages to guest..."
+    if [ -f "${ISO_DIR}/reactshell_x64.zip" ]; then
+        run_scp "${ISO_DIR}/reactshell_x64.zip" "C:/Provisioning/packages/reactshell_x64.zip"
+    fi
+    if [ -f "${ISO_DIR}/winxshell_x64.zip" ]; then
+        run_scp "${ISO_DIR}/winxshell_x64.zip" "C:/Provisioning/packages/winxshell_x64.zip"
+    fi
+    if [ -f "${ISO_DIR}/explorerpp_x64.zip" ]; then
+        run_scp "${ISO_DIR}/explorerpp_x64.zip" "C:/Provisioning/packages/explorerpp_x64.zip"
+    fi
     if [ -f "${REPO_ROOT}/config/explorerpp/config.xml" ]; then
         run_scp "${REPO_ROOT}/config/explorerpp/config.xml" "C:/Provisioning/packages/config.xml"
     fi
@@ -85,19 +108,22 @@ main() {
     fi
     run_scp "${REPO_ROOT}/scripts/guest/Install-DesktopShell.ps1" "C:/Provisioning/scripts/Install-DesktopShell.ps1"
 
-    # 4. Execute Guest Installation Script
+    # 3. Execute Guest Installation Script
     log_info "Executing Install-DesktopShell.ps1 on Windows Core..."
-    run_ssh "powershell -ExecutionPolicy Bypass -File 'C:\\Provisioning\\scripts\\Install-DesktopShell.ps1'"
+    run_ssh "powershell -ExecutionPolicy Bypass -File 'C:\\Provisioning\\scripts\\Install-DesktopShell.ps1' -ShellProvider '${SHELL_PROVIDER}' -FileManager '${FILE_MANAGER}'"
 
-    # 5. Verification
+    # 4. Verification
     log_info "Verifying desktop shell deployment..."
     run_ssh "powershell -Command \"
-        Write-Host '--- Shell Configuration ---'
+        Write-Host '--- Winlogon Shell ---'
+        (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon').Shell
+        Write-Host '--- Default Folder Handler ---'
+        (Get-ItemProperty 'HKLM:\SOFTWARE\Classes\Folder\shell\open\command').'(Default)'
         Write-Host '--- Desktop Shortcuts in Public Desktop ---'
         Get-ChildItem 'C:\Users\Public\Desktop' -ErrorAction SilentlyContinue | Select-Object Name
     \""
 
-    log_success "WinXShell & Explorer++ successfully installed without modifying existing data."
+    log_success "Desktop shell setup (${SHELL_PROVIDER} / ${FILE_MANAGER}) completed successfully."
 }
 
 main

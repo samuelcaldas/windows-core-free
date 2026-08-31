@@ -1,14 +1,16 @@
 <#
 .SYNOPSIS
-    Host Script (PowerShell 7): Non-destructive Live Setup of WinXShell & Explorer++ on Windows Core Guest.
+    Host Script (PowerShell 7): Setup of ReactShell Desktop Environment on Windows Core Guest.
 .DESCRIPTION
-    Transfers WinXShell and Explorer++ packages and invokes Install-DesktopShell.ps1 over SSH.
+    Transfers ReactShell, WinXShell, and Explorer++ packages and invokes Install-DesktopShell.ps1 over SSH.
 #>
 [CmdletBinding()]
 param(
     [string]$VmHost = "127.0.0.1",
     [int]$VmPort = 2222,
-    [string]$VmUser = "samuelcaldas"
+    [string]$VmUser = "samuelcaldas",
+    [ValidateSet('ReactShell', 'WinXShell', 'None')][string]$ShellProvider = 'ReactShell',
+    [ValidateSet('ReactFM', 'ExplorerPlusPlus', 'None')][string]$FileManager = 'ReactFM'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -25,23 +27,26 @@ function Write-ErrMsg { param([string]$Msg) Write-Host "[ERROR] $Msg" -Foregroun
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core - WinXShell & Explorer++ Desktop Shell Deployment (PowerShell)"
+    Write-Host "  Windows Core - Desktop Shell ($ShellProvider / $FileManager) Deployment (PowerShell)"
     Write-Host "=============================================================================="
 
+    $rshellZip    = Join-Path $IsoDir "reactshell_x64.zip"
     $winxshellZip = Join-Path $IsoDir "winxshell_x64.zip"
     $explorerZip  = Join-Path $IsoDir "explorerpp_x64.zip"
 
-    if (-not (Test-Path $winxshellZip) -or -not (Test-Path $explorerZip)) {
-        Write-ErrMsg "Required packages missing in $IsoDir."
-        exit 1
-    }
-
-    Write-Step "Creating remote directories..."
+    Write-Step "Creating remote provisioning directories..."
     & ssh -p $VmPort -o StrictHostKeyChecking=accept-new "$VmUser@$VmHost" "powershell -Command `"New-Item -ItemType Directory -Path 'C:\Provisioning\packages', 'C:\Provisioning\scripts' -Force | Out-Null`""
 
-    Write-Step "Transferring packages..."
-    & scp -P $VmPort -o StrictHostKeyChecking=accept-new $winxshellZip "${VmUser}@${VmHost}:C:/Provisioning/packages/winxshell_x64.zip"
-    & scp -P $VmPort -o StrictHostKeyChecking=accept-new $explorerZip "${VmUser}@${VmHost}:C:/Provisioning/packages/explorerpp_x64.zip"
+    Write-Step "Transferring packages to guest..."
+    if (Test-Path $rshellZip) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $rshellZip "${VmUser}@${VmHost}:C:/Provisioning/packages/reactshell_x64.zip"
+    }
+    if (Test-Path $winxshellZip) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $winxshellZip "${VmUser}@${VmHost}:C:/Provisioning/packages/winxshell_x64.zip"
+    }
+    if (Test-Path $explorerZip) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $explorerZip "${VmUser}@${VmHost}:C:/Provisioning/packages/explorerpp_x64.zip"
+    }
     $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"
     if (Test-Path $configXml) {
         & scp -P $VmPort -o StrictHostKeyChecking=accept-new $configXml "${VmUser}@${VmHost}:C:/Provisioning/packages/config.xml"
@@ -56,10 +61,10 @@ function Main {
     }
     & scp -P $VmPort -o StrictHostKeyChecking=accept-new (Join-Path $RepoRoot "scripts/guest/Install-DesktopShell.ps1") "${VmUser}@${VmHost}:C:/Provisioning/scripts/Install-DesktopShell.ps1"
 
-    Write-Step "Executing Install-DesktopShell.ps1..."
-    & ssh -p $VmPort -o StrictHostKeyChecking=accept-new "$VmUser@$VmHost" "powershell -ExecutionPolicy Bypass -File 'C:\Provisioning\scripts\Install-DesktopShell.ps1'"
+    Write-Step "Executing Install-DesktopShell.ps1 on guest..."
+    & ssh -p $VmPort -o StrictHostKeyChecking=accept-new "$VmUser@$VmHost" "powershell -ExecutionPolicy Bypass -File 'C:\Provisioning\scripts\Install-DesktopShell.ps1' -ShellProvider '$ShellProvider' -FileManager '$FileManager'"
 
-    Write-Success "Desktop shell setup completed."
+    Write-Success "Desktop shell setup ($ShellProvider / $FileManager) completed successfully."
 }
 
 Main

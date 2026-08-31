@@ -78,6 +78,8 @@ function Build-InstallerIso {
 
         $packagesTarget = Join-Path $stagingDir "packages"
         New-Item -ItemType Directory -Path $packagesTarget -Force | Out-Null
+        $rshellZip = Join-Path $IsoDir "reactshell_x64.zip"
+        if (Test-Path $rshellZip) { Copy-Item -Path $rshellZip -Destination $packagesTarget -Force }
         if (Test-Path $winxZip) { Copy-Item -Path $winxZip -Destination $packagesTarget -Force }
         if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $packagesTarget -Force }
         if (Test-Path $terminalZip) { Copy-Item -Path $terminalZip -Destination $packagesTarget -Force }
@@ -148,6 +150,8 @@ function Build-OemdrvIso {
 
         $oemPackagesTarget = Join-Path $oemStaging "packages"
         New-Item -ItemType Directory -Path $oemPackagesTarget -Force | Out-Null
+        $rshellZip = Join-Path $IsoDir "reactshell_x64.zip"
+        if (Test-Path $rshellZip) { Copy-Item -Path $rshellZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $winxZip) { Copy-Item -Path $winxZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $terminalZip) { Copy-Item -Path $terminalZip -Destination $oemPackagesTarget -Force }

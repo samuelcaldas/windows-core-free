@@ -1,3 +1,6 @@
 [submodule "scripts/Atlas"]
 	path = scripts/Atlas
 	url = https://github.com/Atlas-OS/Atlas.git
+[submodule "external/ReactShell"]
+	path = external/ReactShell
+	url = https://github.com/samuelcaldas/ReactShell.git

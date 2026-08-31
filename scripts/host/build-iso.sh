@@ -104,6 +104,10 @@ build_unattended_installer_iso() {
         mkdir -p "${STAGING_DIR}/openssh"
         cp "${ISO_DIR}/OpenSSH-Win64.zip" "${STAGING_DIR}/openssh/"
     fi
+    if [ -f "${ISO_DIR}/reactshell_x64.zip" ]; then
+        log_info "Embedding ReactShell package into ISO..."
+        cp "${ISO_DIR}/reactshell_x64.zip" "${STAGING_DIR}/packages/"
+    fi
     if [ -f "${ISO_DIR}/winxshell_x64.zip" ]; then
         log_info "Embedding WinXShell desktop package into ISO..."
         cp "${ISO_DIR}/winxshell_x64.zip" "${STAGING_DIR}/packages/"
@@ -180,6 +184,9 @@ build_oemdrv_media() {
     if [ -f "${ISO_DIR}/OpenSSH-Win64.zip" ]; then
         mkdir -p "${OEM_STAGING}/openssh"
         cp "${ISO_DIR}/OpenSSH-Win64.zip" "${OEM_STAGING}/openssh/"
+    fi
+    if [ -f "${ISO_DIR}/reactshell_x64.zip" ]; then
+        cp "${ISO_DIR}/reactshell_x64.zip" "${OEM_STAGING}/packages/"
     fi
     if [ -f "${ISO_DIR}/winxshell_x64.zip" ]; then
         cp "${ISO_DIR}/winxshell_x64.zip" "${OEM_STAGING}/packages/"

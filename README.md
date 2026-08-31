@@ -8,7 +8,7 @@ An automated build, unattended installation, memory optimization, and lifecycle 
 
 - **Ultra-Low Memory Footprint**: Stripped from ~2.1 GB down to **~530 MB RAM idle** by uninstalling Windows Defender (`MsMpEng`) and Hyper-V roles, and disabling Superfetch (`SysMain`), Telemetry, and error reporting.
 - **SSH-First Remote Management**: Connect directly via `ssh winvm` with **PowerShell 7** as the default shell and public key authentication.
-- **Optional Desktop Environment**: Lightweight WinXShell + Explorer++ (configured in portable mode as the default system file manager with `explorer.exe` hardlink).
+- **Desktop Environment**: Standalone **ReactShell** (`react-shell.exe` + `react-fm.exe`) decoupled from ReactOS as the primary Win32 shell provider (Desktop, Taskbar, Systray, Start Menu) and default File Explorer (`explorer.exe` link), with WinXShell & Explorer++ preserved as optional alternatives.
 - **Tabbed Terminal**: WezTerm engine with `wt.exe` launcher, Cascadia Code fonts, and Mesa software OpenGL rendering for Windows Server Core.
 - **DNS Blocklist**: Dan Pollock zero-route (`0.0.0.0`) hosts blocklist blocking 13,371 ad, tracker, telemetry, and malware domains.
 - **AI Agent & CLI Stack**: Pre-configured with Docker CLI & Docker Compose (standalone client), Git for Windows, GitHub CLI (`gh`), Node.js, Python 3.12, Claude Code CLI, and Google Antigravity daemon (`agy-daemon`).
