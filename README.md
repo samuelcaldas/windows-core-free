@@ -53,13 +53,18 @@ windows-core/
 ├── docs/                        # Architecture & SSH documentation
 │   ├── README.md
 │   └── ssh-configuration.md
+├── external/
+│   ├── Atlas/                   # Git Submodule: AtlasOS Windows optimization scripts
+│   ├── ReactShell/              # Git Submodule: Standalone ReactOS Win32 Explorer & File Manager
+│   ├── winfile/                 # Git Submodule: Microsoft Windows File Manager (WinFile)
+│   └── omniget/                 # Git Submodule: OmniGet (og) Universal Package Engine
 ├── iso/                         # Downloaded packages & ISO cache (gitignored)
 ├── scripts/
 │   ├── guest/                   # Windows guest provisioning & optimization scripts
 │   │   ├── Disable-HyperV.ps1   # Deactivates nested Hyper-V roles
 │   │   ├── Install-DesktopShell.ps1 # Sets up WinXShell and Explorer++
-│   │   ├── Install-NiniteApps.ps1   # Interactive TUI Ninite app store
-│   │   ├── Install-Tools.ps1    # Installs Git, Node, Python, PowerShell 7, gh
+│   │   ├── Install-OmniGet.ps1  # Deploys OmniGet (og) Universal Package Manager
+│   │   ├── Install-Tools.ps1    # Installs Git, Node, Python, PowerShell 7, gh via OmniGet
 │   │   ├── Install-WindowsTerminal.ps1 # Deploys WezTerm wt.exe engine with OpenGL
 │   │   ├── Optimize-System.ps1  # In-place memory optimization & Defender uninstallation
 │   │   ├── Setup-Agents.ps1     # Deploys Claude Code CLI and Antigravity daemon
@@ -68,7 +73,7 @@ windows-core/
 │   └── host/                    # Linux host management scripts (Bash & PowerShell 7)
 │       ├── build-iso.sh / .ps1  # Generates unattended installer & OEMDRV ISOs
 │       ├── install-desktopshell.sh / .ps1
-│       ├── install-ninite.sh / .ps1
+│       ├── install-omniget.sh / .ps1 # Deploys & runs OmniGet interactive TUI over SSH
 │       ├── install-terminal.sh / .ps1
 │       ├── optimize-vm.sh / .ps1
 │       ├── provision-remote.sh / .ps1

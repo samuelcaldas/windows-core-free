@@ -116,13 +116,14 @@ windows-core/
 ├── external/
 │   ├── Atlas/                   # Git Submodule: AtlasOS Windows optimization scripts
 │   ├── ReactShell/              # Git Submodule: Standalone ReactOS Win32 Explorer & File Manager
-│   └── winfile/                 # Git Submodule: Microsoft Windows File Manager (WinFile)
+│   ├── winfile/                 # Git Submodule: Microsoft Windows File Manager (WinFile)
+│   └── omniget/                 # Git Submodule: OmniGet (og) Universal Multi-Source Package Engine
 ├── iso/                         # Base Windows ISOs and offline package cache (gitignored)
 ├── scripts/
 │   ├── host/                    # Linux host management scripts (Dual Bash & PowerShell 7)
 │   │   ├── build-iso.sh / .ps1  # Generates unattended installer & OEMDRV ISOs
 │   │   ├── install-desktopshell.sh / .ps1 # Sets up WinXShell (default), WinFile, ReactShell, Explorer++
-│   │   ├── install-ninite.sh / .ps1       # Interactive TUI Ninite app store
+│   │   ├── install-omniget.sh / .ps1       # Interactive TUI OmniGet universal package manager
 │   │   ├── install-terminal.sh / .ps1     # Deploys WezTerm wt.exe engine with OpenGL
 │   │   ├── optimize-vm.sh / .ps1          # Deep memory optimization & Defender uninstallation
 │   │   ├── provision-remote.sh / .ps1     # SSH key exchange & remote toolchain orchestration
@@ -132,8 +133,8 @@ windows-core/
 │   └── guest/                   # Post-installation guest configuration scripts
 │       ├── Disable-HyperV.ps1   # Deactivates nested Hyper-V roles and services
 │       ├── Install-DesktopShell.ps1 # Configures WinXShell (default), WinFile, ReactShell, Explorer++
-│       ├── Install-NiniteApps.ps1   # Interactive PowerShell TUI for Ninite installers
-│       ├── Install-Tools.ps1    # Installs Git, Node, Python, PowerShell 7, gh CLI
+│       ├── Install-OmniGet.ps1      # Interactive PowerShell TUI for OmniGet multi-source store
+│       ├── Install-Tools.ps1    # Installs Git, Node, Python, PowerShell 7, gh CLI via OmniGet
 │       ├── Install-WindowsTerminal.ps1 # Installs WezTerm with wt.exe & OpenGL support
 │       ├── Optimize-System.ps1  # Uninstalls Defender/Hyper-V, disables SysMain/Telemetry
 │       ├── Setup-Agents.ps1     # Installs antigravity-cli, claude-cli, agy-daemon service

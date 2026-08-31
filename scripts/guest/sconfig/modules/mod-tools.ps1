@@ -1,8 +1,8 @@
 <#
 .SYNOPSIS
-    sconfig Module: Developer Toolchains & Distro App Store.
+    sconfig Module: Developer Toolchains & Distro App Store (OmniGet).
 .DESCRIPTION
-    Audits installed toolchains and provides an interactive launcher for the Ninite App Store.
+    Audits installed toolchains and provides an interactive launcher for OmniGet (og).
 #>
 [CmdletBinding()]
 param()
@@ -12,7 +12,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 function Write-Header {
     Clear-Host
     Write-Host "============================================================================" -ForegroundColor Cyan
-    Write-Host "              Developer Toolchains & Distro App Store                       " -ForegroundColor White
+    Write-Host "         Developer Toolchains & Universal App Store (OmniGet)               " -ForegroundColor White
     Write-Host "============================================================================" -ForegroundColor Cyan
     Write-Host ""
 }
@@ -25,6 +25,7 @@ function Show-Status {
     $gitVer    = try { (& git.exe --version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
     $ghVer     = try { (& gh.exe --version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
     $dockerVer = try { (& docker.exe --version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
+    $omniVer   = try { (& og.cmd -Version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
 
     if (-not $dotnetVer) { $dotnetVer = "Not Installed" }
     if (-not $pwshVer)   { $pwshVer = "Not Installed" }
@@ -33,11 +34,13 @@ function Show-Status {
     if (-not $gitVer)    { $gitVer = "Not Installed" }
     if (-not $ghVer)     { $ghVer = "Not Installed" }
     if (-not $dockerVer) { $dockerVer = "Not Installed" }
+    if (-not $omniVer)   { $omniVer = "Not Installed" }
 
-    $agyService = Get-ScheduledTask -TaskName "Antigravity Daemon" -ErrorAction SilentlyContinue
+    $agyService = Get-ScheduledTask -TaskName "AntigravityRemoteDaemon" -ErrorAction SilentlyContinue
     $agyStatus = if ($agyService) { "Registered (Scheduled Task at Boot)" } else { "Not Configured" }
 
     Write-Host "  Installed Runtimes & Toolchains:" -ForegroundColor Yellow
+    Write-Host "    • OmniGet (og CLI):     $omniVer"
     Write-Host "    • .NET SDK:             $dotnetVer"
     Write-Host "    • PowerShell Core:      $pwshVer"
     Write-Host "    • Python:               $pyVer"
@@ -55,36 +58,47 @@ function Main-Menu {
         Show-Status
 
         Write-Host "  Actions:" -ForegroundColor Cyan
-        Write-Host "    1) Launch Interactive Ninite App Store (TUI)"
-        Write-Host "    2) Re-run Toolchain Setup / Updater (Install-Tools.ps1)"
-        Write-Host "    3) Return to Server Control Center"
+        Write-Host "    1) Launch Interactive Universal App Store (OmniGet TUI)"
+        Write-Host "    2) Run Developer Toolchain Preset (og preset DevStack)"
+        Write-Host "    3) Search Packages (og search)"
+        Write-Host "    4) Return to Server Control Center"
         Write-Host ""
 
-        $choice = Read-Host "  Enter selection (1-3)"
+        $choice = Read-Host "  Enter selection (1-4)"
         if ($null -eq $choice) { return }
 
         switch ($choice) {
             "1" {
-                $niniteScript = "C:\Provisioning\scripts\Install-NiniteApps.ps1"
-                if (Test-Path $niniteScript) {
-                    & $niniteScript
+                $omniScript = "C:\Program Files\OmniGet\src\OmniGet.ps1"
+                if (Test-Path $omniScript) {
+                    & pwsh.exe -ExecutionPolicy Bypass -File $omniScript
+                } elseif (Get-Command og.cmd -ErrorAction SilentlyContinue) {
+                    & og.cmd
                 } else {
-                    Write-Host "`n  Ninite script not found at $niniteScript" -ForegroundColor Red
-                    Start-Sleep -Seconds 2
+                    $installScript = "C:\Provisioning\scripts\Install-OmniGet.ps1"
+                    if (Test-Path $installScript) { & $installScript -Interactive }
                 }
             }
             "2" {
-                $toolsScript = "C:\Provisioning\scripts\Install-Tools.ps1"
-                if (Test-Path $toolsScript) {
-                    & $toolsScript
+                $omniScript = "C:\Program Files\OmniGet\src\OmniGet.ps1"
+                if (Test-Path $omniScript) {
+                    & pwsh.exe -ExecutionPolicy Bypass -File $omniScript -Preset DevStack -Silent
                     Write-Host "`n  Press Enter to continue..."
                     Read-Host
-                } else {
-                    Write-Host "`n  Toolchain script not found at $toolsScript" -ForegroundColor Red
-                    Start-Sleep -Seconds 2
                 }
             }
-            "3" { return }
+            "3" {
+                $query = Read-Host "  Enter search query"
+                if ($query) {
+                    $omniScript = "C:\Program Files\OmniGet\src\OmniGet.ps1"
+                    if (Test-Path $omniScript) {
+                        & pwsh.exe -ExecutionPolicy Bypass -File $omniScript -Search $query
+                        Write-Host "`n  Press Enter to continue..."
+                        Read-Host
+                    }
+                }
+            }
+            "4" { return }
             default { return }
         }
     }

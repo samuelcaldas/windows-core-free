@@ -7,3 +7,6 @@
 [submodule "external/winfile"]
 	path = external/winfile
 	url = https://github.com/microsoft/winfile.git
+[submodule "external/omniget"]
+	path = external/omniget
+	url = https://github.com/samuelcaldas/omniget.git
