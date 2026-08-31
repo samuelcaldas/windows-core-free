@@ -11,7 +11,8 @@ param(
     [switch]$SkipGit,
     [switch]$SkipGh,
     [switch]$SkipPython,
-    [switch]$SkipPwsh
+    [switch]$SkipPwsh,
+    [switch]$SkipDocker
 )
 
 $ErrorActionPreference = 'Stop'
@@ -32,6 +33,7 @@ function Refresh-EnvironmentPath {
     $machinePath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
     $userPath    = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User)
     $extraPaths  = @(
+        'C:\Program Files\Docker',
         'C:\Program Files\Git\bin',
         'C:\Program Files\Git\cmd',
         'C:\Program Files\GitHub CLI',
@@ -61,16 +63,15 @@ function Download-Fast {
 function Install-PowerShell7 {
     if ($SkipPwsh) { return }
     Write-Step "Checking PowerShell 7..."
-    $currentVer = if (Test-Path "C:\Program Files\PowerShell\7\pwsh.exe") {
-        try { (& "C:\Program Files\PowerShell\7\pwsh.exe" --version).Trim() } catch { "" }
-    } else { "" }
-
-    $targetVersion = "7.6.5"
-    if ($currentVer -like "*$targetVersion*") {
-        Write-Success "PowerShell $targetVersion is already installed."
-        return
+    if (Test-Path "C:\Program Files\PowerShell\7\pwsh.exe") {
+        try {
+            $ver = (& "C:\Program Files\PowerShell\7\pwsh.exe" --version).Trim()
+            Write-Success "PowerShell 7 is already installed: $ver"
+            return
+        } catch {}
     }
 
+    $targetVersion = "7.6.5"
     $msiUrl = "https://github.com/PowerShell/PowerShell/releases/download/v${targetVersion}/PowerShell-${targetVersion}-win-x64.msi"
     $msiFile = "$TempDir\PowerShell-${targetVersion}-win-x64.msi"
 
@@ -166,6 +167,59 @@ function Install-Python {
     Write-Success "Python 3.12 installed successfully."
 }
 
+function Install-DockerCli {
+    if ($SkipDocker) { return }
+    Write-Step "Checking Docker CLI and Docker Compose..."
+    $dockerDir = "C:\Program Files\Docker"
+    $pluginsDir = "C:\ProgramData\Docker\cli-plugins"
+    $dockerExe = Join-Path $dockerDir "docker.exe"
+    $composeExe = Join-Path $dockerDir "docker-compose.exe"
+
+    if (Test-Path $dockerExe) {
+        try {
+            $ver = (& $dockerExe --version).Trim()
+            Write-Success "Docker CLI is already installed: $ver"
+        }
+        catch {}
+    }
+    else {
+        if (-not (Test-Path $dockerDir)) { New-Item -ItemType Directory -Path $dockerDir -Force | Out-Null }
+        if (-not (Test-Path $pluginsDir)) { New-Item -ItemType Directory -Path $pluginsDir -Force | Out-Null }
+
+        $dockerUrl = "https://download.docker.com/win/static/stable/x86_64/docker-27.5.1.zip"
+        $dockerZip = "$TempDir\docker-cli.zip"
+        $dockerExtract = "$TempDir\docker_extract"
+
+        Download-Fast -Url $dockerUrl -OutFile $dockerZip
+        if (Test-Path $dockerExtract) { Remove-Item -Path $dockerExtract -Recurse -Force }
+        Expand-Archive -Path $dockerZip -DestinationPath $dockerExtract -Force
+        Copy-Item -Path "$dockerExtract\docker\docker.exe" -Destination $dockerExe -Force
+        Remove-Item -Path $dockerExtract, $dockerZip -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    if (-not (Test-Path $composeExe)) {
+        if (-not (Test-Path $dockerDir)) { New-Item -ItemType Directory -Path $dockerDir -Force | Out-Null }
+        if (-not (Test-Path $pluginsDir)) { New-Item -ItemType Directory -Path $pluginsDir -Force | Out-Null }
+
+        $composeUrl = "https://github.com/docker/compose/releases/download/v2.33.1/docker-compose-windows-x86_64.exe"
+        Download-Fast -Url $composeUrl -OutFile $composeExe
+        Copy-Item -Path $composeExe -Destination "$pluginsDir\docker-compose.exe" -Force
+        
+        $localPluginsDir = "$dockerDir\cli-plugins"
+        if (-not (Test-Path $localPluginsDir)) { New-Item -ItemType Directory -Path $localPluginsDir -Force | Out-Null }
+        Copy-Item -Path $composeExe -Destination "$localPluginsDir\docker-compose.exe" -Force
+    }
+
+    # Ensure C:\Program Files\Docker is in Machine PATH permanently
+    $machinePath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
+    if ($machinePath -notlike "*$dockerDir*") {
+        [System.Environment]::SetEnvironmentVariable('Path', "$dockerDir;$machinePath", [System.EnvironmentVariableTarget]::Machine)
+    }
+
+    Refresh-EnvironmentPath
+    Write-Success "Docker CLI and Docker Compose configured successfully."
+}
+
 function Main {
     Write-Host "=============================================================================="
     Write-Host "  Windows Core Guest - Developer Toolchain Installer"
@@ -175,6 +229,7 @@ function Main {
     Install-GitHubCli
     Install-NodeJs
     Install-Python
+    Install-DockerCli
     Refresh-EnvironmentPath
 
     $desktopShellScript = Join-Path $PSScriptRoot "Install-DesktopShell.ps1"

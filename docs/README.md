@@ -20,4 +20,4 @@ Welcome to the technical documentation for the **Windows Core Headless Developme
 - **Desktop Shell**: Lightweight WinXShell + Explorer++ (portable mode configured as default file manager and linked to `explorer.exe`).
 - **Terminal**: WezTerm engine with `wt.exe` alias, Cascadia Code fonts, and Mesa software OpenGL rendering.
 - **Protection**: Native Dan Pollock zero-route hosts blocklist with 13,371 ad/tracker/malware rules.
-- **Developer Stack**: Git, Node.js LTS, Python 3.12, .NET, GitHub CLI (`gh`), Claude Code CLI, and Google Antigravity daemon.
+- **Developer Stack**: Docker CLI & Docker Compose (standalone), Git, Node.js LTS, Python 3.12, .NET, GitHub CLI (`gh`), Claude Code CLI, and Google Antigravity daemon.

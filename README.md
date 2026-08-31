@@ -11,7 +11,7 @@ An automated build, unattended installation, memory optimization, and lifecycle 
 - **Optional Desktop Environment**: Lightweight WinXShell + Explorer++ (configured in portable mode as the default system file manager with `explorer.exe` hardlink).
 - **Tabbed Terminal**: WezTerm engine with `wt.exe` launcher, Cascadia Code fonts, and Mesa software OpenGL rendering for Windows Server Core.
 - **DNS Blocklist**: Dan Pollock zero-route (`0.0.0.0`) hosts blocklist blocking 13,371 ad, tracker, telemetry, and malware domains.
-- **AI Agent & CLI Stack**: Pre-configured with Git for Windows, Node.js, Python 3.12, GitHub CLI (`gh`), Claude Code CLI, and Google Antigravity daemon (`agy-daemon`).
+- **AI Agent & CLI Stack**: Pre-configured with Docker CLI & Docker Compose (standalone client), Git for Windows, GitHub CLI (`gh`), Node.js, Python 3.12, Claude Code CLI, and Google Antigravity daemon (`agy-daemon`).
 
 ---
 
@@ -34,7 +34,7 @@ Host winvm
 ssh winvm
 
 # Run remote commands
-ssh winvm "gh --version; git --version; claude"
+ssh winvm "docker --version; docker compose version; gh --version; git --version"
 ```
 
 For remote server access and ProxyJump configuration, see the **[SSH Configuration Guide](file:///home/samuelcaldas/repos/windows-core/docs/ssh-configuration.md)**.

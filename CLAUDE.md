@@ -87,7 +87,9 @@ Executed automatically by `autounattend.xml` during OS installation:
 Managed and triggered remotely from the Linux host over SSH/WinRM:
 1. **SSH Key Exchange**: Script pushes host SSH public key (`~/.ssh/id_ed25519.pub`) to `C:\ProgramData\ssh\administrators_authorized_keys` with correct Windows ACLs, enabling key-based authentication.
 2. **Developer Toolchains**:
+   - Docker CLI & Docker Compose (standalone native client with remote SSH contexts).
    - Git for Windows (configured with long paths and LF line endings).
+   - GitHub CLI (`gh`).
    - Node.js LTS (via standalone installer or `fnm`).
    - Python 3.x with `.venv` and pip.
    - .NET Core / Framework SDK.
