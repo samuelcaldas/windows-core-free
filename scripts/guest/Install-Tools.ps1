@@ -296,6 +296,16 @@ function Main {
         }
     }
 
+    $sconfigScript = Join-Path $PSScriptRoot "Install-SConfigPatch.ps1"
+    if (Test-Path $sconfigScript) {
+        try {
+            & $sconfigScript
+        }
+        catch {
+            Write-WarnMsg "Install-SConfigPatch warning: $_"
+        }
+    }
+
     Write-Success "Developer toolchains installed and configured successfully."
 }
 
