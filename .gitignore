@@ -9,3 +9,6 @@ iso/
 *.pid
 *.sock
 .windows-core*
+
+# Git worktrees
+.worktrees/
