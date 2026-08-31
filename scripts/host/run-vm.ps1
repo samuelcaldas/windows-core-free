@@ -9,12 +9,14 @@
     Boots with unattended installer ISO for zero-touch installation.
 .PARAMETER Run
     Boots installed QCOW2 virtual disk.
+.PARAMETER Foreground
+    Runs VM in foreground mode (for systemd services and direct monitoring).
 .PARAMETER Daemon
     Starts VM in background.
 .PARAMETER Status
     Shows running status and port forwarding.
 .PARAMETER Stop
-    Stops running VM process.
+    Stops running VM process gracefully via ACPI powerdown.
 #>
 [CmdletBinding(DefaultParameterSetName = 'Run')]
 param(
@@ -30,6 +32,7 @@ param(
     [Parameter(ParameterSetName = 'Stop')]
     [switch]$Stop,
 
+    [switch]$Foreground,
     [switch]$Daemon,
     [int]$Ram = 4096,
     [int]$Cpus = 4,
@@ -120,7 +123,33 @@ function Stop-Vm {
     if (Test-VmRunning) {
         $pidNum = (Get-Content $PidFile -Raw).Trim()
         Write-Step "Stopping Windows Core VM (PID: $pidNum)..."
-        Stop-Process -Id ([int]$pidNum) -ErrorAction SilentlyContinue
+
+        # 1. Attempt ACPI powerdown via QEMU monitor socket
+        if (Test-Path $MonitorSock) {
+            Write-Step "Sending ACPI system_powerdown signal to Windows guest..."
+            try {
+                $pyScript = "import socket; s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); s.connect('$MonitorSock'); s.sendall(b'system_powerdown\n'); s.close()"
+                & python3 -c $pyScript 2>$null
+            }
+            catch { }
+        }
+        else {
+            Stop-Process -Id ([int]$pidNum) -ErrorAction SilentlyContinue
+        }
+
+        # Wait up to 30s for clean shutdown
+        for ($i = 0; $i -lt 30; $i++) {
+            if (-not (Test-VmRunning)) {
+                Remove-Item -Path $PidFile, $MonitorSock -Force -ErrorAction SilentlyContinue
+                Write-Success "Windows Core VM stopped cleanly."
+                return
+            }
+            Start-Sleep -Seconds 1
+        }
+
+        # 2. Force termination if not stopped
+        Write-WarnMsg "VM did not exit within 30s, stopping process..."
+        Stop-Process -Id ([int]$pidNum) -Force -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 2
         Remove-Item -Path $PidFile, $MonitorSock -Force -ErrorAction SilentlyContinue
         Write-Success "Windows Core VM stopped."
@@ -131,7 +160,7 @@ function Stop-Vm {
 }
 
 function Start-QemuVm {
-    param([string]$Mode, [bool]$IsDaemon)
+    param([string]$Mode, [bool]$IsDaemon, [bool]$IsForeground)
 
     if (Test-VmRunning) {
         $pidNum = (Get-Content $PidFile -Raw).Trim()
@@ -155,7 +184,7 @@ function Start-QemuVm {
         "-device", "virtio-balloon-pci,id=balloon0",
         "-device", "virtio-scsi-pci,id=scsi0",
         "-drive", "file=$VmDisk,if=none,id=hd0,format=qcow2,cache=writeback,discard=unmap",
-        "-device", "scsi-hd,drive=hd0,bootindex=1",
+        "-device scsi-hd,drive=hd0,bootindex=1",
         "-netdev", "user,id=net0,hostfwd=tcp::$SshPort-:22,hostfwd=tcp::$WinrmHttpPort-:5985,hostfwd=tcp::$WinrmHttpsPort-:5986,hostfwd=tcp::$DaemonPort-:9090",
         "-device", "virtio-net-pci,netdev=net0",
         "-vga", "std",
@@ -190,6 +219,11 @@ function Start-QemuVm {
             Write-Success "Windows Core VM started in background."
         }
     }
+    elseif ($IsForeground) {
+        Write-Step "Running QEMU in foreground mode (systemd / interactive)..."
+        $PID | Out-File -FilePath $PidFile -Force
+        & "qemu-system-x86_64" @qemuArgs
+    }
     else {
         $proc = Start-Process -FilePath "qemu-system-x86_64" -ArgumentList $qemuArgs -PassThru
         $proc.Id | Out-File -FilePath $PidFile -Force
@@ -199,5 +233,5 @@ function Start-QemuVm {
 
 if ($Status) { Show-Status; exit 0 }
 if ($Stop) { Stop-Vm; exit 0 }
-if ($Install) { Start-QemuVm -Mode 'Install' -IsDaemon $Daemon; exit 0 }
-Start-QemuVm -Mode 'Run' -IsDaemon $Daemon
+if ($Install) { Start-QemuVm -Mode 'Install' -IsDaemon $Daemon -IsForeground $Foreground; exit 0 }
+Start-QemuVm -Mode 'Run' -IsDaemon $Daemon -IsForeground $Foreground

@@ -112,16 +112,39 @@ cmd_stop() {
         local pid
         pid=$(cat "${PID_FILE}")
         log_info "Stopping Windows Core VM (PID: ${pid})..."
-        kill "${pid}" 2>/dev/null || true
-        for _ in {1..15}; do
+
+        # 1. Attempt graceful ACPI shutdown via QEMU monitor socket
+        if [ -S "${MONITOR_SOCK}" ]; then
+            log_info "Sending ACPI system_powerdown signal to Windows guest..."
+            python3 -c "import socket; s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM); s.connect('${MONITOR_SOCK}'); s.sendall(b'system_powerdown\n'); s.close()" 2>/dev/null || true
+        else
+            kill "${pid}" 2>/dev/null || true
+        fi
+
+        # Wait up to 30 seconds for guest to shut down cleanly
+        for ((i=1; i<=30; i++)); do
             if ! kill -0 "${pid}" 2>/dev/null; then
                 rm -f "${PID_FILE}" "${MONITOR_SOCK}"
-                log_success "Windows Core VM stopped."
+                log_success "Windows Core VM stopped cleanly."
                 return 0
             fi
             sleep 1
         done
-        log_warn "VM did not exit gracefully, sending SIGKILL..."
+
+        # 2. Fallback to SIGTERM
+        log_warn "VM did not exit within 30s, sending SIGTERM..."
+        kill "${pid}" 2>/dev/null || true
+        for ((i=1; i<=10; i++)); do
+            if ! kill -0 "${pid}" 2>/dev/null; then
+                rm -f "${PID_FILE}" "${MONITOR_SOCK}"
+                log_success "Windows Core VM stopped via SIGTERM."
+                return 0
+            fi
+            sleep 1
+        done
+
+        # 3. Final fallback to SIGKILL
+        log_warn "VM did not exit after SIGTERM, sending SIGKILL..."
         kill -9 "${pid}" 2>/dev/null || true
         rm -f "${PID_FILE}" "${MONITOR_SOCK}"
         log_success "Windows Core VM killed."
@@ -133,6 +156,7 @@ cmd_stop() {
 start_qemu() {
     local MODE="$1"
     local DAEMON_MODE="${2:-false}"
+    local FOREGROUND_MODE="${3:-false}"
 
     if is_vm_running; then
         log_warn "VM is already running (PID: $(cat "${PID_FILE}")). Stop it first."
@@ -193,6 +217,10 @@ start_qemu() {
             log_error "Failed to start QEMU VM."
             exit 1
         fi
+    elif [ "${FOREGROUND_MODE}" = "true" ]; then
+        log_info "Running QEMU in foreground mode (systemd / interactive)..."
+        echo "$$" > "${PID_FILE}"
+        exec "${QEMU_ARGS[@]}"
     else
         "${QEMU_ARGS[@]}" &
         local pid=$!
@@ -207,9 +235,10 @@ usage() {
     echo "Options:"
     echo "  --install, -i      Boot with unattended installer ISO for zero-touch install"
     echo "  --run, -r          Start installed Windows Core VM (default)"
+    echo "  --foreground, -f   Run VM in foreground mode (recommended for systemd services)"
     echo "  --daemon, -d       Run VM as background daemon"
     echo "  --status, -s       Check VM running status and port mapping"
-    echo "  --stop             Gracefully stop the running VM"
+    echo "  --stop             Gracefully stop the running VM via ACPI shutdown"
     echo "  --kill             Force kill the running VM"
     echo "  --help, -h         Show this help message"
     echo ""
@@ -218,6 +247,7 @@ usage() {
 main() {
     local ACTION="run"
     local DAEMON="false"
+    local FOREGROUND="false"
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -227,6 +257,10 @@ main() {
                 ;;
             --run|-r)
                 ACTION="run"
+                shift
+                ;;
+            --foreground|-f)
+                FOREGROUND="true"
                 shift
                 ;;
             --daemon|-d)
@@ -257,7 +291,7 @@ main() {
         esac
     done
 
-    start_qemu "${ACTION}" "${DAEMON}"
+    start_qemu "${ACTION}" "${DAEMON}" "${FOREGROUND}"
 }
 
 main "$@"

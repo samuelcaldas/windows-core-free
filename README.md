@@ -49,6 +49,7 @@ windows-core/
 ├── config/
 │   ├── explorerpp/              # Explorer++ portable config.xml
 │   ├── hosts/                   # Dan Pollock zero-route hosts blocklist
+│   ├── systemd/                 # Systemd service unit template (windows-core.service)
 │   └── winxshell/               # WinXShell settings & Lua scripts
 ├── docs/                        # Architecture & SSH documentation
 │   ├── README.md
@@ -79,6 +80,7 @@ windows-core/
 │       ├── provision-remote.sh / .ps1
 │       ├── run-vm.sh / .ps1
 │       ├── setup-host.sh / .ps1
+│       ├── setup-service.sh / .ps1  # Configures systemd autostart on Ubuntu boot
 │       └── update-hosts.sh / .ps1
 ├── CLAUDE.md                    # Project guidelines & Calisthenics rules
 └── GEMINI.md                    # Detailed architecture & reference manual
@@ -120,4 +122,42 @@ To ensure consistency, security, and avoid drive root clutter, all scripts and p
 
 # 6. Apply Dan Pollock DNS blocklist
 ./scripts/host/update-hosts.sh
+
+# 7. Configure systemd service for automatic startup on Ubuntu host boot
+./scripts/host/setup-service.sh --install
 ```
+
+---
+
+## 🚀 Automatic Startup on Ubuntu Boot (Systemd)
+
+To ensure the Windows Server Core VM automatically starts whenever the Ubuntu host boots up:
+
+```bash
+# Install, enable autostart on boot, and start the service
+./scripts/host/setup-service.sh --install
+
+# Check service status & boot enablement
+./scripts/host/setup-service.sh --status
+
+# Follow live systemd logs
+./scripts/host/setup-service.sh --logs
+
+# Control service manually
+./scripts/host/setup-service.sh --stop       # Gracefully shuts down VM via ACPI
+./scripts/host/setup-service.sh --start      # Starts the VM
+./scripts/host/setup-service.sh --restart    # Restarts the VM
+
+# Enable or disable boot startup without removing service
+./scripts/host/setup-service.sh --enable
+./scripts/host/setup-service.sh --disable
+
+# Completely uninstall systemd service
+./scripts/host/setup-service.sh --uninstall
+```
+
+*Equivalent PowerShell 7 command:*
+```powershell
+./scripts/host/setup-service.ps1 -Install
+```
+

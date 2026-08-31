@@ -120,6 +120,7 @@ windows-core/
 ├── config/
 │   ├── explorerpp/              # Pre-configured portable Explorer++ config.xml
 │   ├── hosts/                   # Dan Pollock zero-route hosts blocklist
+│   ├── systemd/                 # Systemd service unit template (windows-core.service)
 │   └── winxshell/               # Shell settings & WinXShell.lua
 ├── docs/                        # Architecture and remote access documentation
 │   ├── README.md                # Documentation index
@@ -140,6 +141,7 @@ windows-core/
 │   │   ├── provision-remote.sh / .ps1     # SSH key exchange & remote toolchain orchestration
 │   │   ├── run-vm.sh / .ps1               # Starts QEMU/KVM instance with VirtIO & port forwarding
 │   │   ├── setup-host.sh / .ps1           # Prepares Ubuntu dependencies (qemu, ovmf, virtio-win)
+│   │   ├── setup-service.sh / .ps1        # Configures systemd autostart on Ubuntu boot
 │   │   └── update-hosts.sh / .ps1         # Deploys Dan Pollock zero-route hosts blocklist
 │   └── guest/                   # Post-installation guest configuration scripts
 │       ├── Disable-HyperV.ps1   # Deactivates nested Hyper-V roles and services
@@ -198,3 +200,19 @@ pwsh -Command "Enter-PSSession -HostName localhost -Port 2222 -UserName samuelca
 # Deploy Dan Pollock zero-route DNS hosts blocklist (13,371 rules)
 ./scripts/host/update-hosts.sh
 ```
+
+### 6. Automatic Startup on Ubuntu Boot (Systemd)
+```bash
+# Install, enable autostart on boot, and start the service
+./scripts/host/setup-service.sh --install
+
+# Check service status & boot enablement
+./scripts/host/setup-service.sh --status
+
+# Control service manually
+./scripts/host/setup-service.sh --stop       # Gracefully shuts down VM via ACPI
+./scripts/host/setup-service.sh --start      # Starts the VM
+./scripts/host/setup-service.sh --restart    # Restarts the VM
+./scripts/host/setup-service.sh --logs       # Views live journal logs
+```
+
