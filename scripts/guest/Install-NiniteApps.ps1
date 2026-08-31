@@ -27,67 +27,223 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-# --- Catalog Definition ---
+# --- Catalog Definition (sourced from ninite.com, 2026-08-31) ---
 $Catalog = @(
     @{
         Category = "Web Browsers"
         Items = @(
-            @{ Id = "chrome"; Name = "Google Chrome"; Desc = "Fast, modern web browser by Google" },
-            @{ Id = "firefox"; Name = "Mozilla Firefox"; Desc = "Extensible open-source browser" },
-            @{ Id = "edge"; Name = "Microsoft Edge"; Desc = "Chromium-based Microsoft browser" },
-            @{ Id = "brave"; Name = "Brave Browser"; Desc = "Privacy-focused ad-blocking browser" },
-            @{ Id = "opera"; Name = "Opera"; Desc = "Alternative feature-rich browser" }
+            @{ Id = "chrome";          Name = "Chrome";          Desc = "Fast Browser by Google" },
+            @{ Id = "operaChromium";   Name = "Opera";           Desc = "Alternative Browser" },
+            @{ Id = "firefox";         Name = "Firefox";         Desc = "Extensible Browser" },
+            @{ Id = "edge";            Name = "Edge";            Desc = "Microsoft Edge Browser" },
+            @{ Id = "brave";           Name = "Brave";           Desc = "Privacy Browser" },
+            @{ Id = "vivaldi";         Name = "Vivaldi";         Desc = "Vivaldi Browser" }
         )
     },
     @{
-        Category = "Developer Tools & Editors"
+        Category = "Messaging"
         Items = @(
-            @{ Id = "vscode"; Name = "Visual Studio Code"; Desc = "Popular code editor by Microsoft" },
-            @{ Id = "notepadplusplus"; Name = "Notepad++"; Desc = "Fast tabbed source and text editor" },
-            @{ Id = "putty"; Name = "PuTTY"; Desc = "SSH and Telnet client" },
-            @{ Id = "winscp"; Name = "WinSCP"; Desc = "SFTP, SCP, and FTP client" },
-            @{ Id = "filezilla"; Name = "FileZilla"; Desc = "FTP/FTPS/SFTP client" },
-            @{ Id = "python"; Name = "Python 3"; Desc = "Python programming language runtime" },
-            @{ Id = "jdk17"; Name = "OpenJDK 17 LTS"; Desc = "Java Development Kit 17" }
+            @{ Id = "zoom";            Name = "Zoom";            Desc = "Video Conference" },
+            @{ Id = "discord";         Name = "Discord";         Desc = "Voice and Text Chat" },
+            @{ Id = "teams";           Name = "Teams";           Desc = "Video Conferencing, Meetings, Calling" },
+            @{ Id = "pidgin";          Name = "Pidgin";          Desc = "Multi-IM Client" },
+            @{ Id = "thunderbird";     Name = "Thunderbird";     Desc = "Email Reader by Mozilla" },
+            @{ Id = "trillian";        Name = "Trillian";        Desc = "Trillian IM" }
         )
     },
     @{
-        Category = "Compression & Utilities"
+        Category = "Media"
         Items = @(
-            @{ Id = "7zip"; Name = "7-Zip"; Desc = "High-compression file archiver" },
-            @{ Id = "peazip"; Name = "PeaZip"; Desc = "Open-source file manager and archiver" },
-            @{ Id = "winrar"; Name = "WinRAR"; Desc = "RAR archiver (Trial)" },
-            @{ Id = "teracopy"; Name = "TeraCopy"; Desc = "Fast reliable file copier" },
-            @{ Id = "windirstat"; Name = "WinDirStat"; Desc = "Disk space usage visualizer" },
-            @{ Id = "everything"; Name = "Everything"; Desc = "Instant filename search tool" }
+            @{ Id = "itunes";          Name = "iTunes";          Desc = "Music/Media Manager" },
+            @{ Id = "vlc";             Name = "VLC";             Desc = "Great Video Player" },
+            @{ Id = "aimp";            Name = "AIMP";            Desc = "Music Player" },
+            @{ Id = "foobar";          Name = "foobar2000";      Desc = "Music Player" },
+            @{ Id = "winamp";          Name = "Winamp";          Desc = "Music Player" },
+            @{ Id = "musicbee";        Name = "MusicBee";        Desc = "Music Manager & Player" },
+            @{ Id = "audacity";        Name = "Audacity";        Desc = "Audio Editor" },
+            @{ Id = "klitecodecs";     Name = "K-Lite Codecs";   Desc = "Video decoders plus Media Player Classic" },
+            @{ Id = "gom";             Name = "GOM";             Desc = "Video Player" },
+            @{ Id = "spotify";         Name = "Spotify";         Desc = "Online Music Service" },
+            @{ Id = "cccp";            Name = "CCCP";            Desc = "Video decoders plus MPC" },
+            @{ Id = "mediamonkey";     Name = "MediaMonkey";     Desc = "Music Organizer" },
+            @{ Id = "handbrake";       Name = "HandBrake";       Desc = "Convert Videos (requires .NET 5)" }
         )
     },
     @{
-        Category = "Media & Graphics"
+        Category = ".NET"
         Items = @(
-            @{ Id = "vlc"; Name = "VLC Media Player"; Desc = "Versatile open-source media player" },
-            @{ Id = "spotify"; Name = "Spotify"; Desc = "Digital music streaming app" },
-            @{ Id = "audacity"; Name = "Audacity"; Desc = "Open-source audio recording & editor" },
-            @{ Id = "gimp"; Name = "GIMP"; Desc = "GNU Image Manipulation Program" },
-            @{ Id = "paint.net"; Name = "Paint.NET"; Desc = "Image and photo editing software" },
-            @{ Id = "greenshot"; Name = "Greenshot"; Desc = "Lightweight screenshot capture tool" },
-            @{ Id = "sharex"; Name = "ShareX"; Desc = "Screen capture and file sharing" }
+            @{ Id = ".net4.8.1";       Name = ".NET 4.8.1";                     Desc = "Microsoft .NET 4.8.1" },
+            @{ Id = ".netx8";          Name = ".NET Desktop Runtime x64 8";     Desc = ".NET Desktop Runtime (x64) 8" },
+            @{ Id = ".neta8";          Name = ".NET Desktop Runtime arm64 8";   Desc = ".NET Desktop Runtime (arm64) 8" },
+            @{ Id = ".net8";           Name = ".NET Desktop Runtime 8";         Desc = ".NET Desktop Runtime (x86) 8" },
+            @{ Id = ".netx9";          Name = ".NET Desktop Runtime x64 9";     Desc = ".NET Desktop Runtime (x64) 9" },
+            @{ Id = ".neta9";          Name = ".NET Desktop Runtime arm64 9";   Desc = ".NET Desktop Runtime (arm64) 9" },
+            @{ Id = ".net9";           Name = ".NET Desktop Runtime 9";         Desc = ".NET Desktop Runtime (x86) 9" },
+            @{ Id = ".netx10";         Name = ".NET Desktop Runtime x64 10";    Desc = ".NET Desktop Runtime (x64) 10" },
+            @{ Id = ".neta10";         Name = ".NET Desktop Runtime arm64 10";  Desc = ".NET Desktop Runtime (arm64) 10" },
+            @{ Id = ".net10";          Name = ".NET Desktop Runtime 10";        Desc = ".NET Desktop Runtime (x86) 10" },
+            @{ Id = "aspnetx8";        Name = "ASP.NET Core Runtime x64 8";    Desc = "ASP.NET Core Runtime (x64) 8" },
+            @{ Id = "aspneta8";        Name = "ASP.NET Core Runtime arm64 8";  Desc = "ASP.NET Core Runtime (arm64) 8" },
+            @{ Id = "aspnet8";         Name = "ASP.NET Core Runtime 8";        Desc = "ASP.NET Core Runtime (x86) 8" },
+            @{ Id = "aspnetx9";        Name = "ASP.NET Core Runtime x64 9";    Desc = "ASP.NET Core Runtime (x64) 9" },
+            @{ Id = "aspneta9";        Name = "ASP.NET Core Runtime arm64 9";  Desc = "ASP.NET Core Runtime (arm64) 9" },
+            @{ Id = "aspnet9";         Name = "ASP.NET Core Runtime 9";        Desc = "ASP.NET Core Runtime (x86) 9" },
+            @{ Id = "aspnetx10";       Name = "ASP.NET Core Runtime x64 10";   Desc = "ASP.NET Core Runtime (x64) 10" },
+            @{ Id = "aspneta10";       Name = "ASP.NET Core Runtime arm64 10"; Desc = "ASP.NET Core Runtime (arm64) 10" },
+            @{ Id = "aspnet10";        Name = "ASP.NET Core Runtime 10";       Desc = "ASP.NET Core Runtime (x86) 10" }
         )
     },
     @{
-        Category = "Documents & Readers"
+        Category = "Java"
         Items = @(
-            @{ Id = "sumatrapdf"; Name = "SumatraPDF"; Desc = "Slim, fast, lightweight PDF reader" },
-            @{ Id = "foxit"; Name = "Foxit Reader"; Desc = "PDF viewing and annotation" },
-            @{ Id = "libreoffice"; Name = "LibreOffice"; Desc = "Complete open-source office suite" }
+            @{ Id = "adoptjavax8";     Name = "Java (AdoptOpenJDK) x64 8";     Desc = "64-bit Java Runtime (JRE) 8" },
+            @{ Id = "adoptjava8";      Name = "Java (AdoptOpenJDK) 8";         Desc = "32-bit Java Runtime (JRE) 8" },
+            @{ Id = "adoptjavax11";    Name = "Java (AdoptOpenJDK) x64 11";    Desc = "64-bit Java Runtime (JRE) 11" },
+            @{ Id = "adoptjavax17";    Name = "Java (AdoptOpenJDK) x64 17";    Desc = "64-bit Java Runtime (JRE) 17" },
+            @{ Id = "adoptjavax21";    Name = "Java (AdoptOpenJDK) x64 21";    Desc = "64-bit Java Runtime (JRE) 21" },
+            @{ Id = "adoptjavax25";    Name = "Java (AdoptOpenJDK) x64 25";    Desc = "64-bit Java Runtime (JRE) 25" },
+            @{ Id = "adoptjdkx8";      Name = "JDK (AdoptOpenJDK) x64 8";     Desc = "64-bit Java Development Kit 8" },
+            @{ Id = "adoptjdk8";       Name = "JDK (AdoptOpenJDK) 8";         Desc = "Java Development Kit 8" },
+            @{ Id = "adoptjdkx11";     Name = "JDK (AdoptOpenJDK) x64 11";    Desc = "64-bit Java Development Kit 11" },
+            @{ Id = "adoptjdkx17";     Name = "JDK (AdoptOpenJDK) x64 17";    Desc = "64-bit Java Development Kit 17" },
+            @{ Id = "adoptjdkx21";     Name = "JDK (AdoptOpenJDK) x64 21";    Desc = "64-bit Java Development Kit 21" },
+            @{ Id = "adoptjdkx25";     Name = "JDK (AdoptOpenJDK) x64 25";    Desc = "64-bit Java Development Kit 25" },
+            @{ Id = "correttojdkx8";   Name = "JDK (Amazon Corretto) x64 8";  Desc = "64-bit Java Development Kit 8" },
+            @{ Id = "correttojdk8";    Name = "JDK (Amazon Corretto) 8";      Desc = "Java Development Kit 8" },
+            @{ Id = "correttojdkx11";  Name = "JDK (Amazon Corretto) x64 11"; Desc = "64-bit Java Development Kit 11" },
+            @{ Id = "correttojdkx17";  Name = "JDK (Amazon Corretto) x64 17"; Desc = "64-bit Java Development Kit 17" },
+            @{ Id = "correttojdkx21";  Name = "JDK (Amazon Corretto) x64 21"; Desc = "64-bit Java Development Kit 21" },
+            @{ Id = "correttojdkx25";  Name = "JDK (Amazon Corretto) x64 25"; Desc = "64-bit Java Development Kit 25" },
+            @{ Id = "correttojrex8";   Name = "JRE (Amazon Corretto) x64 8";  Desc = "64-bit Java Runtime Environment 8" },
+            @{ Id = "correttojre8";    Name = "JRE (Amazon Corretto) 8";      Desc = "Java Runtime Environment 8" }
         )
     },
     @{
-        Category = "Remote Access"
+        Category = "Imaging"
         Items = @(
-            @{ Id = "anydesk"; Name = "AnyDesk"; Desc = "Fast remote desktop software" },
-            @{ Id = "teamviewer15"; Name = "TeamViewer"; Desc = "Remote control and meeting tool" },
-            @{ Id = "realvnc"; Name = "RealVNC Viewer"; Desc = "VNC remote control viewer" }
+            @{ Id = "krita";           Name = "Krita";           Desc = "Painting Program" },
+            @{ Id = "blender";         Name = "Blender";         Desc = "3D Creation Suite" },
+            @{ Id = "paint.net";       Name = "Paint.NET";       Desc = "Image Editor (requires .NET 4.5)" },
+            @{ Id = "gimp";            Name = "GIMP";            Desc = "Open Source Image Editor" },
+            @{ Id = "irfanview";       Name = "IrfanView";       Desc = "Image Viewer" },
+            @{ Id = "xnview";          Name = "XnView";          Desc = "Image Viewer" },
+            @{ Id = "inkscape";        Name = "Inkscape";        Desc = "Vector Graphics Editor" },
+            @{ Id = "faststone";       Name = "FastStone";       Desc = "FastStone Image Viewer" },
+            @{ Id = "greenshot";       Name = "Greenshot";       Desc = "Screenshot Tool" },
+            @{ Id = "sharex";          Name = "ShareX";          Desc = "Screenshot Uploader" }
+        )
+    },
+    @{
+        Category = "Documents"
+        Items = @(
+            @{ Id = "foxit";           Name = "Foxit Reader";    Desc = "Alternative PDF Reader" },
+            @{ Id = "libreoffice";     Name = "LibreOffice";     Desc = "Free Office Suite" },
+            @{ Id = "sumatrapdf";      Name = "SumatraPDF";      Desc = "Lightweight PDF Reader" },
+            @{ Id = "cutepdf";         Name = "CutePDF";         Desc = "Print Documents as PDF Files" },
+            @{ Id = "openoffice";      Name = "OpenOffice";      Desc = "Free Office Suite (JRE recommended)" }
+        )
+    },
+    @{
+        Category = "Security"
+        Items = @(
+            @{ Id = "malwarebytes";    Name = "Malwarebytes";    Desc = "Malware Remover" },
+            @{ Id = "avast";           Name = "Avast";           Desc = "Avast Free Antivirus" },
+            @{ Id = "avg";             Name = "AVG";             Desc = "AVG Free Antivirus" },
+            @{ Id = "spybot2";         Name = "Spybot 2";        Desc = "Spyware Remover" },
+            @{ Id = "avira";           Name = "Avira";           Desc = "Avira Free Antivirus" },
+            @{ Id = "super";           Name = "SUPERAntiSpyware"; Desc = "SUPERAntiSpyware Free" }
+        )
+    },
+    @{
+        Category = "File Sharing"
+        Items = @(
+            @{ Id = "qbittorrent";     Name = "qBittorrent";     Desc = "Free Bittorrent Client" }
+        )
+    },
+    @{
+        Category = "Online Storage"
+        Items = @(
+            @{ Id = "dropbox";              Name = "Dropbox";                Desc = "Great Online Backup/File Sync" },
+            @{ Id = "googledrivefordesktop"; Name = "Google Drive for Desktop"; Desc = "Online File Sync" },
+            @{ Id = "onedrive";             Name = "OneDrive";               Desc = "Online File Sync by Microsoft" },
+            @{ Id = "sugarsync";            Name = "SugarSync";              Desc = "Online Backup/File Sync" }
+        )
+    },
+    @{
+        Category = "Other"
+        Items = @(
+            @{ Id = "evernote";        Name = "Evernote";           Desc = "Online Notes" },
+            @{ Id = "googleearth";     Name = "Google Earth";        Desc = "Online Atlas by Google" },
+            @{ Id = "steam";           Name = "Steam";               Desc = "App Store for Games" },
+            @{ Id = "epic";            Name = "Epic Games Launcher"; Desc = "Epic Games Store" },
+            @{ Id = "keepass2";        Name = "KeePass 2";           Desc = "Password Manager" },
+            @{ Id = "everything";      Name = "Everything";          Desc = "Local File Search Engine" },
+            @{ Id = "nvda";            Name = "NV Access";           Desc = "Screen Reader" }
+        )
+    },
+    @{
+        Category = "Utilities"
+        Items = @(
+            @{ Id = "anydesk";         Name = "AnyDesk";         Desc = "Remote Desktop" },
+            @{ Id = "teamviewer15";    Name = "TeamViewer 15";   Desc = "Remote Access Tool" },
+            @{ Id = "imgburn";         Name = "ImgBurn";         Desc = "Disc Burner" },
+            @{ Id = "realvncserver";   Name = "RealVNC Server";  Desc = "RealVNC Remote Access" },
+            @{ Id = "realvncviewer";   Name = "RealVNC Viewer";  Desc = "RealVNC Remote Access" },
+            @{ Id = "tightvnc";        Name = "TightVNC";        Desc = "TightVNC Remote Desktop Software" },
+            @{ Id = "teracopy";        Name = "TeraCopy";        Desc = "Better File Copy" },
+            @{ Id = "cdburnerxp";      Name = "CDBurnerXP";      Desc = "Disc Burner (requires .NET)" },
+            @{ Id = "revo";            Name = "Revo";            Desc = "App Uninstaller/Reverse Ninite" },
+            @{ Id = "launchy";         Name = "Launchy";         Desc = "Hotkey Launcher" },
+            @{ Id = "windirstat";      Name = "WinDirStat";      Desc = "Directory Statistics" },
+            @{ Id = "wiztree";         Name = "WizTree";         Desc = "Directory Statistics" },
+            @{ Id = "glary";           Name = "Glary";           Desc = "System Utilities" },
+            @{ Id = "infrarecorder";   Name = "InfraRecorder";   Desc = "Disc Burner" },
+            @{ Id = "openshell";       Name = "Open-Shell";      Desc = "Old-Style Start Menu" },
+            @{ Id = "ccleaner";        Name = "CCleaner";        Desc = "PC Crap Remover" }
+        )
+    },
+    @{
+        Category = "Compression"
+        Items = @(
+            @{ Id = "7zip";            Name = "7-Zip";           Desc = "Great Compression App" },
+            @{ Id = "peazip";          Name = "PeaZip";          Desc = "File Compression Tool" },
+            @{ Id = "winrar";          Name = "WinRAR";          Desc = "Another Compression Tool (Trial)" }
+        )
+    },
+    @{
+        Category = "VC++ Redistributables"
+        Items = @(
+            @{ Id = "vcredistx15";     Name = "VC Redist x64 2015+";   Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredist15";      Name = "VC Redist x86 2015+";   Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredistarm15";   Name = "VC Redist arm64 2015+"; Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredistx13";     Name = "VC Redist x64 2013";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredist13";      Name = "VC Redist x86 2013";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredistx12";     Name = "VC Redist x64 2012";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredist12";      Name = "VC Redist x86 2012";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredistx10";     Name = "VC Redist x64 2010";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredist10";      Name = "VC Redist x86 2010";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredistx08";     Name = "VC Redist x64 2008";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredist08";      Name = "VC Redist x86 2008";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredistx05";     Name = "VC Redist x64 2005";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" },
+            @{ Id = "vcredist05";      Name = "VC Redist x86 2005";    Desc = "Microsoft C and C++ (MSVC) runtime libraries" }
+        )
+    },
+    @{
+        Category = "Developer Tools"
+        Items = @(
+            @{ Id = "pythonx3";        Name = "Python x64 3";        Desc = "Programming Language x64" },
+            @{ Id = "pythona3";        Name = "Python arm64 3";      Desc = "Programming Language arm64" },
+            @{ Id = "python3";         Name = "Python 3";            Desc = "Programming Language x86" },
+            @{ Id = "python";          Name = "Python 2";            Desc = "Great Programming Language 2.7" },
+            @{ Id = "git";             Name = "Git";                 Desc = "Version Control System" },
+            @{ Id = "filezilla";       Name = "FileZilla";           Desc = "FTP Client" },
+            @{ Id = "notepadplusplus"; Name = "Notepad++";           Desc = "Programmer's Editor" },
+            @{ Id = "winscp";          Name = "WinSCP";              Desc = "SCP Client" },
+            @{ Id = "putty";           Name = "PuTTY";               Desc = "SSH client" },
+            @{ Id = "winmerge";        Name = "WinMerge";            Desc = "Compare and Merge Files" },
+            @{ Id = "eclipse";         Name = "Eclipse";             Desc = "IDE for Java (requires Java)" },
+            @{ Id = "vscode";          Name = "Visual Studio Code";  Desc = "Programmer's Editor" },
+            @{ Id = "cursor";          Name = "Cursor";              Desc = "Programmer's Editor (AI)" }
         )
     }
 )
@@ -105,12 +261,16 @@ foreach ($cat in $Catalog) {
     }
 }
 
+# ponytail: static catalog — update from ninite.com HTML when major apps are added
+$dupes = $AllItems | Group-Object Id | Where-Object { $_.Count -gt 1 }
+if ($dupes) { throw "Duplicate catalog slugs: $($dupes.Name -join ', ')" }
+
 $PresetsMap = @{
-    "DevStack"  = @("vscode", "notepadplusplus", "7zip", "putty", "winscp", "python")
+    "DevStack"  = @("vscode", "notepadplusplus", "7zip", "putty", "winscp", "git", "pythonx3", "cursor")
     "Browsers"  = @("chrome", "firefox")
     "Minimal"   = @("7zip", "notepadplusplus", "chrome")
-    "Utilities" = @("7zip", "windirstat", "everything", "teracopy")
-    "Media"     = @("vlc", "greenshot", "audacity", "spotify")
+    "Utilities" = @("7zip", "windirstat", "wiztree", "everything", "teracopy", "ccleaner")
+    "Media"     = @("vlc", "foobar", "audacity", "greenshot", "spotify")
     "All"       = ($AllItems | ForEach-Object { $_.Id })
 }
 
@@ -180,6 +340,37 @@ function Invoke-NiniteInstallation {
     }
 }
 
+function Read-SearchString {
+    # Inline readline for '/' search — backspace + enter/esc to confirm
+    $buf = ""
+    [Console]::Write("Search: ")
+    while ($true) {
+        $k = [Console]::ReadKey($true)
+        if ($k.Key -eq [ConsoleKey]::Enter -or $k.Key -eq [ConsoleKey]::Escape) { break }
+        if ($k.Key -eq [ConsoleKey]::Backspace) {
+            if ($buf.Length -gt 0) {
+                $buf = $buf.Substring(0, $buf.Length - 1)
+                [Console]::Write("`b `b")
+            }
+        }
+        elseif ($k.KeyChar -match '\S') {
+            $buf += $k.KeyChar
+            [Console]::Write($k.KeyChar)
+        }
+    }
+    [Console]::WriteLine()
+    return $buf
+}
+
+function Get-FilteredItems {
+    param([string]$Filter, [System.Collections.Generic.List[PSObject]]$Items)
+    if ([string]::IsNullOrWhiteSpace($Filter)) { return $Items }
+    $f = $Filter.ToLower()
+    return @($Items | Where-Object {
+        $_.Id.ToLower().Contains($f) -or $_.Name.ToLower().Contains($f) -or $_.Category.ToLower().Contains($f)
+    })
+}
+
 function Show-TUI {
     param(
         [System.Collections.Generic.HashSet[string]]$InitialSelection
@@ -187,7 +378,8 @@ function Show-TUI {
 
     $selected = [System.Collections.Generic.HashSet[string]]::new($InitialSelection, [System.StringComparer]::OrdinalIgnoreCase)
     $cursor = 0
-    $total = $AllItems.Count
+    $searchFilter = ""
+    $visibleItems = $AllItems
     $presetKeys = @("Minimal", "DevStack", "Browsers", "Utilities", "Media", "All")
     $presetIndex = 0
 
@@ -206,29 +398,32 @@ function Show-TUI {
     [Console]::CursorVisible = $false
     try {
         while ($true) {
+            $total = $visibleItems.Count
+            if ($cursor -ge $total -and $total -gt 0) { $cursor = $total - 1 }
+
             Clear-Host
             Write-Host "================================================================================" -ForegroundColor Cyan
             Write-Host "            NINITE INTERACTIVE PACKAGE MANAGER (Windows Server Core)           " -ForegroundColor Cyan
             Write-Host "================================================================================" -ForegroundColor Cyan
-            Write-Host " [?] Use Up/Down (or j/k) | [Space] Toggle | [a] All | [n] None" -ForegroundColor Gray
-            Write-Host "     [p] Cycle Presets | [Enter] Install Selected | [q/Esc] Quit" -ForegroundColor Gray
+            Write-Host " [?] Up/Down (j/k) | [Space] Toggle | [a] All | [n] None | [p] Preset" -ForegroundColor Gray
+            Write-Host "     [/] Search | [Enter] Install | [q/Esc] Quit" -ForegroundColor Gray
             Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkGray
 
             $lastCat = ""
             for ($i = 0; $i -lt $total; $i++) {
-                $item = $AllItems[$i]
+                $item = $visibleItems[$i]
                 if ($item.Category -ne $lastCat) {
                     Write-Host "`n  :: $($item.Category)" -ForegroundColor Yellow
                     $lastCat = $item.Category
                 }
 
-                $isCursor = ($i -eq $cursor)
+                $isCursor   = ($i -eq $cursor)
                 $isSelected = $selected.Contains($item.Id)
 
                 $checkMark = if ($isSelected) { "[x]" } else { "[ ]" }
                 $pointer   = if ($isCursor)   { ">" }   else { " " }
 
-                $lineText = "  $pointer $checkMark {0,-18} - {1}" -f $item.Id, $item.Desc
+                $lineText = "  $pointer $checkMark {0,-24} - {1}" -f $item.Id, $item.Desc
 
                 if ($isCursor) {
                     Write-Host $lineText -ForegroundColor Black -BackgroundColor Cyan
@@ -241,39 +436,40 @@ function Show-TUI {
                 }
             }
 
+            if ($total -eq 0) {
+                Write-Host "`n  (no matches)" -ForegroundColor DarkGray
+            }
+
             Write-Host "`n--------------------------------------------------------------------------------" -ForegroundColor DarkGray
-            $selCount = $selected.Count
+            $selCount   = $selected.Count
             $selPreview = if ($selCount -gt 0) { ($selected | Sort-Object) -join ' ' } else { "None" }
             Write-Host " Selected ($selCount apps): " -NoNewline -ForegroundColor Cyan
             Write-Host "$selPreview" -ForegroundColor Green
+            if (-not [string]::IsNullOrWhiteSpace($searchFilter)) {
+                Write-Host " Filter: `"$searchFilter`" (press / to change, empty input to clear)" -ForegroundColor Magenta
+            }
             Write-Host " > Press [ENTER] to download & install selected packages now..." -ForegroundColor Yellow
 
             $keyInfo = [Console]::ReadKey($true)
 
             switch ($keyInfo.Key) {
-                ([ConsoleKey]::UpArrow) {
-                    $cursor = [Math]::Max(0, $cursor - 1)
-                }
-                ([ConsoleKey]::DownArrow) {
-                    $cursor = [Math]::Min($total - 1, $cursor + 1)
-                }
-                ([ConsoleKey]::K) {
-                    $cursor = [Math]::Max(0, $cursor - 1)
-                }
-                ([ConsoleKey]::J) {
-                    $cursor = [Math]::Min($total - 1, $cursor + 1)
-                }
+                ([ConsoleKey]::UpArrow)   { $cursor = [Math]::Max(0, $cursor - 1) }
+                ([ConsoleKey]::DownArrow) { $cursor = [Math]::Min($total - 1, $cursor + 1) }
+                ([ConsoleKey]::K)         { $cursor = [Math]::Max(0, $cursor - 1) }
+                ([ConsoleKey]::J)         { $cursor = [Math]::Min($total - 1, $cursor + 1) }
                 ([ConsoleKey]::Spacebar) {
-                    $currId = $AllItems[$cursor].Id
-                    if ($selected.Contains($currId)) {
-                        [void]$selected.Remove($currId)
-                    }
-                    else {
-                        [void]$selected.Add($currId)
+                    if ($total -gt 0) {
+                        $currId = $visibleItems[$cursor].Id
+                        if ($selected.Contains($currId)) {
+                            [void]$selected.Remove($currId)
+                        }
+                        else {
+                            [void]$selected.Add($currId)
+                        }
                     }
                 }
                 ([ConsoleKey]::A) {
-                    foreach ($it in $AllItems) { [void]$selected.Add($it.Id) }
+                    foreach ($it in $visibleItems) { [void]$selected.Add($it.Id) }
                 }
                 ([ConsoleKey]::N) {
                     $selected.Clear()
@@ -283,11 +479,27 @@ function Show-TUI {
                     $presetIndex++
                     $selected = Get-SelectedFromPreset -PresetName $pName
                 }
-                ([ConsoleKey]::Enter) {
-                    return $selected
+                ([ConsoleKey]::OemQuestion) {
+                    # '/' — enter search mode
+                    [Console]::CursorVisible = $true
+                    $searchFilter = Read-SearchString
+                    [Console]::CursorVisible = $false
+                    $visibleItems = Get-FilteredItems -Filter $searchFilter -Items $AllItems
+                    $cursor = 0
                 }
                 ([ConsoleKey]::Escape) {
-                    return [System.Collections.Generic.HashSet[string]]::new()
+                    if (-not [string]::IsNullOrWhiteSpace($searchFilter)) {
+                        # First Esc clears search
+                        $searchFilter = ""
+                        $visibleItems = $AllItems
+                        $cursor = 0
+                    }
+                    else {
+                        return [System.Collections.Generic.HashSet[string]]::new()
+                    }
+                }
+                ([ConsoleKey]::Enter) {
+                    return $selected
                 }
                 ([ConsoleKey]::Q) {
                     return [System.Collections.Generic.HashSet[string]]::new()
@@ -307,13 +519,13 @@ function Show-FallbackMenu {
 
     Clear-Host
     Write-Host "================================================================================" -ForegroundColor Cyan
-    Write-Host "            NINITE PACKAGE SELECTION (Console Fallback Mode)                    " -ForegroundColor Cyan
+    Write-Host "            NINITE PACKAGE SELECTION (Console Fallback Mode)                   " -ForegroundColor Cyan
     Write-Host "================================================================================" -ForegroundColor Cyan
 
     for ($i = 0; $i -lt $AllItems.Count; $i++) {
         $it = $AllItems[$i]
-        $idx = "{0,2}" -f ($i + 1)
-        Write-Host " [$idx] {0,-18} - {1}" -f $it.Id, $it.Name -ForegroundColor White
+        $idx = "{0,3}" -f ($i + 1)
+        Write-Host " [$idx] {0,-24} - {1}" -f $it.Id, $it.Name -ForegroundColor White
     }
 
     Write-Host "`nPresets: DevStack, Browsers, Minimal, Utilities, Media, All" -ForegroundColor Yellow
@@ -324,12 +536,11 @@ function Show-FallbackMenu {
         return [System.Collections.Generic.HashSet[string]]::new()
     }
 
-    $set = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
-
     if ($PresetsMap.ContainsKey($inputStr.Trim())) {
         return Get-SelectedFromPreset -PresetName $inputStr.Trim()
     }
 
+    $set = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     $tokens = $inputStr.Split(',', [System.StringSplitOptions]::RemoveEmptyEntries)
     foreach ($token in $tokens) {
         $t = $token.Trim()
@@ -372,7 +583,6 @@ function Deploy-DesktopShortcut {
             Get-ChildItem -Path $uDir -Filter "Ninite App Store*.lnk" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
         }
     }
-    # Also remove legacy names in Public Desktop if present
     $legacyPublic = Join-Path $publicDesktop "Ninite App Store (TUI).lnk"
     if (Test-Path $legacyPublic) { Remove-Item -Path $legacyPublic -Force -ErrorAction SilentlyContinue }
 
