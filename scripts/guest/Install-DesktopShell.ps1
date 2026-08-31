@@ -80,7 +80,7 @@ function Install-ReactFileManager {
 
     if (Test-Path $zipFile) {
         Write-Step "Terminating any running ReactShell processes for update..."
-        Stop-Process -Name "react-shell", "react-fm" -Force -ErrorAction SilentlyContinue
+        Stop-Process -Name "react-shell", "react-fm", "explorer" -Force -ErrorAction SilentlyContinue
         Start-Sleep -Milliseconds 500
 
         Write-Step "Extracting ReactShell binaries from $zipFile..."
@@ -92,28 +92,42 @@ function Install-ReactFileManager {
         return
     }
 
-    # Link C:\Windows\explorer.exe to react-fm.exe
-    $winExplorer = "$env:WINDIR\explorer.exe"
-    try {
-        if (Test-Path $winExplorer) {
-            Remove-Item $winExplorer -Force -ErrorAction SilentlyContinue
-        }
-        New-Item -ItemType HardLink -Path $winExplorer -Target $fmExe -Force | Out-Null
-        Write-Success "Linked $winExplorer to $fmExe (HardLink)."
-    }
-    catch {
-        Write-WarnMsg "HardLink failed, attempting copy fallback: $_"
-        Copy-Item -Path $fmExe -Destination $winExplorer -Force
-        Write-Success "Copied react-fm.exe to $winExplorer."
+    # 1. System-wide File Replacements (C:\Windows, System32, SysWOW64, ReactShell)
+    $systemTargets = @(
+        "$env:WINDIR\explorer.exe",
+        "$env:WINDIR\System32\explorer.exe",
+        "$targetDir\explorer.exe"
+    )
+    $sysWow64 = "$env:WINDIR\SysWOW64"
+    if (Test-Path $sysWow64) {
+        $systemTargets += "$sysWow64\explorer.exe"
     }
 
-    # Register ReactFM as default system file manager in Registry
+    foreach ($sysTarget in $systemTargets) {
+        try {
+            if (Test-Path $sysTarget) {
+                Remove-Item $sysTarget -Force -ErrorAction SilentlyContinue
+            }
+            New-Item -ItemType HardLink -Path $sysTarget -Target $fmExe -Force | Out-Null
+            Write-Success "Linked $sysTarget -> $fmExe (HardLink)."
+        }
+        catch {
+            Copy-Item -Path $fmExe -Destination $sysTarget -Force
+            Write-Success "Copied $fmExe -> $sysTarget."
+        }
+    }
+
+    # 2. Register ReactFM as default system file manager in Registry (64-bit and WOW64)
     Write-Step "Registering ReactFM as default system file explorer in Registry..."
-    $classesBase = "HKLM:\SOFTWARE\Classes"
     $regAssociations = @(
-        "$classesBase\Folder\shell\open\command",
-        "$classesBase\Directory\shell\open\command",
-        "$classesBase\Drive\shell\open\command"
+        "HKLM:\SOFTWARE\Classes\Folder\shell\open\command",
+        "HKLM:\SOFTWARE\Classes\Directory\shell\open\command",
+        "HKLM:\SOFTWARE\Classes\Drive\shell\open\command",
+        "HKLM:\SOFTWARE\Classes\Directory\Background\shell\open\command",
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Folder\shell\open\command",
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Directory\shell\open\command",
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Drive\shell\open\command",
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Directory\Background\shell\open\command"
     )
     foreach ($regKey in $regAssociations) {
         if (-not (Test-Path $regKey)) {
@@ -121,7 +135,34 @@ function Install-ReactFileManager {
         }
         Set-ItemProperty -Path $regKey -Name "(Default)" -Value "`"$fmExe`" `"%1`"" -Force
     }
-    Write-Success "ReactFM registered as default file manager in registry."
+
+    # 3. Register App Paths for explorer.exe, react-fm.exe, react-shell.exe (64-bit and WOW64)
+    Write-Step "Registering App Paths for explorer.exe in Registry..."
+    $appPaths = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\explorer.exe",
+        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\explorer.exe"
+    )
+    foreach ($apKey in $appPaths) {
+        if (-not (Test-Path $apKey)) {
+            New-Item -Path $apKey -Force | Out-Null
+        }
+        Set-ItemProperty -Path $apKey -Name "(Default)" -Value "$env:WINDIR\explorer.exe" -Force
+        Set-ItemProperty -Path $apKey -Name "Path" -Value "$targetDir;$env:WINDIR;$env:WINDIR\System32" -Force
+    }
+
+    $rsAppPaths = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\react-fm.exe",
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\react-shell.exe"
+    )
+    foreach ($apKey in $rsAppPaths) {
+        if (-not (Test-Path $apKey)) {
+            New-Item -Path $apKey -Force | Out-Null
+        }
+        $targetBin = if ($apKey -like "*react-fm*") { "$targetDir\react-fm.exe" } else { "$targetDir\react-shell.exe" }
+        Set-ItemProperty -Path $apKey -Name "(Default)" -Value $targetBin -Force
+        Set-ItemProperty -Path $apKey -Name "Path" -Value $targetDir -Force
+    }
+    Write-Success "ReactFM registered across system paths and registry."
 
     # Add to Machine PATH
     $currPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
@@ -163,10 +204,17 @@ function Install-ReactShell {
         return
     }
 
-    # Configure Winlogon Shell
+    # Configure Winlogon Shell (64-bit and WOW64)
     Write-Step "Setting ReactShell as the primary logon shell..."
-    $winlogonKey = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-    Set-ItemProperty -Path $winlogonKey -Name "Shell" -Value "$shellExe" -Type String -Force
+    $winlogonKeys = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Winlogon"
+    )
+    foreach ($wKey in $winlogonKeys) {
+        if (Test-Path $wKey) {
+            Set-ItemProperty -Path $wKey -Name "Shell" -Value "$shellExe" -Type String -Force
+        }
+    }
     Write-Success "Winlogon Shell configured: $shellExe"
 
     # Remove sconfig and alternate shell auto-start cmd windows
