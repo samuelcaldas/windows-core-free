@@ -68,29 +68,28 @@ function Install-ReactFileManager {
     }
 
     $fmExe = "$targetDir\react-fm.exe"
-    if (-not (Test-Path $fmExe)) {
-        $zipFile = Join-Path $SourceDir "reactshell_x64.zip"
-        if (-not (Test-Path $zipFile)) {
-            foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
-                $cand = "${letter}:\reactshell_x64.zip"
-                if (Test-Path $cand) { $zipFile = $cand; break }
-                $cand = "${letter}:\packages\reactshell_x64.zip"
-                if (Test-Path $cand) { $zipFile = $cand; break }
-            }
-        }
-
-        if (Test-Path $zipFile) {
-            Write-Step "Extracting ReactShell FM from $zipFile..."
-            Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
-            Write-Success "ReactShell FM extracted to $targetDir."
-        }
-        else {
-            Write-WarnMsg "ReactShell archive not found in packages."
-            return
+    $zipFile = Join-Path $SourceDir "reactshell_x64.zip"
+    if (-not (Test-Path $zipFile)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\reactshell_x64.zip"
+            if (Test-Path $cand) { $zipFile = $cand; break }
+            $cand = "${letter}:\packages\reactshell_x64.zip"
+            if (Test-Path $cand) { $zipFile = $cand; break }
         }
     }
-    else {
-        Write-Success "ReactShell FM is already installed in $targetDir."
+
+    if (Test-Path $zipFile) {
+        Write-Step "Terminating any running ReactShell processes for update..."
+        Stop-Process -Name "react-shell", "react-fm" -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds 500
+
+        Write-Step "Extracting ReactShell binaries from $zipFile..."
+        Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
+        Write-Success "ReactShell extracted to $targetDir."
+    }
+    elseif (-not (Test-Path $fmExe)) {
+        Write-WarnMsg "ReactShell archive not found in packages."
+        return
     }
 
     # Link C:\Windows\explorer.exe to react-fm.exe
@@ -140,29 +139,28 @@ function Install-ReactShell {
     }
 
     $shellExe = "$targetDir\react-shell.exe"
-    if (-not (Test-Path $shellExe)) {
-        $zipFile = Join-Path $SourceDir "reactshell_x64.zip"
-        if (-not (Test-Path $zipFile)) {
-            foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
-                $cand = "${letter}:\reactshell_x64.zip"
-                if (Test-Path $cand) { $zipFile = $cand; break }
-                $cand = "${letter}:\packages\reactshell_x64.zip"
-                if (Test-Path $cand) { $zipFile = $cand; break }
-            }
-        }
-
-        if (Test-Path $zipFile) {
-            Write-Step "Extracting ReactShell from $zipFile..."
-            Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
-            Write-Success "ReactShell extracted to $targetDir."
-        }
-        else {
-            Write-WarnMsg "ReactShell archive not found in packages or attached drives."
-            return
+    $zipFile = Join-Path $SourceDir "reactshell_x64.zip"
+    if (-not (Test-Path $zipFile)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\reactshell_x64.zip"
+            if (Test-Path $cand) { $zipFile = $cand; break }
+            $cand = "${letter}:\packages\reactshell_x64.zip"
+            if (Test-Path $cand) { $zipFile = $cand; break }
         }
     }
-    else {
-        Write-Success "ReactShell is already installed in $targetDir."
+
+    if (Test-Path $zipFile) {
+        Write-Step "Terminating any running ReactShell processes for update..."
+        Stop-Process -Name "react-shell", "react-fm" -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds 500
+
+        Write-Step "Extracting ReactShell from $zipFile..."
+        Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
+        Write-Success "ReactShell extracted to $targetDir."
+    }
+    elseif (-not (Test-Path $shellExe)) {
+        Write-WarnMsg "ReactShell archive not found in packages or attached drives."
+        return
     }
 
     # Configure Winlogon Shell
