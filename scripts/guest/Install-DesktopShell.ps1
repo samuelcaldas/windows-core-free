@@ -12,8 +12,8 @@
 [CmdletBinding()]
 param(
     [string]$SourceDir = "C:\Provisioning\packages",
-    [ValidateSet('ReactShell', 'WinXShell', 'None')][string]$ShellProvider = 'ReactShell',
-    [ValidateSet('ReactFM', 'ExplorerPlusPlus', 'WinFile', 'None')][string]$FileManager = 'ReactFM'
+    [ValidateSet('WinXShell', 'ReactShell', 'None')][string]$ShellProvider = 'WinXShell',
+    [ValidateSet('WinFile', 'ReactFM', 'ExplorerPlusPlus', 'None')][string]$FileManager = 'WinFile'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -363,29 +363,42 @@ function Install-WinFile {
         return
     }
 
-    # Link C:\Windows\explorer.exe to Winfile.exe
-    $winExplorer = "$env:WINDIR\explorer.exe"
-    try {
-        if (Test-Path $winExplorer) {
-            Remove-Item $winExplorer -Force -ErrorAction SilentlyContinue
-        }
-        New-Item -ItemType HardLink -Path $winExplorer -Target $winfileExe -Force | Out-Null
-        Write-Success "Linked $winExplorer to $winfileExe (HardLink)."
-    }
-    catch {
-        Copy-Item -Path $winfileExe -Destination $winExplorer -Force
-        Write-Success "Copied Winfile.exe to $winExplorer."
+    # 1. System-wide File Replacements (C:\Windows, System32, SysWOW64, WinFile)
+    $systemTargets = @(
+        "$env:WINDIR\explorer.exe",
+        "$env:WINDIR\System32\explorer.exe",
+        "$targetDir\explorer.exe"
+    )
+    $sysWow64 = "$env:WINDIR\SysWOW64"
+    if (Test-Path $sysWow64) {
+        $systemTargets += "$sysWow64\explorer.exe"
     }
 
-    # Register WinFile as default system file manager in Registry (64-bit and WOW64)
+    foreach ($sysTarget in $systemTargets) {
+        try {
+            if (Test-Path $sysTarget) {
+                Remove-Item $sysTarget -Force -ErrorAction SilentlyContinue
+            }
+            New-Item -ItemType HardLink -Path $sysTarget -Target $winfileExe -Force | Out-Null
+            Write-Success "Linked $sysTarget -> $winfileExe (HardLink)."
+        }
+        catch {
+            Copy-Item -Path $winfileExe -Destination $sysTarget -Force
+            Write-Success "Copied $winfileExe -> $sysTarget."
+        }
+    }
+
+    # 2. Register WinFile as default system file manager in Registry (64-bit and WOW64)
     Write-Step "Registering WinFile as default file manager in Registry..."
     $regAssociations = @(
         "HKLM:\SOFTWARE\Classes\Folder\shell\open\command",
         "HKLM:\SOFTWARE\Classes\Directory\shell\open\command",
         "HKLM:\SOFTWARE\Classes\Drive\shell\open\command",
+        "HKLM:\SOFTWARE\Classes\Directory\Background\shell\open\command",
         "HKLM:\SOFTWARE\WOW6432Node\Classes\Folder\shell\open\command",
         "HKLM:\SOFTWARE\WOW6432Node\Classes\Directory\shell\open\command",
-        "HKLM:\SOFTWARE\WOW6432Node\Classes\Drive\shell\open\command"
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Drive\shell\open\command",
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Directory\Background\shell\open\command"
     )
     foreach ($regKey in $regAssociations) {
         if (-not (Test-Path $regKey)) {
@@ -394,8 +407,10 @@ function Install-WinFile {
         Set-ItemProperty -Path $regKey -Name "(Default)" -Value "`"$winfileExe`" `"%1`"" -Force
     }
 
-    # Register App Paths
+    # 3. Register App Paths for explorer.exe and winfile.exe (64-bit and WOW64)
     $appPaths = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\explorer.exe",
+        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\explorer.exe",
         "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\winfile.exe",
         "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\winfile.exe"
     )
@@ -403,8 +418,9 @@ function Install-WinFile {
         if (-not (Test-Path $apKey)) {
             New-Item -Path $apKey -Force | Out-Null
         }
-        Set-ItemProperty -Path $apKey -Name "(Default)" -Value $winfileExe -Force
-        Set-ItemProperty -Path $apKey -Name "Path" -Value $targetDir -Force
+        $targetBin = if ($apKey -like "*explorer*") { "$env:WINDIR\explorer.exe" } else { $winfileExe }
+        Set-ItemProperty -Path $apKey -Name "(Default)" -Value $targetBin -Force
+        Set-ItemProperty -Path $apKey -Name "Path" -Value "$targetDir;$env:WINDIR;$env:WINDIR\System32" -Force
     }
     Write-Success "WinFile registered across system paths and registry."
 
@@ -417,7 +433,7 @@ function Install-WinFile {
 }
 
 function Install-WinXShell {
-    Write-Step "Installing WinXShell desktop environment (optional)..."
+    Write-Step "Installing WinXShell desktop environment (default shell)..."
     $targetDir = "C:\Program Files\WinXShell"
     if (-not (Test-Path $targetDir)) {
         New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
@@ -485,11 +501,32 @@ function Install-WinXShell {
         Write-Success "Applied customized shell and taskbar registry settings."
     }
 
-    # Configure Winlogon Shell
+    # Configure Winlogon Shell (64-bit and WOW64)
     Write-Step "Setting WinXShell as the primary logon shell..."
-    $winlogonKey = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-    Set-ItemProperty -Path $winlogonKey -Name "Shell" -Value "$targetDir\WinXShell.exe -winpe" -Type String -Force
+    $winlogonKeys = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\Winlogon"
+    )
+    foreach ($wKey in $winlogonKeys) {
+        if (Test-Path $wKey) {
+            Set-ItemProperty -Path $wKey -Name "Shell" -Value "$targetDir\WinXShell.exe -winpe" -Type String -Force
+        }
+    }
     Write-Success "Winlogon Shell configured: $targetDir\WinXShell.exe -winpe"
+
+    # Remove sconfig and alternate shell auto-start cmd windows
+    Write-Step "Disabling automatic cmd.exe and sconfig.cmd startup on logon..."
+    $runKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+    if (Get-ItemProperty -Path $runKey -Name "sconfig" -ErrorAction SilentlyContinue) {
+        Remove-ItemProperty -Path $runKey -Name "sconfig" -Force -ErrorAction SilentlyContinue
+        Write-Success "Removed automatic sconfig.cmd from Run registry key."
+    }
+
+    $altShellKey = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\AlternateShells\AvailableShells"
+    if (Test-Path $altShellKey) {
+        Remove-ItemProperty -Path $altShellKey -Name "30000" -Force -ErrorAction SilentlyContinue
+        Write-Success "Disabled AlternateShells cmd.exe fallback."
+    }
 
     # Add to Machine PATH
     $currPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)

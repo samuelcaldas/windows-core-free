@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/host/install-desktopshell.sh
-# Non-destructive Live Setup of ReactShell Desktop Environment on Windows Core
+# Non-destructive Live Setup of Desktop Shell (WinXShell/ReactShell) and File Manager on Windows Core
 # ==============================================================================
 set -euo pipefail
 
@@ -14,8 +14,8 @@ VM_PORT="${VM_PORT:-2222}"
 VM_USER="${VM_USER:-samuelcaldas}"
 VM_PASS="${VM_PASS:-hebroN@1994}"
 
-SHELL_PROVIDER="${1:-ReactShell}"
-FILE_MANAGER="${2:-ReactFM}"
+SHELL_PROVIDER="${1:-WinXShell}"
+FILE_MANAGER="${2:-WinFile}"
 
 SSH_OPTS="-p ${VM_PORT} -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"
 SCP_OPTS="-P ${VM_PORT} -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10"

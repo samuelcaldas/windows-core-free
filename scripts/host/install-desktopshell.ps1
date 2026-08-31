@@ -9,8 +9,8 @@ param(
     [string]$VmHost = "127.0.0.1",
     [int]$VmPort = 2222,
     [string]$VmUser = "samuelcaldas",
-    [ValidateSet('ReactShell', 'WinXShell', 'None')][string]$ShellProvider = 'ReactShell',
-    [ValidateSet('ReactFM', 'ExplorerPlusPlus', 'None')][string]$FileManager = 'ReactFM'
+    [ValidateSet('WinXShell', 'ReactShell', 'None')][string]$ShellProvider = 'WinXShell',
+    [ValidateSet('WinFile', 'ReactFM', 'ExplorerPlusPlus', 'None')][string]$FileManager = 'WinFile'
 )
 
 $ErrorActionPreference = 'Stop'
