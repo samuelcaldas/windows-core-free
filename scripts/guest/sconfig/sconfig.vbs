@@ -58,7 +58,7 @@ Do
     WScript.Echo "  6) OpenSSH Server & Remote Access Dashboard"
     WScript.Echo ""
     WScript.Echo " [ Developer Tools & Distro Utilities ]"
-    WScript.Echo "  7) Distro App Store & Toolchains (Ninite / .NET / Python / Node)"
+    WScript.Echo "  7) OmniGet App Store & Toolchains (og / .NET / Python / Node)"
     WScript.Echo "  8) Desktop Shell & File Manager (WinXShell / WinFile / ReactShell)"
     WScript.Echo "  9) System Performance & Memory Pruning (Atlas / Core Tuning)"
     WScript.Echo ""
