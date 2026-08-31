@@ -90,6 +90,8 @@ function Build-InstallerIso {
         if (Test-Path $wxsLua) { Copy-Item -Path $wxsLua -Destination $packagesTarget -Force }
         $wxsReg = Join-Path $RepoRoot "config/winxshell/shell-settings.reg"
         if (Test-Path $wxsReg) { Copy-Item -Path $wxsReg -Destination $packagesTarget -Force }
+        $wallpaperDir = Join-Path $RepoRoot "config/wallpaper"
+        if (Test-Path $wallpaperDir) { Copy-Item -Path "$wallpaperDir/*" -Destination $packagesTarget -Force }
         $hostsFile = Join-Path $RepoRoot "config/hosts/hosts"
         if (Test-Path $hostsFile) {
             $hostsTarget = Join-Path $stagingDir "config/hosts"
@@ -162,6 +164,8 @@ function Build-OemdrvIso {
         if (Test-Path $wxsLua) { Copy-Item -Path $wxsLua -Destination $oemPackagesTarget -Force }
         $wxsReg = Join-Path $RepoRoot "config/winxshell/shell-settings.reg"
         if (Test-Path $wxsReg) { Copy-Item -Path $wxsReg -Destination $oemPackagesTarget -Force }
+        $wallpaperDir = Join-Path $RepoRoot "config/wallpaper"
+        if (Test-Path $wallpaperDir) { Copy-Item -Path "$wallpaperDir/*" -Destination $oemPackagesTarget -Force }
         $hostsFile = Join-Path $RepoRoot "config/hosts/hosts"
         if (Test-Path $hostsFile) {
             $oemHostsTarget = Join-Path $oemStaging "config/hosts"

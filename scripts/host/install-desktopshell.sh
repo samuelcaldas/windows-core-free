@@ -106,6 +106,15 @@ main() {
     if [ -f "${REPO_ROOT}/config/winxshell/shell-settings.reg" ]; then
         run_scp "${REPO_ROOT}/config/winxshell/shell-settings.reg" "C:/Provisioning/packages/shell-settings.reg"
     fi
+    if [ -f "${REPO_ROOT}/config/wallpaper/wallpaper.jpg" ]; then
+        run_scp "${REPO_ROOT}/config/wallpaper/wallpaper.jpg" "C:/Provisioning/packages/wallpaper.jpg"
+    fi
+    if [ -f "${REPO_ROOT}/config/wallpaper/wallpaper.bmp" ]; then
+        run_scp "${REPO_ROOT}/config/wallpaper/wallpaper.bmp" "C:/Provisioning/packages/wallpaper.bmp"
+    fi
+    if [ -f "${REPO_ROOT}/config/wallpaper/oemlogo.bmp" ]; then
+        run_scp "${REPO_ROOT}/config/wallpaper/oemlogo.bmp" "C:/Provisioning/packages/oemlogo.bmp"
+    fi
     run_scp "${REPO_ROOT}/scripts/guest/Install-DesktopShell.ps1" "C:/Provisioning/scripts/Install-DesktopShell.ps1"
 
     # 3. Execute Guest Installation Script

@@ -136,6 +136,10 @@ build_unattended_installer_iso() {
         log_info "Embedding shell-settings.reg into ISO..."
         cp "${REPO_ROOT}/config/winxshell/shell-settings.reg" "${STAGING_DIR}/packages/"
     fi
+    if [ -d "${REPO_ROOT}/config/wallpaper" ]; then
+        log_info "Embedding wallpaper and OEM branding into ISO..."
+        cp -r "${REPO_ROOT}/config/wallpaper/"* "${STAGING_DIR}/packages/"
+    fi
     if [ -f "${REPO_ROOT}/config/hosts/hosts" ]; then
         log_info "Embedding Dan Pollock hosts blocklist into ISO..."
         mkdir -p "${STAGING_DIR}/config/hosts"

@@ -59,6 +59,18 @@ function Main {
     if (Test-Path $wxsReg) {
         & scp -P $VmPort -o StrictHostKeyChecking=accept-new $wxsReg "${VmUser}@${VmHost}:C:/Provisioning/packages/shell-settings.reg"
     }
+    $wpJpg = Join-Path $RepoRoot "config/wallpaper/wallpaper.jpg"
+    if (Test-Path $wpJpg) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $wpJpg "${VmUser}@${VmHost}:C:/Provisioning/packages/wallpaper.jpg"
+    }
+    $wpBmp = Join-Path $RepoRoot "config/wallpaper/wallpaper.bmp"
+    if (Test-Path $wpBmp) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $wpBmp "${VmUser}@${VmHost}:C:/Provisioning/packages/wallpaper.bmp"
+    }
+    $oemBmp = Join-Path $RepoRoot "config/wallpaper/oemlogo.bmp"
+    if (Test-Path $oemBmp) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $oemBmp "${VmUser}@${VmHost}:C:/Provisioning/packages/oemlogo.bmp"
+    }
     & scp -P $VmPort -o StrictHostKeyChecking=accept-new (Join-Path $RepoRoot "scripts/guest/Install-DesktopShell.ps1") "${VmUser}@${VmHost}:C:/Provisioning/scripts/Install-DesktopShell.ps1"
 
     Write-Step "Executing Install-DesktopShell.ps1 on guest..."

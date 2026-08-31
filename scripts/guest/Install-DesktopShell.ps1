@@ -418,6 +418,87 @@ function Install-WinXShell {
     }
 }
 
+function Deploy-DistroBranding {
+    Write-Step "Deploying Windows Core Developer Edition branding & wallpaper..."
+    $wallpaperDir = "C:\Windows\Web\Wallpaper\WindowsCore"
+    if (-not (Test-Path $wallpaperDir)) {
+        New-Item -ItemType Directory -Path $wallpaperDir -Force | Out-Null
+    }
+
+    # Search for wallpaper files in SourceDir or attached drives
+    $wpJpg = Join-Path $SourceDir "wallpaper.jpg"
+    $wpBmp = Join-Path $SourceDir "wallpaper.bmp"
+    $oemBmp = Join-Path $SourceDir "oemlogo.bmp"
+
+    if (-not (Test-Path $wpJpg)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\packages\wallpaper.jpg"
+            if (Test-Path $cand) { $wpJpg = $cand; break }
+            $cand = "${letter}:\wallpaper.jpg"
+            if (Test-Path $cand) { $wpJpg = $cand; break }
+            $cand = "${letter}:\config\wallpaper\wallpaper.jpg"
+            if (Test-Path $cand) { $wpJpg = $cand; break }
+        }
+    }
+    if (-not (Test-Path $wpBmp)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\packages\wallpaper.bmp"
+            if (Test-Path $cand) { $wpBmp = $cand; break }
+            $cand = "${letter}:\wallpaper.bmp"
+            if (Test-Path $cand) { $wpBmp = $cand; break }
+            $cand = "${letter}:\config\wallpaper\wallpaper.bmp"
+            if (Test-Path $cand) { $wpBmp = $cand; break }
+        }
+    }
+    if (-not (Test-Path $oemBmp)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\packages\oemlogo.bmp"
+            if (Test-Path $cand) { $oemBmp = $cand; break }
+            $cand = "${letter}:\oemlogo.bmp"
+            if (Test-Path $cand) { $oemBmp = $cand; break }
+            $cand = "${letter}:\config\wallpaper\oemlogo.bmp"
+            if (Test-Path $cand) { $oemBmp = $cand; break }
+        }
+    }
+
+    if (Test-Path $wpJpg) {
+        Copy-Item -Path $wpJpg -Destination "$wallpaperDir\wallpaper.jpg" -Force
+        Write-Success "Deployed wallpaper.jpg to $wallpaperDir."
+    }
+    if (Test-Path $wpBmp) {
+        Copy-Item -Path $wpBmp -Destination "$wallpaperDir\wallpaper.bmp" -Force
+        Write-Success "Deployed wallpaper.bmp to $wallpaperDir."
+    }
+    if (Test-Path $oemBmp) {
+        Copy-Item -Path $oemBmp -Destination "$env:WINDIR\System32\oemlogo.bmp" -Force
+        Write-Success "Deployed oemlogo.bmp to System32."
+    }
+
+    # Configure User Desktop Wallpaper Registry
+    $desktopKey = "HKCU:\Control Panel\Desktop"
+    if (Test-Path "$wallpaperDir\wallpaper.bmp") {
+        Set-ItemProperty -Path $desktopKey -Name "Wallpaper" -Value "$wallpaperDir\wallpaper.bmp" -Force
+    }
+    elseif (Test-Path "$wallpaperDir\wallpaper.jpg") {
+        Set-ItemProperty -Path $desktopKey -Name "Wallpaper" -Value "$wallpaperDir\wallpaper.jpg" -Force
+    }
+    Set-ItemProperty -Path $desktopKey -Name "WallpaperStyle" -Value "2" -Force
+    Set-ItemProperty -Path $desktopKey -Name "TileWallpaper" -Value "0" -Force
+
+    # Configure OEM Information Registry
+    $oemKey = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation"
+    if (-not (Test-Path $oemKey)) {
+        New-Item -Path $oemKey -Force | Out-Null
+    }
+    Set-ItemProperty -Path $oemKey -Name "Manufacturer" -Value "Windows Core Developer Edition" -Force
+    Set-ItemProperty -Path $oemKey -Name "Model" -Value "Headless Dev Node & Agentic CLI Workstation" -Force
+    Set-ItemProperty -Path $oemKey -Name "SupportURL" -Value "https://github.com/samuelcaldas/windows-core-free" -Force
+    if (Test-Path "$env:WINDIR\System32\oemlogo.bmp") {
+        Set-ItemProperty -Path $oemKey -Name "Logo" -Value "$env:WINDIR\System32\oemlogo.bmp" -Force
+    }
+    Write-Success "OEM Information and wallpaper branding registered."
+}
+
 function Deploy-DesktopShortcuts {
     Write-Step "Creating desktop shortcuts in Public Desktop..."
     $publicDir = "C:\Users\Public\Desktop"
@@ -522,7 +603,10 @@ function Main {
     Write-Host "  Windows Core Guest - Desktop Shell & File Explorer Installer"
     Write-Host "=============================================================================="
 
-    # 1. File Manager Provider
+    # 1. Branding & Wallpaper
+    Deploy-DistroBranding
+
+    # 2. File Manager Provider
     if ($FileManager -eq 'ReactFM') {
         Install-ReactFileManager
     }
@@ -530,7 +614,7 @@ function Main {
         Install-ExplorerPlusPlus
     }
 
-    # 2. Shell Provider
+    # 3. Shell Provider
     if ($ShellProvider -eq 'ReactShell') {
         Install-ReactShell
     }
@@ -538,7 +622,7 @@ function Main {
         Install-WinXShell
     }
 
-    # 3. Desktop Shortcuts
+    # 4. Desktop Shortcuts
     Deploy-DesktopShortcuts
 
     Write-Success "Desktop Shell ($ShellProvider) and File Manager ($FileManager) deployed successfully."
