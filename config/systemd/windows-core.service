@@ -1,0 +1,22 @@
+[Unit]
+Description=Windows Server Core Headless Development VM (QEMU/KVM)
+Documentation=https://github.com/samuelcaldas/windows-core
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=samuelcaldas
+Group=samuelcaldas
+SupplementaryGroups=kvm
+WorkingDirectory=/home/samuelcaldas/repos/windows-core
+ExecStart=/home/samuelcaldas/repos/windows-core/scripts/host/run-vm.sh --foreground
+ExecStop=/home/samuelcaldas/repos/windows-core/scripts/host/run-vm.sh --stop
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=60s
+KillMode=control-group
+PIDFile=/home/samuelcaldas/repos/windows-core/.windows-core-qemu.pid
+
+[Install]
+WantedBy=multi-user.target
