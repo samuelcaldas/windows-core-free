@@ -61,20 +61,25 @@ function Download-Fast {
 function Install-PowerShell7 {
     if ($SkipPwsh) { return }
     Write-Step "Checking PowerShell 7..."
-    if (Test-Path "C:\Program Files\PowerShell\7\pwsh.exe") {
-        Write-Success "PowerShell 7 is already installed."
+    $currentVer = if (Test-Path "C:\Program Files\PowerShell\7\pwsh.exe") {
+        try { (& "C:\Program Files\PowerShell\7\pwsh.exe" --version).Trim() } catch { "" }
+    } else { "" }
+
+    $targetVersion = "7.6.5"
+    if ($currentVer -like "*$targetVersion*") {
+        Write-Success "PowerShell $targetVersion is already installed."
         return
     }
 
-    $msiUrl = "https://github.com/PowerShell/PowerShell/releases/download/v7.4.5/PowerShell-7.4.5-win-x64.msi"
-    $msiFile = "$TempDir\PowerShell-7.4.5-win-x64.msi"
+    $msiUrl = "https://github.com/PowerShell/PowerShell/releases/download/v${targetVersion}/PowerShell-${targetVersion}-win-x64.msi"
+    $msiFile = "$TempDir\PowerShell-${targetVersion}-win-x64.msi"
 
     Download-Fast -Url $msiUrl -OutFile $msiFile
 
-    Write-Step "Installing PowerShell 7 silently..."
+    Write-Step "Installing/Upgrading PowerShell $targetVersion silently..."
     Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$msiFile`" /qn /norestart ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1 USE_MU=0" -Wait
     Refresh-EnvironmentPath
-    Write-Success "PowerShell 7 installed successfully."
+    Write-Success "PowerShell $targetVersion installed successfully."
 }
 
 function Install-GitForWindows {
