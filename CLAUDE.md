@@ -86,18 +86,29 @@ Executed automatically by `autounattend.xml` during OS installation:
 ### Stage 2: Remote Toolchain & Agent Orchestration (Post-Boot via SSH)
 Managed and triggered remotely from the Linux host over SSH/WinRM:
 1. **SSH Key Exchange**: Script pushes host SSH public key (`~/.ssh/id_ed25519.pub`) to `C:\ProgramData\ssh\administrators_authorized_keys` with correct Windows ACLs, enabling key-based authentication.
-2. **Developer Toolchains**:
-   - Docker CLI & Docker Compose (standalone native client with remote SSH contexts).
-   - Git for Windows (configured with long paths and LF line endings).
-   - GitHub CLI (`gh`).
-   - Node.js LTS (via standalone installer or `fnm`).
-   - Python 3.x with `.venv` and pip.
-   - .NET Core / Framework SDK.
-2. **AI Agent Tooling**:
+2. **Developer Toolchains & Package Management**:
+   - **OmniGet (og)**: Universal multi-source package manager deployed to `C:\Program Files\OmniGet`.
+   - Docker CLI & Docker Compose (standalone native client in `C:\Program Files\Docker`).
+   - Git for Windows (`C:\Program Files\Git` configured with long paths and LF line endings).
+   - GitHub CLI (`C:\Program Files\GitHub CLI\gh.exe`).
+   - Node.js LTS (`C:\Program Files\nodejs`).
+   - Python 3.x (`C:\Program Files\Python312` with `.venv` and pip).
+   - .NET SDK (`C:\Program Files\dotnet` with .NET 10.0 and 8.0).
+3. **AI Agent Tooling**:
    - **Google Antigravity CLI** (`antigravity-cli`) & **Headless Remote Control** (`agy-daemon` via [Antigravity Remote Control](https://antigravity.google/docs/remote-control/)).
    - **Persistence**: `agy-daemon` is registered as a background **Windows Service / Scheduled Task at Boot** running under the `samuelcaldas` account for 24/7 headless availability.
    - **Claude CLI** (`claude-cli`).
    - **Codex CLI** (`codex-cli`).
+
+### Filesystem & Installation Directory Hierarchy Policy
+To maintain system cleanliness, predictable PATH resolution, and standard Windows security permissions:
+* **STRICT PROHIBITION of Root `C:\` Application Folders**: Applications, runtimes, portable tools, utilities, shell replacements, or package managers MUST NEVER create installation or binary directories directly on the root drive (e.g. `C:\ReactShell`, `C:\XPShell`, `C:\Python27`, `C:\OmniGet`, `C:\Tools`, `C:\Ninite` are strictly forbidden).
+* **64-bit Applications & Runtimes**: Must be installed under `C:\Program Files\<VendorOrToolName>` (e.g., `C:\Program Files\OmniGet`, `C:\Program Files\WinXShell`, `C:\Program Files\ReactShell`, `C:\Program Files\WinFile`, `C:\Program Files\Explorer++`, `C:\Program Files\WindowsTerminal`, `C:\Program Files\dotnet`, `C:\Program Files\PowerShell\7`, `C:\Program Files\Docker`, `C:\Program Files\Git`).
+* **32-bit Applications**: Must be installed under `C:\Program Files (x86)\<VendorOrToolName>`.
+* **System-Wide Application Data & State**: Non-binary state, host keys, daemon data, and global configuration must reside under `C:\ProgramData\<AppName>` (e.g. `C:\ProgramData\ssh`, `C:\ProgramData\OmniGet`).
+* **User Data & Cache**: User-specific configuration and caches must reside in `%APPDATA%`, `%LOCALAPPDATA%`, or `C:\Users\<user>\.<tool>`.
+* **Temporary Installer Artifacts**: Download and extract transient installers in `%TEMP%\<installer_folder>` and clean up on exit.
+* **Unattended Bootstrap Staging**: `C:\Provisioning` is reserved strictly for temporary OS initialization scripts and offline package cache during unattended setup; it must never serve as an application's permanent runtime installation directory.
 
 ---
 

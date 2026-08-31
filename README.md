@@ -86,6 +86,20 @@ windows-core/
 
 ---
 
+## 🏛️ Filesystem & Program Installation Standards
+
+To ensure consistency, security, and avoid drive root clutter, all scripts and package installations in this distribution follow strict filesystem rules:
+
+- **No Root `C:\` Application Directories**: Applications and runtimes must **never** be placed directly on the root drive (e.g. `C:\Tools`, `C:\ReactShell`, `C:\XPShell`, `C:\OmniGet`, `C:\Python27` are prohibited).
+- **Standard 64-bit Directory**: All 64-bit packages, runtimes, shells, and CLI utilities install under `C:\Program Files\<VendorOrToolName>` (e.g. `C:\Program Files\OmniGet`, `C:\Program Files\dotnet`, `C:\Program Files\WinXShell`, `C:\Program Files\PowerShell\7`).
+- **Standard 32-bit Directory**: 32-bit components install under `C:\Program Files (x86)\<VendorOrToolName>`.
+- **System Data & Non-Binary State**: Host keys, daemon databases, and global app data reside in `C:\ProgramData\<AppName>`.
+- **User Configurations & Dotfiles**: User-specific configuration resides in `%APPDATA%`, `%LOCALAPPDATA%`, or `C:\Users\<user>\.<tool>`.
+- **Transient Installer Storage**: Downloads and intermediate extractions occur in `%TEMP%\<folder>` and are cleaned up upon exit.
+- **Unattended Bootstrap Staging**: `C:\Provisioning` is strictly reserved for unattended boot ISO staging and is never a permanent program folder.
+
+---
+
 ## 🛠️ Host Automation Commands
 
 ```bash
