@@ -103,21 +103,38 @@ Managed and triggered remotely from the Linux host over SSH/WinRM:
 
 ```
 windows-core/
-├── iso/                         # Base Windows Hyper-V Server ISOs (gitignored)
-├── autounattend.xml             # Unattended installation answer file
+├── autounattend.xml             # Unattended dual-drive installation answer file
+├── config/
+│   ├── explorerpp/              # Pre-configured portable Explorer++ config.xml
+│   ├── hosts/                   # Dan Pollock zero-route hosts blocklist
+│   └── winxshell/               # Shell settings & WinXShell.lua
+├── docs/                        # Architecture and remote access documentation
+│   ├── README.md                # Documentation index
+│   └── ssh-configuration.md     # SSH client config & ProxyJump guide
+├── iso/                         # Base Windows ISOs and offline package cache (gitignored)
 ├── scripts/
 │   ├── host/                    # Linux host management scripts (Dual Bash & PowerShell 7)
-│   │   ├── build-iso.sh / .ps1  # Generates secondary OEMDRV image with autounattend.xml & VirtIO
-│   │   ├── run-vm.sh / .ps1     # Starts QEMU/KVM instance with VirtIO & port forwarding
-│   │   ├── setup-host.sh / .ps1 # Prepares Ubuntu dependencies (qemu, ovmf, virtio-win)
-│   │   └── provision-remote.sh / .ps1 # SSH key exchange & remote toolchain orchestration
+│   │   ├── build-iso.sh / .ps1  # Generates unattended installer & OEMDRV ISOs
+│   │   ├── install-desktopshell.sh / .ps1 # Sets up WinXShell and Explorer++
+│   │   ├── install-ninite.sh / .ps1       # Interactive TUI Ninite app store
+│   │   ├── install-terminal.sh / .ps1     # Deploys WezTerm wt.exe engine with OpenGL
+│   │   ├── optimize-vm.sh / .ps1          # Deep memory optimization & Defender uninstallation
+│   │   ├── provision-remote.sh / .ps1     # SSH key exchange & remote toolchain orchestration
+│   │   ├── run-vm.sh / .ps1               # Starts QEMU/KVM instance with VirtIO & port forwarding
+│   │   ├── setup-host.sh / .ps1           # Prepares Ubuntu dependencies (qemu, ovmf, virtio-win)
+│   │   └── update-hosts.sh / .ps1         # Deploys Dan Pollock zero-route hosts blocklist
 │   └── guest/                   # Post-installation guest configuration scripts
-│       ├── Specialize.ps1       # System specialization & feature removal
-│       ├── Install-Tools.ps1    # Installs Git, Node, Python, PowerShell 7, Winget/Scoop
+│       ├── Disable-HyperV.ps1   # Deactivates nested Hyper-V roles and services
+│       ├── Install-DesktopShell.ps1 # Configures WinXShell and default Explorer++
+│       ├── Install-NiniteApps.ps1   # Interactive PowerShell TUI for Ninite installers
+│       ├── Install-Tools.ps1    # Installs Git, Node, Python, PowerShell 7, gh CLI
+│       ├── Install-WindowsTerminal.ps1 # Installs WezTerm with wt.exe & OpenGL support
+│       ├── Optimize-System.ps1  # Uninstalls Defender/Hyper-V, disables SysMain/Telemetry
 │       ├── Setup-Agents.ps1     # Installs antigravity-cli, claude-cli, agy-daemon service
-│       └── Disable-HyperV.ps1   # Disables Hyper-V hypervisor roles and services
-├── docs/                        # Architecture and remote access documentation
-├── GEMINI.md                    # Project guidance and system reference (this file)
+│       ├── Specialize.ps1       # System specialization & feature removal bootstrap
+│       └── Update-HostsBlocklist.ps1 # Installs DNS hosts blocklist
+├── README.md                    # Project landing page and quickstart guide
+├── GEMINI.md                    # System architecture reference (this file)
 └── CLAUDE.md                    # Operational and coding rules
 ```
 
@@ -133,7 +150,7 @@ sudo apt-get update && sudo apt-get install -y qemu-system-x86 qemu-utils ovmf c
 
 ### 2. ISO / Unattended Preparation
 ```bash
-# Create unattend floppy or modified ISO containing autounattend.xml
+# Create unattended installer ISO and secondary OEMDRV media
 ./scripts/host/build-iso.sh
 ```
 
@@ -143,11 +160,23 @@ sudo apt-get update && sudo apt-get install -y qemu-system-x86 qemu-utils ovmf c
 ./scripts/host/run-vm.sh
 ```
 
-### 4. Remote Management from Ubuntu Host
+### 4. Remote Management from Ubuntu Host (`ssh winvm`)
 ```bash
-# Connect via OpenSSH
+# Connect directly via SSH alias (configured in ~/.ssh/config)
+ssh winvm
+
+# Or connect via explicit port
 ssh -p 2222 samuelcaldas@localhost
 
 # Connect via PowerShell Remoting
 pwsh -Command "Enter-PSSession -HostName localhost -Port 2222 -UserName samuelcaldas"
+```
+
+### 5. Memory Optimization & System Protection
+```bash
+# Optimize memory and strip Defender/Hyper-V features (down to ~530MB RAM)
+./scripts/host/optimize-vm.sh
+
+# Deploy Dan Pollock zero-route DNS hosts blocklist (13,371 rules)
+./scripts/host/update-hosts.sh
 ```
