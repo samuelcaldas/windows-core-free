@@ -359,6 +359,125 @@ function Invoke-AtlasDeepCleanup {
     }
 }
 
+function Invoke-AtlasFastShutdownTweaks {
+    Write-Step "Configuring Atlas fast shutdown & zero-delay startup..."
+    try {
+        # Reduce service kill timeout on shutdown
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control" -Name "WaitToKillServiceTimeout" -Value "2000" -Type String -Force
+        
+        # Kill hung desktop apps quickly on logoff/reboot
+        $desktopKey = "HKCU:\Control Panel\Desktop"
+        if (Test-Path $desktopKey) {
+            Set-ItemProperty -Path $desktopKey -Name "AutoEndTasks" -Value "1" -Type String -Force
+            Set-ItemProperty -Path $desktopKey -Name "HungAppTimeout" -Value "1000" -Type String -Force
+            Set-ItemProperty -Path $desktopKey -Name "WaitToKillAppTimeout" -Value "2000" -Type String -Force
+            Set-ItemProperty -Path $desktopKey -Name "MenuShowDelay" -Value "0" -Type String -Force
+        }
+        
+        # Disable Explorer startup delays
+        $serializeKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize"
+        if (-not (Test-Path $serializeKey)) { New-Item -Path $serializeKey -Force | Out-Null }
+        Set-ItemProperty -Path $serializeKey -Name "StartupDelayInMSec" -Value 0 -Type DWord -Force
+        
+        Write-Success "Fast shutdown and zero startup delay configured."
+    }
+    catch {
+        Write-WarnMsg "Fast shutdown tweaks notice: $_"
+    }
+}
+
+function Invoke-AtlasSchedulerAndNetworkTweaks {
+    Write-Step "Tuning Windows scheduler & MMCSS network throttling..."
+    try {
+        # Optimize thread quantum for foreground/interactive CLI workloads (0x26 = 38)
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" -Name "Win32PrioritySeparation" -Value 38 -Type DWord -Force
+        
+        # Remove network throttling index & disable system responsiveness cap
+        $sysProfile = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"
+        if (-not (Test-Path $sysProfile)) { New-Item -Path $sysProfile -Force | Out-Null }
+        Set-ItemProperty -Path $sysProfile -Name "NetworkThrottlingIndex" -Value 0xFFFFFFFF -Type DWord -Force
+        Set-ItemProperty -Path $sysProfile -Name "SystemResponsiveness" -Value 0 -Type DWord -Force
+        
+        # Disable Fault Tolerant Heap overhead
+        $fthKey = "HKLM:\SOFTWARE\Microsoft\FTH"
+        if (-not (Test-Path $fthKey)) { New-Item -Path $fthKey -Force | Out-Null }
+        Set-ItemProperty -Path $fthKey -Name "Enabled" -Value 0 -Type DWord -Force
+        
+        Write-Success "Scheduler and MMCSS network throttling tuned."
+    }
+    catch {
+        Write-WarnMsg "Scheduler/MMCSS tweaks notice: $_"
+    }
+}
+
+function Invoke-AtlasDeliveryOptimizationLockdown {
+    Write-Step "Locking down Delivery Optimization P2P and automatic update reboots..."
+    try {
+        # Disable Delivery Optimization P2P bandwidth sharing
+        $doKey = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization"
+        if (-not (Test-Path $doKey)) { New-Item -Path $doKey -Force | Out-Null }
+        Set-ItemProperty -Path $doKey -Name "DODownloadMode" -Value 0 -Type DWord -Force
+        
+        # Disable automatic reboots with logged-on users
+        $wuKey = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+        if (-not (Test-Path $wuKey)) { New-Item -Path $wuKey -Force | Out-Null }
+        Set-ItemProperty -Path $wuKey -Name "NoAutoRebootWithLoggedOnUsers" -Value 1 -Type DWord -Force
+        Set-ItemProperty -Path $wuKey -Name "AlwaysAutoRebootAtScheduledTime" -Value 0 -Type DWord -Force
+        
+        Write-Success "Delivery Optimization P2P and auto-reboots disabled."
+    }
+    catch {
+        Write-WarnMsg "Delivery optimization lockdown notice: $_"
+    }
+}
+
+function Invoke-AtlasSecurityHardening {
+    Write-Step "Applying security surface hardening & ACPI protection..."
+    try {
+        # Block anonymous enumeration of SAM accounts and shares
+        $lsaKey = "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"
+        Set-ItemProperty -Path $lsaKey -Name "RestrictAnonymous" -Value 1 -Type DWord -Force
+        Set-ItemProperty -Path $lsaKey -Name "RestrictAnonymousSAM" -Value 1 -Type DWord -Force
+        
+        # Disable unapproved ACPI WPBT binary execution
+        $smKey = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager"
+        Set-ItemProperty -Path $smKey -Name "DisableWpbtExecution" -Value 1 -Type DWord -Force
+        
+        # Disable legacy Remote Assistance
+        $raKey = "HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance"
+        if (-not (Test-Path $raKey)) { New-Item -Path $raKey -Force | Out-Null }
+        Set-ItemProperty -Path $raKey -Name "fAllowToGetHelp" -Value 0 -Type DWord -Force
+        
+        Write-Success "SAM restriction, WPBT protection, and Remote Assistance deactivation applied."
+    }
+    catch {
+        Write-WarnMsg "Security hardening notice: $_"
+    }
+}
+
+function Register-DefaultFileAssociations {
+    Write-Step "Setting default file associations for PowerShell 7 and CLI tools..."
+    try {
+        $pwshExe = "C:\Program Files\PowerShell\7\pwsh.exe"
+        if (Test-Path $pwshExe) {
+            # Associate .ps1 with PowerShell 7
+            $ps1Class = "HKLM:\SOFTWARE\Classes\Microsoft.PowerShellScript.1\Shell\Open\Command"
+            if (-not (Test-Path $ps1Class)) { New-Item -Path $ps1Class -Force | Out-Null }
+            Set-ItemProperty -Path $ps1Class -Name "(Default)" -Value "`"$pwshExe`" -NoProfile -ExecutionPolicy Bypass -File `"%1`" %*" -Force
+            
+            # Machine PATH & command alias
+            $linkPath = "C:\Program Files\PowerShell\7\powershell.exe"
+            if (-not (Test-Path $linkPath)) {
+                try { New-Item -ItemType HardLink -Path $linkPath -Target $pwshExe -Force | Out-Null } catch { Copy-Item -Path $pwshExe -Destination $linkPath -Force | Out-Null }
+            }
+            Write-Success "PowerShell 7 registered as default .ps1 handler and CLI powershell link."
+        }
+    }
+    catch {
+        Write-WarnMsg "File association notice: $_"
+    }
+}
+
 function Flush-MemoryGarbage {
     Write-Step "Flushing system memory cache and running garbage collection..."
     [System.GC]::Collect()
@@ -387,6 +506,11 @@ function Main {
     Invoke-AtlasNetworkTweaks
     Invoke-AtlasPnpOptimization
     Invoke-AtlasDevQolTweaks
+    Invoke-AtlasFastShutdownTweaks
+    Invoke-AtlasSchedulerAndNetworkTweaks
+    Invoke-AtlasDeliveryOptimizationLockdown
+    Invoke-AtlasSecurityHardening
+    Register-DefaultFileAssociations
     Invoke-AtlasDeepCleanup
     
     Flush-MemoryGarbage
