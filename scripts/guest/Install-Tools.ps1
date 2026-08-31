@@ -7,6 +7,7 @@
 #>
 [CmdletBinding()]
 param(
+    [switch]$SkipDotNet,
     [switch]$SkipNode,
     [switch]$SkipGit,
     [switch]$SkipGh,
@@ -33,6 +34,7 @@ function Refresh-EnvironmentPath {
     $machinePath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
     $userPath    = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User)
     $extraPaths  = @(
+        'C:\Program Files\dotnet',
         'C:\Program Files\Docker',
         'C:\Program Files\Git\bin',
         'C:\Program Files\Git\cmd',
@@ -58,6 +60,37 @@ function Download-Fast {
         $wc = New-Object System.Net.WebClient
         $wc.DownloadFile($Url, $OutFile)
     }
+}
+
+function Install-DotNet {
+    if ($SkipDotNet) { return }
+    Write-Step "Checking .NET SDK..."
+    $dotnetDir = "C:\Program Files\dotnet"
+    $dotnetExe = Join-Path $dotnetDir "dotnet.exe"
+
+    if (Test-Path $dotnetExe) {
+        try {
+            $ver = (& $dotnetExe --version).Trim()
+            Write-Success ".NET SDK is already installed: $ver"
+            return
+        } catch {}
+    }
+
+    $scriptUrl = "https://dot.net/v1/dotnet-install.ps1"
+    $scriptFile = "$TempDir\dotnet-install.ps1"
+    Download-Fast -Url $scriptUrl -OutFile $scriptFile
+
+    Write-Step "Installing .NET 10.0 SDK..."
+    & $scriptFile -Channel 10.0 -InstallDir $dotnetDir -Architecture "x64"
+
+    # Add dotnet to system-wide PATH permanently
+    $machinePath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
+    if ($machinePath -notlike "*$dotnetDir*") {
+        [System.Environment]::SetEnvironmentVariable('Path', "$dotnetDir;$machinePath", [System.EnvironmentVariableTarget]::Machine)
+    }
+
+    Refresh-EnvironmentPath
+    Write-Success ".NET SDK installed successfully."
 }
 
 function Install-PowerShell7 {
@@ -224,6 +257,7 @@ function Main {
     Write-Host "=============================================================================="
     Write-Host "  Windows Core Guest - Developer Toolchain Installer"
     Write-Host "=============================================================================="
+    Install-DotNet
     Install-PowerShell7
     Install-GitForWindows
     Install-GitHubCli
