@@ -479,7 +479,7 @@ function Show-TUI {
                     $presetIndex++
                     $selected = Get-SelectedFromPreset -PresetName $pName
                 }
-                ([ConsoleKey]::OemQuestion) {
+                { $_ -in @([ConsoleKey]::Oem2, [ConsoleKey]::Divide, [ConsoleKey]::F, [ConsoleKey]::S) -or $keyInfo.KeyChar -in @('/', '?') } {
                     # '/' — enter search mode
                     [Console]::CursorVisible = $true
                     $searchFilter = Read-SearchString
