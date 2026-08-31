@@ -157,6 +157,7 @@ verify_remote_environment() {
         hostname;
         Write-Host '--- Installed Tools ---';
         git --version;
+        gh --version;
         node -v;
         npm -v;
         python --version;

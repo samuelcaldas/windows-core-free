@@ -124,6 +124,7 @@ function Verify-RemoteEnvironment {
         hostname;
         Write-Host '--- Installed Tools ---';
         git --version;
+        gh --version;
         node -v;
         npm -v;
         python --version;

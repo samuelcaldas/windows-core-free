@@ -9,6 +9,7 @@
 param(
     [switch]$SkipNode,
     [switch]$SkipGit,
+    [switch]$SkipGh,
     [switch]$SkipPython,
     [switch]$SkipPwsh
 )
@@ -33,6 +34,7 @@ function Refresh-EnvironmentPath {
     $extraPaths  = @(
         'C:\Program Files\Git\bin',
         'C:\Program Files\Git\cmd',
+        'C:\Program Files\GitHub CLI',
         'C:\Program Files\nodejs',
         "$env:APPDATA\npm",
         "$env:USERPROFILE\AppData\Roaming\npm",
@@ -102,6 +104,25 @@ function Install-GitForWindows {
     }
 }
 
+function Install-GitHubCli {
+    if ($SkipGh) { return }
+    Write-Step "Checking GitHub CLI..."
+    if (Get-Command gh -ErrorAction SilentlyContinue) {
+        Write-Success "GitHub CLI is already installed: $(gh --version | Select-Object -First 1)"
+        return
+    }
+
+    $ghUrl = "https://github.com/cli/cli/releases/download/v2.98.0/gh_2.98.0_windows_amd64.msi"
+    $ghMsi = "$TempDir\gh_windows_amd64.msi"
+
+    Download-Fast -Url $ghUrl -OutFile $ghMsi
+
+    Write-Step "Installing GitHub CLI silently..."
+    Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$ghMsi`" /qn /norestart" -Wait
+    Refresh-EnvironmentPath
+    Write-Success "GitHub CLI installed successfully."
+}
+
 function Install-NodeJs {
     if ($SkipNode) { return }
     Write-Step "Checking Node.js LTS..."
@@ -146,6 +167,7 @@ function Main {
     Write-Host "=============================================================================="
     Install-PowerShell7
     Install-GitForWindows
+    Install-GitHubCli
     Install-NodeJs
     Install-Python
     Refresh-EnvironmentPath

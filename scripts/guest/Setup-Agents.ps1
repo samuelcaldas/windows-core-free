@@ -21,6 +21,7 @@ function Refresh-EnvironmentPath {
     $extraPaths  = @(
         'C:\Program Files\Git\bin',
         'C:\Program Files\Git\cmd',
+        'C:\Program Files\GitHub CLI',
         'C:\Program Files\nodejs',
         "$env:APPDATA\npm",
         "$env:USERPROFILE\AppData\Roaming\npm",
@@ -112,6 +113,7 @@ function Verify-Installation {
     $tools = @(
         @{ Name = 'PowerShell 7'; Command = 'pwsh'; Arg = '-v' },
         @{ Name = 'Git'; Command = 'git'; Arg = '--version' },
+        @{ Name = 'GitHub CLI'; Command = 'gh'; Arg = '--version' },
         @{ Name = 'Node.js'; Command = 'node'; Arg = '-v' },
         @{ Name = 'npm'; Command = 'npm'; Arg = '-v' },
         @{ Name = 'Python'; Command = 'python'; Arg = '--version' },
