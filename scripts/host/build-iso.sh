@@ -116,6 +116,10 @@ build_unattended_installer_iso() {
         log_info "Embedding Explorer++ package into ISO..."
         cp "${ISO_DIR}/explorerpp_x64.zip" "${STAGING_DIR}/packages/"
     fi
+    if [ -f "${ISO_DIR}/winfile_x64.zip" ]; then
+        log_info "Embedding WinFile package into ISO..."
+        cp "${ISO_DIR}/winfile_x64.zip" "${STAGING_DIR}/packages/"
+    fi
     if [ -f "${ISO_DIR}/terminal_x64.zip" ]; then
         log_info "Embedding Windows Terminal package into ISO..."
         cp "${ISO_DIR}/terminal_x64.zip" "${STAGING_DIR}/packages/"

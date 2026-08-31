@@ -47,6 +47,10 @@ function Main {
     if (Test-Path $explorerZip) {
         & scp -P $VmPort -o StrictHostKeyChecking=accept-new $explorerZip "${VmUser}@${VmHost}:C:/Provisioning/packages/explorerpp_x64.zip"
     }
+    $winfileZip = Join-Path $IsoDir "winfile_x64.zip"
+    if (Test-Path $winfileZip) {
+        & scp -P $VmPort -o StrictHostKeyChecking=accept-new $winfileZip "${VmUser}@${VmHost}:C:/Provisioning/packages/winfile_x64.zip"
+    }
     $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"
     if (Test-Path $configXml) {
         & scp -P $VmPort -o StrictHostKeyChecking=accept-new $configXml "${VmUser}@${VmHost}:C:/Provisioning/packages/config.xml"

@@ -4,3 +4,6 @@
 [submodule "external/ReactShell"]
 	path = external/ReactShell
 	url = https://github.com/samuelcaldas/ReactShell.git
+[submodule "external/winfile"]
+	path = external/winfile
+	url = https://github.com/microsoft/winfile.git

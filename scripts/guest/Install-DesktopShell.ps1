@@ -13,7 +13,7 @@
 param(
     [string]$SourceDir = "C:\Provisioning\packages",
     [ValidateSet('ReactShell', 'WinXShell', 'None')][string]$ShellProvider = 'ReactShell',
-    [ValidateSet('ReactFM', 'ExplorerPlusPlus', 'None')][string]$FileManager = 'ReactFM'
+    [ValidateSet('ReactFM', 'ExplorerPlusPlus', 'WinFile', 'None')][string]$FileManager = 'ReactFM'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -335,6 +335,87 @@ function Install-ExplorerPlusPlus {
     }
 }
 
+function Install-WinFile {
+    Write-Step "Installing Microsoft File Manager (Winfile.exe)..."
+    $targetDir = "C:\Program Files\WinFile"
+    if (-not (Test-Path $targetDir)) {
+        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+    }
+
+    $winfileExe = "$targetDir\Winfile.exe"
+    $zipFile = Join-Path $SourceDir "winfile_x64.zip"
+    if (-not (Test-Path $zipFile)) {
+        foreach ($letter in 'DEFGHIJKLMNOPQRSTUVWXYZ'.ToCharArray()) {
+            $cand = "${letter}:\winfile_x64.zip"
+            if (Test-Path $cand) { $zipFile = $cand; break }
+            $cand = "${letter}:\packages\winfile_x64.zip"
+            if (Test-Path $cand) { $zipFile = $cand; break }
+        }
+    }
+
+    if (Test-Path $zipFile) {
+        Write-Step "Extracting WinFile from $zipFile..."
+        Expand-Archive -Path $zipFile -DestinationPath $targetDir -Force
+        Write-Success "WinFile extracted to $targetDir."
+    }
+    elseif (-not (Test-Path $winfileExe)) {
+        Write-WarnMsg "WinFile package not found in packages or attached drives."
+        return
+    }
+
+    # Link C:\Windows\explorer.exe to Winfile.exe
+    $winExplorer = "$env:WINDIR\explorer.exe"
+    try {
+        if (Test-Path $winExplorer) {
+            Remove-Item $winExplorer -Force -ErrorAction SilentlyContinue
+        }
+        New-Item -ItemType HardLink -Path $winExplorer -Target $winfileExe -Force | Out-Null
+        Write-Success "Linked $winExplorer to $winfileExe (HardLink)."
+    }
+    catch {
+        Copy-Item -Path $winfileExe -Destination $winExplorer -Force
+        Write-Success "Copied Winfile.exe to $winExplorer."
+    }
+
+    # Register WinFile as default system file manager in Registry (64-bit and WOW64)
+    Write-Step "Registering WinFile as default file manager in Registry..."
+    $regAssociations = @(
+        "HKLM:\SOFTWARE\Classes\Folder\shell\open\command",
+        "HKLM:\SOFTWARE\Classes\Directory\shell\open\command",
+        "HKLM:\SOFTWARE\Classes\Drive\shell\open\command",
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Folder\shell\open\command",
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Directory\shell\open\command",
+        "HKLM:\SOFTWARE\WOW6432Node\Classes\Drive\shell\open\command"
+    )
+    foreach ($regKey in $regAssociations) {
+        if (-not (Test-Path $regKey)) {
+            New-Item -Path $regKey -Force | Out-Null
+        }
+        Set-ItemProperty -Path $regKey -Name "(Default)" -Value "`"$winfileExe`" `"%1`"" -Force
+    }
+
+    # Register App Paths
+    $appPaths = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\winfile.exe",
+        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\winfile.exe"
+    )
+    foreach ($apKey in $appPaths) {
+        if (-not (Test-Path $apKey)) {
+            New-Item -Path $apKey -Force | Out-Null
+        }
+        Set-ItemProperty -Path $apKey -Name "(Default)" -Value $winfileExe -Force
+        Set-ItemProperty -Path $apKey -Name "Path" -Value $targetDir -Force
+    }
+    Write-Success "WinFile registered across system paths and registry."
+
+    # Add to Machine PATH
+    $currPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
+    if ($currPath -notlike "*$targetDir*") {
+        [System.Environment]::SetEnvironmentVariable('Path', "$targetDir;$currPath", [System.EnvironmentVariableTarget]::Machine)
+        $env:Path = "$targetDir;$env:Path"
+    }
+}
+
 function Install-WinXShell {
     Write-Step "Installing WinXShell desktop environment (optional)..."
     $targetDir = "C:\Program Files\WinXShell"
@@ -535,6 +616,7 @@ function Deploy-DesktopShortcuts {
     $pwsh7Exe    = "C:\Program Files\PowerShell\7\pwsh.exe"
     $reactFmExe  = "C:\Program Files\ReactShell\react-fm.exe"
     $expExe      = "C:\Program Files\Explorer++\Explorer++.exe"
+    $winfileExe  = "C:\Program Files\WinFile\Winfile.exe"
     $sconfig     = "$env:WINDIR\System32\sconfig.cmd"
 
     # 1. Command Prompt
@@ -560,7 +642,7 @@ function Deploy-DesktopShortcuts {
             -Description "Windows PowerShell"
     }
 
-    # 3. File Explorer (ReactFM or Explorer++)
+    # 3. File Explorer (ReactFM, Explorer++, or WinFile)
     if (Test-Path $reactFmExe) {
         Create-DesktopShortcut `
             -ShortcutPath "$publicDir\File Explorer.lnk" `
@@ -568,12 +650,19 @@ function Deploy-DesktopShortcuts {
             -WorkingDirectory "C:\Program Files\ReactShell" `
             -Description "ReactShell File Explorer"
     }
-    elseif (Test-Path $expExe) {
+    if (Test-Path $expExe) {
         Create-DesktopShortcut `
             -ShortcutPath "$publicDir\Explorer++.lnk" `
             -TargetPath $expExe `
             -WorkingDirectory "C:\Program Files\Explorer++" `
             -Description "Explorer++ File Manager"
+    }
+    if (Test-Path $winfileExe) {
+        Create-DesktopShortcut `
+            -ShortcutPath "$publicDir\File Manager (WinFile).lnk" `
+            -TargetPath $winfileExe `
+            -WorkingDirectory "C:\Program Files\WinFile" `
+            -Description "Microsoft Windows File Manager"
     }
 
     # 4. Server Configuration (sconfig)
@@ -612,6 +701,9 @@ function Main {
     }
     elseif ($FileManager -eq 'ExplorerPlusPlus') {
         Install-ExplorerPlusPlus
+    }
+    elseif ($FileManager -eq 'WinFile') {
+        Install-WinFile
     }
 
     # 3. Shell Provider

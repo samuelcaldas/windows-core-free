@@ -82,6 +82,8 @@ function Build-InstallerIso {
         if (Test-Path $rshellZip) { Copy-Item -Path $rshellZip -Destination $packagesTarget -Force }
         if (Test-Path $winxZip) { Copy-Item -Path $winxZip -Destination $packagesTarget -Force }
         if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $packagesTarget -Force }
+        $winfileZip = Join-Path $IsoDir "winfile_x64.zip"
+        if (Test-Path $winfileZip) { Copy-Item -Path $winfileZip -Destination $packagesTarget -Force }
         if (Test-Path $terminalZip) { Copy-Item -Path $terminalZip -Destination $packagesTarget -Force }
         if (Test-Path $vcRedist) { Copy-Item -Path $vcRedist -Destination $packagesTarget -Force }
         $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"
@@ -156,6 +158,8 @@ function Build-OemdrvIso {
         if (Test-Path $rshellZip) { Copy-Item -Path $rshellZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $winxZip) { Copy-Item -Path $winxZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $explorerZip) { Copy-Item -Path $explorerZip -Destination $oemPackagesTarget -Force }
+        $winfileZip = Join-Path $IsoDir "winfile_x64.zip"
+        if (Test-Path $winfileZip) { Copy-Item -Path $winfileZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $terminalZip) { Copy-Item -Path $terminalZip -Destination $oemPackagesTarget -Force }
         if (Test-Path $vcRedist) { Copy-Item -Path $vcRedist -Destination $oemPackagesTarget -Force }
         $configXml = Join-Path $RepoRoot "config/explorerpp/config.xml"

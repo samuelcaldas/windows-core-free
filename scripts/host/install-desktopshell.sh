@@ -97,6 +97,9 @@ main() {
     if [ -f "${ISO_DIR}/explorerpp_x64.zip" ]; then
         run_scp "${ISO_DIR}/explorerpp_x64.zip" "C:/Provisioning/packages/explorerpp_x64.zip"
     fi
+    if [ -f "${ISO_DIR}/winfile_x64.zip" ]; then
+        run_scp "${ISO_DIR}/winfile_x64.zip" "C:/Provisioning/packages/winfile_x64.zip"
+    fi
     if [ -f "${REPO_ROOT}/config/explorerpp/config.xml" ]; then
         run_scp "${REPO_ROOT}/config/explorerpp/config.xml" "C:/Provisioning/packages/config.xml"
     fi
