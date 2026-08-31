@@ -57,7 +57,7 @@ main() {
     run_ssh "powershell -ExecutionPolicy Bypass -File 'C:\\Provisioning\\scripts\\Optimize-System.ps1'"
 
     log_info "Checking Top RAM Consuming Processes..."
-    run_ssh 'powershell -Command "Get-Process | Sort-Object WorkingSet64 -Descending | Select-Object -First 10 Name, Id, @{Name=''RAM (MB)''; Expression={[math]::Round($_.WorkingSet64 / 1MB, 2)}} | Format-Table -AutoSize"'
+    run_ssh 'powershell -Command "Get-Process | Sort-Object WorkingSet64 -Descending | Select-Object -First 10 Name, Id, WorkingSet64 | Format-Table -AutoSize"'
 
     log_success "Windows Core memory optimization completed successfully."
 }

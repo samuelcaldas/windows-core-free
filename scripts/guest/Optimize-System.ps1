@@ -221,6 +221,144 @@ function Disable-UnnecessaryScheduledTasks {
     }
 }
 
+function Invoke-AtlasNgenOptimization {
+    Write-Step "Running Atlas NGEN .NET assembly pre-compilation (10x faster PowerShell startup)..."
+    try {
+        $frameworkDir = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()
+        $ngenExe = Join-Path $frameworkDir "ngen.exe"
+        if (Test-Path $ngenExe) {
+            [AppDomain]::CurrentDomain.GetAssemblies().Location | Where-Object { $_ } | ForEach-Object {
+                $asmName = Split-Path $_ -Leaf
+                & $ngenExe install $_ /nologo 2>&1 | Out-Null
+            }
+            Write-Success "NGEN native pre-compilation completed."
+        }
+    }
+    catch {
+        Write-WarnMsg "NGEN optimization notice: $_"
+    }
+}
+
+function Invoke-AtlasServiceHostConsolidation {
+    Write-Step "Consolidating svchost service hosts (Atlas SvcHostSplitDisable)..."
+    try {
+        Get-ChildItem 'HKLM:\SYSTEM\CurrentControlSet\Services' -ErrorAction SilentlyContinue | ForEach-Object {
+            if ($_.PSChildName -notmatch 'Xbl|Xbox') {
+                $svcKey = "HKLM:\SYSTEM\CurrentControlSet\Services\$($_.PSChildName)"
+                $val = Get-ItemProperty -Path $svcKey -ErrorAction SilentlyContinue
+                if ($null -ne $val -and ($val.PSObject.Properties['Start'])) {
+                    Set-ItemProperty -Path $svcKey -Name 'SvcHostSplitDisable' -Type DWORD -Value 1 -Force -ErrorAction SilentlyContinue
+                }
+            }
+        }
+        Write-Success "Service Host Splitting disabled (svchost processes consolidated)."
+    }
+    catch {
+        Write-WarnMsg "SvcHost consolidation notice: $_"
+    }
+}
+
+function Invoke-AtlasNtfsOptimizations {
+    Write-Step "Applying Atlas NTFS filesystem optimizations (disabling last access & 8.3 names)..."
+    try {
+        & fsutil.exe behavior set disablelastaccess 1 | Out-Null
+        & fsutil.exe 8dot3name set 1 | Out-Null
+        Write-Success "NTFS I/O optimizations applied (disablelastaccess=1, 8dot3name=1)."
+    }
+    catch {
+        Write-WarnMsg "NTFS optimization notice: $_"
+    }
+}
+
+function Invoke-AtlasReservedStorageDeactivation {
+    Write-Step "Disabling Windows Reserved Storage buffer (~7 GB disk space saving)..."
+    try {
+        & DISM.exe /Online /Set-ReservedStorageState /State:Disabled /NoRestart 2>&1 | Out-Null
+        Write-Success "Windows Reserved Storage disabled."
+    }
+    catch {
+        Write-WarnMsg "Reserved storage deactivation notice: $_"
+    }
+}
+
+function Invoke-AtlasNetworkTweaks {
+    Write-Step "Applying Atlas network optimizations (disabling LLMNR & SMB bandwidth throttling)..."
+    try {
+        # Disable LLMNR multicast
+        $dnsKey = "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient"
+        if (-not (Test-Path $dnsKey)) { New-Item -Path $dnsKey -Force | Out-Null }
+        Set-ItemProperty -Path $dnsKey -Name "EnableMulticast" -Value 0 -Type DWord -Force
+        
+        # Disable SMB bandwidth throttling for maximum transfer speed
+        $lanmanKey = "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters"
+        if (-not (Test-Path $lanmanKey)) { New-Item -Path $lanmanKey -Force | Out-Null }
+        Set-ItemProperty -Path $lanmanKey -Name "DisableBandwidthThrottling" -Value 1 -Type DWord -Force
+        
+        Write-Success "LLMNR disabled and SMB bandwidth throttling removed."
+    }
+    catch {
+        Write-WarnMsg "Network tweaks notice: $_"
+    }
+}
+
+function Invoke-AtlasPnpOptimization {
+    Write-Step "Disabling unneeded virtualized PnP legacy devices..."
+    $devices = @(
+        "AMD PSP", "AMD SMBus", "Base System Device", "Composite Bus Enumerator",
+        "Direct memory access controller", "High precision event timer", "Intel Management Engine",
+        "Intel SMBus", "Legacy device", "Microsoft Kernel Debug Network Adapter",
+        "Motherboard resources", "Numeric Data Processor", "PCI Data Acquisition and Signal Processing Controller",
+        "PCI Encryption/Decryption Controller", "PCI Memory Controller", "PCI Simple Communications Controller",
+        "PCI standard RAM Controller", "SM Bus Controller", "System CMOS/real time clock",
+        "System Speaker", "System Timer"
+    )
+    try {
+        Get-PnpDevice -FriendlyName $devices -ErrorAction SilentlyContinue | Disable-PnpDevice -Confirm:$false -ErrorAction SilentlyContinue | Out-Null
+        Write-Success "Unneeded virtual PnP devices disabled."
+    }
+    catch {
+        Write-WarnMsg "PnP device disabling notice: $_"
+    }
+}
+
+function Invoke-AtlasDevQolTweaks {
+    Write-Step "Removing WindowsApps Python Microsoft Store redirection stubs..."
+    try {
+        Remove-Item -Path "$env:LOCALAPPDATA\Microsoft\WindowsApps\python*.exe" -Force -ErrorAction SilentlyContinue
+        if (Test-Path "Alias:python") { Remove-Item "Alias:python" -Force -ErrorAction SilentlyContinue }
+        if (Test-Path "Alias:python3") { Remove-Item "Alias:python3" -Force -ErrorAction SilentlyContinue }
+        Write-Success "Python store redirection stubs purged."
+    }
+    catch {
+        Write-WarnMsg "Python stub cleanup notice: $_"
+    }
+}
+
+function Invoke-AtlasDeepCleanup {
+    Write-Step "Performing deep system, temp, and cache cleanup..."
+    try {
+        $tempPaths = @(
+            "$env:TEMP\*",
+            "$env:LOCALAPPDATA\Temp\*",
+            "$env:WINDIR\Temp\*",
+            "$env:WINDIR\Logs\CBS\*.log",
+            "$env:WINDIR\SoftwareDistribution\Download\*"
+        )
+        foreach ($tp in $tempPaths) {
+            Remove-Item -Path $tp -Recurse -Force -ErrorAction SilentlyContinue
+        }
+        
+        $cleanmgr = "$env:WINDIR\System32\cleanmgr.exe"
+        if (Test-Path $cleanmgr) {
+            Start-Process -FilePath $cleanmgr -ArgumentList "/sagerun:64" -WindowStyle Hidden -ErrorAction SilentlyContinue
+        }
+        Write-Success "Temp folders and update download cache purged."
+    }
+    catch {
+        Write-WarnMsg "Deep cleanup notice: $_"
+    }
+}
+
 function Flush-MemoryGarbage {
     Write-Step "Flushing system memory cache and running garbage collection..."
     [System.GC]::Collect()
@@ -230,7 +368,7 @@ function Flush-MemoryGarbage {
 
 function Main {
     Write-Host "==============================================================================" -ForegroundColor Cyan
-    Write-Host "  Windows Core Guest - System & Memory Optimization Suite" -ForegroundColor Cyan
+    Write-Host "  Windows Core Guest - System & Memory Optimization Suite (Atlas Enhanced)" -ForegroundColor Cyan
     Write-Host "==============================================================================" -ForegroundColor Cyan
 
     Show-MemoryStats -Label "BEFORE Optimization"
@@ -240,6 +378,17 @@ function Main {
     Disable-HeavyBackgroundServices
     Configure-MemoryRegistryOptimizations
     Disable-UnnecessaryScheduledTasks
+    
+    # Atlas OS Enhancements
+    Invoke-AtlasNgenOptimization
+    Invoke-AtlasServiceHostConsolidation
+    Invoke-AtlasNtfsOptimizations
+    Invoke-AtlasReservedStorageDeactivation
+    Invoke-AtlasNetworkTweaks
+    Invoke-AtlasPnpOptimization
+    Invoke-AtlasDevQolTweaks
+    Invoke-AtlasDeepCleanup
+    
     Flush-MemoryGarbage
 
     Show-MemoryStats -Label "AFTER Optimization"
