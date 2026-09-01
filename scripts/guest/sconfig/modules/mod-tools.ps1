@@ -24,6 +24,7 @@ function Show-Status {
     $nodeVer   = try { (& node.exe -v 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
     $gitVer    = try { (& git.exe --version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
     $ghVer     = try { (& gh.exe --version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
+    $teaVer    = try { (& tea.exe --version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
     $dockerVer = try { (& docker.exe --version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
     $omniVer   = try { (& og.cmd -Version 2>$null | Select-Object -First 1).Trim() } catch { "Not Installed" }
 
@@ -33,6 +34,7 @@ function Show-Status {
     if (-not $nodeVer)   { $nodeVer = "Not Installed" }
     if (-not $gitVer)    { $gitVer = "Not Installed" }
     if (-not $ghVer)     { $ghVer = "Not Installed" }
+    if (-not $teaVer)    { $teaVer = "Not Installed" }
     if (-not $dockerVer) { $dockerVer = "Not Installed" }
     if (-not $omniVer)   { $omniVer = "Not Installed" }
 
@@ -47,6 +49,7 @@ function Show-Status {
     Write-Host "    • Node.js:              $nodeVer"
     Write-Host "    • Git for Windows:      $gitVer"
     Write-Host "    • GitHub CLI (gh):      $ghVer"
+    Write-Host "    • Gitea CLI (tea):      $teaVer"
     Write-Host "    • Docker CLI:           $dockerVer"
     Write-Host "    • Antigravity Daemon:   $agyStatus"
     Write-Host ""
