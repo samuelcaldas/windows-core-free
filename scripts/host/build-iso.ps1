@@ -100,6 +100,12 @@ function Build-InstallerIso {
             New-Item -ItemType Directory -Path $hostsTarget -Force | Out-Null
             Copy-Item -Path $hostsFile -Destination $hostsTarget -Force
         }
+        $omniSource = Join-Path $RepoRoot "external/omniget"
+        if (Test-Path $omniSource) {
+            Write-Step "Packaging and embedding OmniGet (og) package into ISO..."
+            $omniZip = Join-Path $packagesTarget "omniget.zip"
+            Compress-Archive -Path "$omniSource/*" -DestinationPath $omniZip -Force
+        }
 
         Write-Step "Packaging bootable unattended ISO ($InstallerIso)..."
         if (Test-Path $InstallerIso) { Remove-Item -Path $InstallerIso -Force }
@@ -175,6 +181,12 @@ function Build-OemdrvIso {
             $oemHostsTarget = Join-Path $oemStaging "config/hosts"
             New-Item -ItemType Directory -Path $oemHostsTarget -Force | Out-Null
             Copy-Item -Path $hostsFile -Destination $oemHostsTarget -Force
+        }
+        $omniSource = Join-Path $RepoRoot "external/omniget"
+        if (Test-Path $omniSource) {
+            Write-Step "Embedding OmniGet package into OEMDRV media..."
+            $omniZip = Join-Path $oemPackagesTarget "omniget.zip"
+            Compress-Archive -Path "$omniSource/*" -DestinationPath $omniZip -Force
         }
 
         if (Test-Path $OemdrvIso) { Remove-Item -Path $OemdrvIso -Force }

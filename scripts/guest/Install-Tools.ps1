@@ -68,7 +68,8 @@ function Main {
     $omniExe = "C:\Program Files\OmniGet\src\OmniGet.ps1"
     if (Test-Path $omniExe) {
         Write-Step "Executing DevStack toolchain preset via OmniGet..."
-        & pwsh.exe -ExecutionPolicy Bypass -File $omniExe -Preset DevStack -Silent
+        $psRunner = if (Test-Path "C:\Program Files\PowerShell\7\pwsh.exe") { "C:\Program Files\PowerShell\7\pwsh.exe" } else { "$env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe" }
+        & $psRunner -ExecutionPolicy Bypass -File $omniExe preset DevStack -s
     }
 
     Refresh-EnvironmentPath
