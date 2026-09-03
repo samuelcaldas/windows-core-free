@@ -29,7 +29,7 @@ jobs:
           
           # Clone or initialize
           if git clone "$WIKI_REPO" "$TMP_DIR" 2>/dev/null; then
-            echo "Existing wiki cloned."
+            echo "Existing wiki cloned successfully."
           else
             echo "Initializing fresh wiki branch..."
             git -C "$TMP_DIR" init -b master
@@ -50,5 +50,15 @@ jobs:
           fi
           
           git -C "$TMP_DIR" commit -m "docs(wiki): sync pages from master [skip ci]"
-          git -C "$TMP_DIR" push origin master || git -C "$TMP_DIR" push origin HEAD:master
+          
+          echo "Attempting to push to GitHub Wiki..."
+          if ! git -C "$TMP_DIR" push origin master 2>&1 | tee /tmp/push.log; then
+            if grep -qi "not found" /tmp/push.log; then
+              echo "::warning ::GitHub Wiki repository has not been initialized yet via the GitHub web UI."
+              echo "::notice ::Visit https://github.com/${{ github.repository }}/wiki and click 'Create the first page' once to instantiate the wiki repository. Subsequent syncs will push automatically."
+              exit 0
+            fi
+            echo "::error ::Failed to push to GitHub Wiki: $(cat /tmp/push.log)"
+            exit 1
+          fi
           echo "Wiki sync completed successfully."
