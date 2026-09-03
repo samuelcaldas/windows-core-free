@@ -1,15 +1,15 @@
 # Systemd Autostart & Host Service Management Guide
 
-This guide documents the host-level **systemd service** configuration for the Windows Server Core VM (`windows-core`), enabling zero-touch automatic startup on Ubuntu host boot, background process supervision, and clean ACPI shutdown orchestration.
+This guide documents the host-level **systemd service** configuration for the Windows CoreOS (WCOS) VM (`windows-core`), enabling zero-touch automatic startup on Ubuntu host boot, background process supervision, and clean ACPI shutdown orchestration.
 
 ---
 
 ## 1. Overview & Architecture
 
-When running Windows Server Core as a virtualized development guest on an Ubuntu host, managing the VM via systemd ensures:
+When running Windows CoreOS (WCOS) as a virtualized development guest on an Ubuntu host, managing the VM via systemd ensures:
 - **Automatic Boot on Host Startup**: The VM automatically initializes when Ubuntu starts, without requiring an interactive login.
 - **Process Supervision & Restart on Failure**: Systemd monitors the QEMU process (`windows-core`) and restarts it automatically if unexpected crashes occur.
-- **Graceful ACPI Shutdown on Host Shutdown/Reboot**: When the Ubuntu host powers off or reboots, systemd triggers an ACPI power button event to the guest, allowing Windows Core to flush disk caches and shut down cleanly.
+- **Graceful ACPI Shutdown on Host Shutdown/Reboot**: When the Ubuntu host powers off or reboots, systemd triggers an ACPI power button event to the guest, allowing Windows CoreOS to flush disk caches and shut down cleanly.
 - **Non-Root Execution**: Runs under the user account (`samuelcaldas`) with access to `/dev/kvm` through the `kvm` supplementary group.
 
 ```
@@ -24,7 +24,7 @@ When running Windows Server Core as a virtualized development guest on an Ubuntu
 |       ├── ExecStart: run-vm.sh --foreground                       |
 |       │     └─► qemu-system-x86_64 (KVM + VirtIO + UEFI)         |
 |       │             │                                             |
-|       │             └─► Windows Server Core Guest (port forwards) |
+|       │             └─► Windows CoreOS (WCOS) Guest (port forwards)|
 |       │                   - SSH: 2222 -> 22                       |
 |       │                   - WinRM: 5985/5986 -> 5985/5986         |
 |       │                   - Daemon: 9090 -> 9090                  |

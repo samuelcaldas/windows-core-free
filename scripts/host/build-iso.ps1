@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Phase 2: Build Unattended Windows Core Bootable Installer ISO & OEMDRV (PowerShell 7)
+    Phase 2: Build Unattended Windows CoreOS (WCOS) Bootable Installer ISO & OEMDRV (PowerShell 7)
 .DESCRIPTION
     Extracts base ISO, injects autounattend.xml into boot.wim index 1 & 2, extracts VirtIO drivers,
     and builds a bootable unattended ISO with UEFI and BIOS support.
@@ -200,7 +200,7 @@ function Build-OemdrvIso {
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core Headless Host - Build Unattended Installer ISO (PowerShell 7)"
+    Write-Host "  Windows CoreOS (WCOS) - Build Unattended Installer ISO (PowerShell 7)"
     Write-Host "=============================================================================="
     Assert-Prerequisites
     Build-InstallerIso

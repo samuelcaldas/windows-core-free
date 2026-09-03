@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/host/build-iso.sh
-# Phase 2: Build Unattended Windows Core Bootable Installer ISO & OEMDRV Media
+# Phase 2: Build Unattended Windows CoreOS (WCOS) Bootable Installer ISO & OEMDRV Media
 # ==============================================================================
 set -euo pipefail
 
@@ -244,7 +244,7 @@ build_oemdrv_media() {
 
 main() {
     echo "=============================================================================="
-    echo "  Windows Core Headless Host - Build Unattended Installer ISO"
+    echo "  Windows CoreOS (WCOS) - Build Unattended Installer ISO"
     echo "=============================================================================="
     check_prerequisites
     build_unattended_installer_iso

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Windows Core - System & Memory Optimization Orchestrator (PowerShell 7)
+    Windows CoreOS (WCOS) - System & Memory Optimization Orchestrator (PowerShell 7)
 #>
 
 [CmdletBinding()]
@@ -23,7 +23,7 @@ function Write-ErrMsg { param([string]$Msg) Write-Host "[ERROR] $Msg" -Foregroun
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core - Live Memory Optimization & Feature Pruning (PowerShell)"
+    Write-Host "  Windows CoreOS (WCOS) - Live Memory Optimization & Feature Pruning (PowerShell)"
     Write-Host "=============================================================================="
 
     Write-Step "Creating remote directories..."
@@ -38,7 +38,7 @@ function Main {
     Write-Step "Checking Top RAM Consuming Processes..."
     & ssh -p $VmPort -o StrictHostKeyChecking=accept-new "$VmUser@$VmHost" "powershell -Command `"Get-Process | Sort-Object WorkingSet64 -Descending | Select-Object -First 10 Name, Id, @{Name='RAM (MB)'; Expression={[math]::Round(`$_.WorkingSet64 / 1MB, 2)}} | Format-Table -AutoSize`""
 
-    Write-Success "Optimization completed."
+    Write-Success "Windows CoreOS (WCOS) memory optimization completed successfully."
 }
 
 Main

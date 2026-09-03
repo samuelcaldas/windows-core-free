@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Windows Core - System & Memory Optimization Orchestrator (Host Bash)
+# Windows CoreOS (WCOS) - System & Memory Optimization Orchestrator (Host Bash)
 # ==============================================================================
 set -euo pipefail
 
@@ -44,8 +44,10 @@ run_scp() {
 
 main() {
     echo "=============================================================================="
-    echo "  Windows Core - Live Memory Optimization & Feature Pruning"
+    echo "  Windows CoreOS (WCOS) - System & Memory Optimization"
     echo "=============================================================================="
+
+    check_prerequisites
 
     log_info "Preparing guest provisioning directory..."
     run_ssh "powershell -Command \"New-Item -ItemType Directory -Path 'C:\\Provisioning\\scripts' -Force | Out-Null\""
@@ -59,7 +61,7 @@ main() {
     log_info "Checking Top RAM Consuming Processes..."
     run_ssh 'powershell -Command "Get-Process | Sort-Object WorkingSet64 -Descending | Select-Object -First 10 Name, Id, WorkingSet64 | Format-Table -AutoSize"'
 
-    log_success "Windows Core memory optimization completed successfully."
+    log_success "Windows CoreOS (WCOS) memory optimization completed successfully."
 }
 
 main

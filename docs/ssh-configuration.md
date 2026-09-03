@@ -1,6 +1,6 @@
 # SSH Configuration & Remote Access Guide
 
-This guide documents how to configure OpenSSH client access to the Windows Server Core VM (`WINDOWS-CORE`) from local and remote machines.
+This guide documents how to configure OpenSSH client access to the Windows CoreOS (WCOS) VM from local and remote machines.
 
 ---
 
@@ -20,7 +20,7 @@ Host winvm
 ```
 
 ### Remote / Jumper Host Access (ProxyJump)
-If accessing the Windows Core VM running on a remote Ubuntu server:
+If accessing the Windows CoreOS (WCOS) VM running on a remote Ubuntu server:
 ```sshconfig
 Host winvm
     HostName 127.0.0.1

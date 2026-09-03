@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Guest Script: Deploys OmniGet (og) - Universal Multi-Source Package Engine on Windows Core.
+    Guest Script: Deploys OmniGet (og) - Universal Multi-Source Package Engine on Windows CoreOS (WCOS).
 .DESCRIPTION
     Installs OmniGet to C:\Program Files\OmniGet, adds to system Machine PATH,
     and deploys the desktop shortcut to Public Desktop.

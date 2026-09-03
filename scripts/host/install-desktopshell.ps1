@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Host Script (PowerShell 7): Setup of ReactShell Desktop Environment on Windows Core Guest.
+    Host Script (PowerShell 7): Setup of Desktop Shell Environment on Windows CoreOS (WCOS) Guest.
 .DESCRIPTION
     Transfers ReactShell, WinXShell, and Explorer++ packages and invokes Install-DesktopShell.ps1 over SSH.
 #>

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Guest Script: Deploys the modular sconfig Control Center patch for Windows Core Developer Edition.
+    Guest Script: Deploys the modular sconfig Control Center patch for Windows CoreOS (WCOS).
 .DESCRIPTION
     Replaces legacy Hyper-V sconfig.vbs with the categorized Control Center TUI,
     installs sconfig-modules into System32, and configures shortcuts.
@@ -27,7 +27,7 @@ $EnUsDir     = "$env:WINDIR\System32\en-US"
 $ModulesDir  = "$env:WINDIR\System32\sconfig-modules"
 
 Write-Host "=============================================================================="
-Write-Host "  Windows Core Guest - sconfig Control Center Patch Installer"
+Write-Host "  Windows CoreOS (WCOS) Guest - sconfig Control Center Patch Installer"
 Write-Host "=============================================================================="
 
 # 1. Ensure target modules directory exists

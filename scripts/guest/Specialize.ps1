@@ -188,14 +188,36 @@ function Configure-WinRM {
     }
 }
 
+function Deploy-WcosBranding {
+    Write-Step "Deploying Windows CoreOS (WCOS) branding and terminal profile..."
+    try {
+        $motdFile = Join-Path $PSScriptRoot "motd.txt"
+        $banner = if (Test-Path $motdFile) { Get-Content -Path $motdFile -Raw } else { "Windows CoreOS (WCOS)" }
+
+        # Deploy global PowerShell 7 profile banner
+        $pwshDir = "C:\Program Files\PowerShell\7"
+        if (Test-Path $pwshDir) {
+            $profilePath = Join-Path $pwshDir "profile.ps1"
+            $profileCode = "`$Host.UI.RawUI.WindowTitle = 'Windows CoreOS (WCOS)'`n" +
+                           "Write-Host @'`n$banner`n'@ -ForegroundColor Cyan`n"
+            Set-Content -Path $profilePath -Value $profileCode -Encoding UTF8 -Force
+            Write-Success "PowerShell 7 WCOS profile deployed."
+        }
+    }
+    catch {
+        Write-WarnMsg "Branding deployment returned: $_"
+    }
+}
+
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core Guest - Specialization & Remote Management Bootstrap"
+    Write-Host "  Windows CoreOS (WCOS) Guest - Specialization & Remote Management Bootstrap"
     Write-Host "=============================================================================="
     Configure-SystemBasics
     Configure-Firewall
     Install-OpenSshServer
     Configure-WinRM
+    Deploy-WcosBranding
 
     $disableHyperVScript = Join-Path $PSScriptRoot "Disable-HyperV.ps1"
     if (Test-Path $disableHyperVScript) {
@@ -224,7 +246,7 @@ function Main {
         }
     }
 
-    Write-Success "Guest specialization completed successfully."
+    Write-Success "Windows CoreOS (WCOS) guest specialization completed successfully."
 }
 
 Main

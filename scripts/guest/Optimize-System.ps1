@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Deep Memory Optimization & Feature Pruning for Windows Server Core Guest.
+    Deep Memory Optimization & Feature Pruning for Windows CoreOS (WCOS) Guest.
 .DESCRIPTION
     Reclaims 600MB-800MB of RAM by removing Windows Defender, Hyper-V role,
     SysMain (Superfetch), Telemetry, and error reporting services without
@@ -517,7 +517,7 @@ function Main {
 
     Show-MemoryStats -Label "AFTER Optimization"
 
-    Write-Success "System & memory optimization completed successfully."
+    Write-Success "Windows CoreOS (WCOS) system & memory optimization completed successfully."
 }
 
 Main

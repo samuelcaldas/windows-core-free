@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release Tag Name (e.g. v1.1.0)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Determine Release Tag
+        id: tag_info
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            TAG="${{ github.event.inputs.tag_name }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
+          echo "Using release tag: ${TAG}"
+
+      - name: Validate Scripts Syntax
+        run: |
+          echo "===> Checking Bash scripts syntax..."
+          find scripts -type f -name "*.sh" -exec bash -n {} +
+          echo "===> All shell scripts passed syntax checks."
+
+      - name: Package Release Bundles
+        run: |
+          echo "===> Creating wcos-scripts.zip bundle..."
+          zip -rq wcos-scripts.zip scripts autounattend.xml config docs LICENSE README.md AGENTS.md -x "*.git*"
+
+          echo "===> Creating wcos-oemdrv-template.zip bundle..."
+          zip -rq wcos-oemdrv-template.zip autounattend.xml scripts/guest config -x "*.git*"
+
+          if [ -d "external/omniget" ]; then
+            echo "===> Creating wcos-omniget.zip bundle..."
+            (cd external/omniget && zip -rq ../../wcos-omniget.zip . -x "*.git*")
+          fi
+
+          echo "===> Release packages created:"
+          ls -lh wcos-*.zip
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: "Windows CoreOS ${{ env.TAG_NAME }}"
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          files: |
+            wcos-scripts.zip
+            wcos-oemdrv-template.zip
+            wcos-omniget.zip

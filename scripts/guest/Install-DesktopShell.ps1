@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Guest Script: ReactShell Desktop Environment & File Manager Installation.
+    Guest Script: Desktop Environment & File Manager Installation for Windows CoreOS (WCOS).
 .DESCRIPTION
     Non-destructive installation on Windows Server Core:
     - Installs ReactShell (react-shell.exe) as the default primary logon shell with taskbar, start menu, system tray, and wallpaper.
@@ -608,8 +608,8 @@ function Deploy-DistroBranding {
     if (-not (Test-Path $oemKey)) {
         New-Item -Path $oemKey -Force | Out-Null
     }
-    Set-ItemProperty -Path $oemKey -Name "Manufacturer" -Value "Windows Core Developer Edition" -Force
-    Set-ItemProperty -Path $oemKey -Name "Model" -Value "Headless Dev Node & Agentic CLI Workstation" -Force
+    Set-ItemProperty -Path $oemKey -Name "Manufacturer" -Value "Windows CoreOS (WCOS)" -Force
+    Set-ItemProperty -Path $oemKey -Name "Model" -Value "Free Windows Server Core Distribution" -Force
     Set-ItemProperty -Path $oemKey -Name "SupportURL" -Value "https://github.com/samuelcaldas/windows-core-free" -Force
     if (Test-Path "$env:WINDIR\System32\oemlogo.bmp") {
         Set-ItemProperty -Path $oemKey -Name "Logo" -Value "$env:WINDIR\System32\oemlogo.bmp" -Force
@@ -726,7 +726,7 @@ function Deploy-DesktopShortcuts {
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core Guest - Desktop Shell & File Explorer Installer"
+    Write-Host "  Windows CoreOS (WCOS) Guest - Desktop Shell & File Explorer Installer"
     Write-Host "=============================================================================="
 
     # 1. Branding & Wallpaper
