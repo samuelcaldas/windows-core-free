@@ -35,6 +35,15 @@ function Configure-SystemBasics {
     catch {
         Write-WarnMsg "Failed to enable long paths: $_"
     }
+
+    Write-Step "Ensuring OmniGet (og) binary directory is registered in Machine PATH..."
+    $omniBin = "C:\Program Files\OmniGet\bin"
+    $machinePath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine)
+    if ($machinePath -notlike "*$omniBin*") {
+        [System.Environment]::SetEnvironmentVariable('Path', "$omniBin;$machinePath", [System.EnvironmentVariableTarget]::Machine)
+        $env:Path = "$omniBin;$env:Path"
+        Write-Success "OmniGet binary directory registered in Machine PATH."
+    }
 }
 
 function Configure-Firewall {
@@ -201,6 +210,18 @@ function Main {
     $hostsScript = Join-Path $PSScriptRoot "Update-HostsBlocklist.ps1"
     if (Test-Path $hostsScript) {
         & $hostsScript
+    }
+
+    $installOmniGetScript = Join-Path $PSScriptRoot "Install-OmniGet.ps1"
+    if (Test-Path $installOmniGetScript) {
+        Write-Step "Deploying OmniGet (og) Package Engine during specialization..."
+        try {
+            & $installOmniGetScript -DeployOnly
+            Write-Success "OmniGet deployed successfully during specialization."
+        }
+        catch {
+            Write-WarnMsg "Install-OmniGet deployment returned: $_"
+        }
     }
 
     Write-Success "Guest specialization completed successfully."

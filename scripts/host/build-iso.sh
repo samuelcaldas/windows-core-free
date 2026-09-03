@@ -149,6 +149,10 @@ build_unattended_installer_iso() {
         mkdir -p "${STAGING_DIR}/config/hosts"
         cp "${REPO_ROOT}/config/hosts/hosts" "${STAGING_DIR}/config/hosts/"
     fi
+    if [ -d "${REPO_ROOT}/external/omniget" ]; then
+        log_info "Packaging and embedding OmniGet (og) package into ISO..."
+        (cd "${REPO_ROOT}/external/omniget" && zip -rq "${STAGING_DIR}/packages/omniget.zip" .)
+    fi
 
     # 7. Build bootable ISO with UEFI + BIOS support
     log_info "Packaging bootable unattended ISO (${INSTALLER_ISO})..."
@@ -220,6 +224,10 @@ build_oemdrv_media() {
     if [ -f "${REPO_ROOT}/config/hosts/hosts" ]; then
         mkdir -p "${OEM_STAGING}/config/hosts"
         cp "${REPO_ROOT}/config/hosts/hosts" "${OEM_STAGING}/config/hosts/"
+    fi
+    if [ -d "${REPO_ROOT}/external/omniget" ]; then
+        log_info "Embedding OmniGet package into OEMDRV media..."
+        (cd "${REPO_ROOT}/external/omniget" && zip -rq "${OEM_STAGING}/packages/omniget.zip" .)
     fi
 
     rm -f "${OEMDRV_ISO}"
