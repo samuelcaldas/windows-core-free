@@ -10,8 +10,8 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://github.com/PowerShell/PowerShell"><img src="https://img.shields.io/badge/PowerShell-7%2B-blue.svg?logo=powershell" alt="PowerShell 7"></a>
   <a href="docs/branding/MANUAL.md"><img src="docs/branding/assets/wcos-badge.svg" alt="Windows CoreOS Distro"></a>
-  <a href="https://github.com/samuelcaldas/windows-core-free/releases"><img src="https://img.shields.io/github/v/release/samuelcaldas/windows-core-free?include_prereleases&label=Release&color=brightgreen" alt="GitHub Release"></a>
-  <a href="https://samuelcaldas.github.io/windows-core-free/"><img src="https://img.shields.io/badge/Website-GitHub%20Pages-00F5D4.svg?logo=githubpages&logoColor=black" alt="GitHub Pages"></a>
+  <a href="https://github.com/samuelcaldas/windows-coreos/releases"><img src="https://img.shields.io/github/v/release/samuelcaldas/windows-coreos?include_prereleases&label=Release&color=brightgreen" alt="GitHub Release"></a>
+  <a href="https://samuelcaldas.github.io/windows-coreos/"><img src="https://img.shields.io/badge/Website-GitHub%20Pages-00F5D4.svg?logo=githubpages&logoColor=black" alt="GitHub Pages"></a>
   <a href="docs/README.md"><img src="https://img.shields.io/badge/Docs-Wiki%20%26%20Guides-00D2FF.svg?logo=gitbook" alt="Documentation"></a>
   <a href="https://microsoft.com/windows"><img src="https://img.shields.io/badge/Base%20Kernel-Windows%20Server%20Core%20RS5%20(17763)-0078D6?logo=windows" alt="Windows Server Core 2019"></a>
 </p>
@@ -114,8 +114,8 @@ Install virtualization prerequisites and download the official Microsoft ISO:
 
 ```bash
 # 1. Clone repository
-git clone --recurse-submodules https://github.com/samuelcaldas/windows-core-free.git
-cd windows-core-free
+git clone --recurse-submodules https://github.com/samuelcaldas/windows-coreos.git
+cd windows-coreos
 
 # 2. Setup host dependencies and download official Microsoft ISO
 ./scripts/host/setup-host.sh --download-iso
@@ -230,7 +230,7 @@ Manage the VM as a native background system service on your Linux host:
 
 ## 📚 Documentation & Technical Wiki
 
-Full documentation is available in the **[Windows CoreOS Wiki](https://github.com/samuelcaldas/windows-core-free/wiki)** (and mirrored offline in [`wiki/`](wiki/Home.md)):
+Full documentation is available in the **[Windows CoreOS Wiki](https://github.com/samuelcaldas/windows-coreos/wiki)** (and mirrored offline in [`wiki/`](wiki/Home.md)):
 
 - 📖 **[Wiki Home](wiki/Home.md)**: Main wiki portal, overview, and specifications.
 - 🚀 **[Getting Started Guide](wiki/Getting-Started.md)**: Step-by-step installation, automated ISO download, and initial boot.

@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'Windows CoreOS',
   description: 'Free, ultra-lightweight Windows Server Core distribution for Linux KVM, Proxmox, and Autonomous AI Agents.',
-  base: process.env.VITEPRESS_BASE || '/windows-core-free/',
+  base: process.env.VITEPRESS_BASE || '/windows-coreos/',
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
@@ -43,7 +43,7 @@ export default defineConfig({
       {
         text: 'v1.0.0',
         items: [
-          { text: 'GitHub Releases', link: 'https://github.com/samuelcaldas/windows-core-free/releases' },
+          { text: 'GitHub Releases', link: 'https://github.com/samuelcaldas/windows-coreos/releases' },
           { text: 'Versioning Guide', link: '/guides/Release-and-Versioning-Guide' }
         ]
       }
@@ -102,7 +102,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/samuelcaldas/windows-core-free' }
+      { icon: 'github', link: 'https://github.com/samuelcaldas/windows-coreos' }
     ],
 
     footer: {

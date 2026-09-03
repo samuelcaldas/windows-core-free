@@ -59,7 +59,7 @@ This registers `/etc/systemd/system/windows-core.service`, configures your user 
 ```ini
 [Unit]
 Description=Windows CoreOS (WCOS) Virtual Machine (QEMU/KVM)
-Documentation=https://github.com/samuelcaldas/windows-core-free
+Documentation=https://github.com/samuelcaldas/windows-coreos
 After=network.target local-fs.target
 
 [Service]

@@ -39,7 +39,7 @@ generate_service_unit() {
     cat <<EOF
 [Unit]
 Description=Windows CoreOS (WCOS) Virtual Machine (QEMU/KVM)
-Documentation=https://github.com/samuelcaldas/windows-core-free
+Documentation=https://github.com/samuelcaldas/windows-coreos
 After=network.target network-online.target
 Wants=network-online.target
 

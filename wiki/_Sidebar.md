@@ -31,7 +31,7 @@
 ---
 
 ### 🔗 External Resources
-* [GitHub Repository](https://github.com/samuelcaldas/windows-core-free)
-* [Releases & Downloads](https://github.com/samuelcaldas/windows-core-free/releases)
-* [Issue Tracker](https://github.com/samuelcaldas/windows-core-free/issues)
+* [GitHub Repository](https://github.com/samuelcaldas/windows-coreos)
+* [Releases & Downloads](https://github.com/samuelcaldas/windows-coreos/releases)
+* [Issue Tracker](https://github.com/samuelcaldas/windows-coreos/issues)
 * [OmniGet Package Manager](https://github.com/samuelcaldas/omniget)

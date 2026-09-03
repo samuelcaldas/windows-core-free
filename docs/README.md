@@ -6,7 +6,7 @@ Welcome to the comprehensive documentation index for **Windows CoreOS (WCOS)**: 
 
 ## 📚 Core Documentation & Technical Wiki
 
-Full documentation is published in the **[Windows CoreOS Wiki](https://github.com/samuelcaldas/windows-core-free/wiki)** (and stored locally in [`../wiki/`](../wiki/Home.md)):
+Full documentation is published in the **[Windows CoreOS Wiki](https://github.com/samuelcaldas/windows-coreos/wiki)** (and stored locally in [`../wiki/`](../wiki/Home.md)):
 
 | Document | Description |
 | :--- | :--- |
