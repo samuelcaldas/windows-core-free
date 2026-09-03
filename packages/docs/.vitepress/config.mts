@@ -1,17 +1,19 @@
 import { defineConfig } from 'vitepress';
 
+const base = process.env.VITEPRESS_BASE || '/windows-coreos/';
+
 export default defineConfig({
   title: 'Windows CoreOS',
   description: 'Free, ultra-lightweight Windows Server Core distribution for Linux KVM, Proxmox, and Autonomous AI Agents.',
-  base: process.env.VITEPRESS_BASE || '/windows-coreos/',
+  base,
 
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#00F5D4' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Windows CoreOS (WCOS)' }],
     ['meta', { property: 'og:description', content: 'Free Windows Server Core distribution for Linux KVM & AI Agents' }],
-    ['meta', { property: 'og:image', content: '/hero.svg' }]
+    ['meta', { property: 'og:image', content: `${base}hero.svg` }]
   ],
 
   themeConfig: {

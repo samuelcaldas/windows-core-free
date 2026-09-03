@@ -21,12 +21,12 @@ The WCOS color scheme combines dark server aesthetics with modern neon cyan acce
 
 ## 📁 Vector Assets Catalog (`docs/branding/assets/`)
 
-| Asset | Preview / Link | Description | Primary Use Case |
+| Asset | Preview & Download | Description | Primary Use Case |
 | :--- | :--- | :--- | :--- |
-| **Horizontal Logo** | [`wcos-logo-horizontal.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-horizontal.svg) | Master horizontal logo with icon, logotype, badge, and tagline | Documentation headers, README banners |
-| **Square Logo** | [`wcos-logo-square.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-square.svg) | 1:1 square icon | Profile avatars, app icons |
-| **Hex Core Icon** | [`wcos-icon.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-icon.svg) | Isometric server cube inside hexagon with neon `W` prompt | Favicons, bullet points, system trays |
-| **Distro Badge** | [`wcos-badge.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-badge.svg) | Dual-tone status shield badge | README header shields |
+| **Horizontal Logo** | <img src="https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-horizontal.svg" alt="WCOS Horizontal Logo" height="40"><br>[`wcos-logo-horizontal.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-horizontal.svg) | Master horizontal logo with icon, logotype, badge, and tagline | Documentation headers, README banners |
+| **Square Logo** | <img src="https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-square.svg" alt="WCOS Square Logo" height="40"><br>[`wcos-logo-square.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-square.svg) | 1:1 square icon | Profile avatars, app icons |
+| **Hex Core Icon** | <img src="https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-icon.svg" alt="WCOS Hex Core Icon" height="40"><br>[`wcos-icon.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-icon.svg) | Isometric server cube inside hexagon with neon `W` prompt | Favicons, bullet points, system trays |
+| **Distro Badge** | <img src="https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-badge.svg" alt="WCOS Distro Badge" height="24"><br>[`wcos-badge.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-badge.svg) | Dual-tone status shield badge | README header shields |
 
 ---
 

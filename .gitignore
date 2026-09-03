@@ -19,3 +19,12 @@ dist/
 packages/docs/.vitepress/dist/
 packages/docs/.vitepress/cache/
 packages/docs/guides/
+packages/docs/public/docs/
+packages/docs/public/assets/
+packages/docs/public/config/
+packages/docs/public/wcos-*.svg
+packages/docs/public/wallpaper.*
+packages/docs/public/oemlogo.bmp
+
+# Playwright MCP artifacts
+.playwright-mcp/
