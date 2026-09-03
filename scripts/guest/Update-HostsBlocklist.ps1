@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Dan Pollock Zero-Route Hosts Blocklist Installer for Windows Server Core.
+    Dan Pollock Zero-Route Hosts Blocklist Installer for Windows CoreOS (WCOS).
 .DESCRIPTION
     Applies https://someonewhocares.org/hosts/zero/hosts to
     C:\Windows\System32\drivers\etc\hosts for zero-overhead DNS blocking
@@ -22,7 +22,7 @@ function Write-ErrMsg { param([string]$Msg) Write-Host "[ERROR] $Msg" -Foregroun
 
 function Main {
     Write-Host "==============================================================================" -ForegroundColor Cyan
-    Write-Host "  Windows Core - Dan Pollock Zero-Route Hosts Blocklist Installer" -ForegroundColor Cyan
+    Write-Host "  Windows CoreOS (WCOS) - Dan Pollock Zero-Route Hosts Blocklist Installer" -ForegroundColor Cyan
     Write-Host "==============================================================================" -ForegroundColor Cyan
 
     $targetHosts = "$env:WINDIR\System32\drivers\etc\hosts"

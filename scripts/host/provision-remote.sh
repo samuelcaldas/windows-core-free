@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/host/provision-remote.sh
-# Phase 4 & 5: Synchronize SSH Keys/Config & Orchestrate Remote Toolchains on Windows Core
+# Phase 4 & 5: Synchronize SSH Keys/Config & Orchestrate Remote Toolchains on Windows CoreOS (WCOS)
 # ==============================================================================
 set -euo pipefail
 
@@ -31,7 +31,7 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 check_vm_connectivity() {
     log_info "Checking VM connectivity on ${VM_HOST}:${VM_PORT}..."
     if ! nc -z -w 3 "${VM_HOST}" "${VM_PORT}" 2>/dev/null; then
-        log_error "Cannot reach Windows Core VM on port ${VM_PORT}. Is run-vm.sh running?"
+        log_error "Cannot reach Windows CoreOS VM on port ${VM_PORT}. Is run-vm.sh running?"
         exit 1
     fi
     log_success "Port ${VM_PORT} is reachable."
@@ -150,7 +150,7 @@ deploy_guest_scripts_and_tools() {
 }
 
 verify_remote_environment() {
-    log_info "Verifying remote Windows Core environment and Claude CLI..."
+    log_info "Verifying remote Windows CoreOS (WCOS) environment and Claude CLI..."
     ssh ${SSH_OPTS} "${VM_USER}@${VM_HOST}" "powershell -Command \"
         Write-Host '--- Environment Info ---';
         whoami;
@@ -168,7 +168,7 @@ verify_remote_environment() {
 
 main() {
     echo "=============================================================================="
-    echo "  Windows Core Headless Host - Remote Provisioning & SSH Synchronization"
+    echo "  Windows CoreOS (WCOS) - Remote Provisioning & SSH Synchronization"
     echo "=============================================================================="
     check_vm_connectivity
     sync_ssh_keys_and_config

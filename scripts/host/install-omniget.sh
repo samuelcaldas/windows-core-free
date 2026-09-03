@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/host/install-omniget.sh
-# Deploy & Run OmniGet (og) Universal Package Manager on Windows Core Guest
+# Deploy & Run OmniGet (og) Universal Package Manager on Windows CoreOS (WCOS) Guest
 # ==============================================================================
 set -euo pipefail
 
@@ -48,7 +48,7 @@ deploy_omniget() {
 
 main() {
     echo "=============================================================================="
-    echo "  Windows Core - OmniGet (og) Universal Package Manager Host Orchestrator"
+    echo "  Windows CoreOS (WCOS) - OmniGet (og) Universal Package Manager Host Orchestrator"
     echo "=============================================================================="
 
     deploy_omniget

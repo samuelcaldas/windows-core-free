@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/host/run-vm.sh
-# Phase 2: QEMU / KVM Virtual Machine Orchestrator for Windows Core (UEFI + VirtIO)
+# Phase 2: QEMU / KVM Virtual Machine Orchestrator for Windows CoreOS (WCOS)
 # ==============================================================================
 set -euo pipefail
 
@@ -125,7 +125,7 @@ cmd_stop() {
         for ((i=1; i<=30; i++)); do
             if ! kill -0 "${pid}" 2>/dev/null; then
                 rm -f "${PID_FILE}" "${MONITOR_SOCK}"
-                log_success "Windows Core VM stopped cleanly."
+                log_success "Windows CoreOS (WCOS) stopped cleanly."
                 return 0
             fi
             sleep 1
@@ -225,16 +225,19 @@ start_qemu() {
         "${QEMU_ARGS[@]}" &
         local pid=$!
         echo "${pid}" > "${PID_FILE}"
-        log_success "Windows Core VM started (PID: ${pid})."
+        log_success "Windows CoreOS (WCOS) VM started (PID: ${pid})."
     fi
 }
 
 usage() {
+    echo "=============================================================================="
+    echo "  Windows CoreOS (WCOS) - QEMU VM Orchestrator"
+    echo "=============================================================================="
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
     echo "  --install, -i      Boot with unattended installer ISO for zero-touch install"
-    echo "  --run, -r          Start installed Windows Core VM (default)"
+    echo "  --run, -r          Start installed Windows CoreOS VM (default)"
     echo "  --foreground, -f   Run VM in foreground mode (recommended for systemd services)"
     echo "  --daemon, -d       Run VM as background daemon"
     echo "  --status, -s       Check VM running status and port mapping"

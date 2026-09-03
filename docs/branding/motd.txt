@@ -1,0 +1,20 @@
+   __      ___           _                     _____              ____   _____ 
+   \ \    / (_)         | |                   / ____|            / __ \ / ____|
+    \ \  / / _ _ __   __| | _____      _____ | |     ___  _ __ ___| |  | | (___  
+     \ \/ / | | '_ \ / _` |/ _ \ \ /\ / / __|| |    / _ \| '__/ _ \ |  | |\___ \ 
+      \  /  | | | | | (_| | (_) \ V  V /\__ \| |___| (_) | | |  __/ |__| |____) |
+       \/   |_|_| |_|\__,_|\___/ \_/\_/ |___(_)_____\___/|_|  \___|\____/|_____/ 
+                                                                                   
+ ==================================================================================
+  Windows CoreOS (WCOS) — Free Windows Server Core Distribution for Developers & AI
+ ==================================================================================
+  • Shell: PowerShell 7 (pwsh)              • Remote Access: OpenSSH / WinRM
+  • Store: OmniGet (og)                     • Kernel: Windows Server Core RS5 (17763)
+  • Docs: https://github.com/samuelcaldas/windows-core-free
+ ----------------------------------------------------------------------------------
+  Quick Commands:
+    og search <pkg>      Search packages across Ninite, GitHub, Direct, Distro
+    og install <pkg> -s  Install software silently
+    og preset DevStack   Deploy complete development stack
+    sconfig              Launch Windows Server Core Configuration Utility
+ ==================================================================================

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Host Script (PowerShell 7): Non-destructive Live Setup of Windows Terminal on Windows Core Guest.
+    Host Script (PowerShell 7): Non-destructive Live Setup of Windows Terminal on Windows CoreOS (WCOS) Guest.
 .DESCRIPTION
     Transfers Windows Terminal and Visual C++ packages and invokes Install-WindowsTerminal.ps1 over SSH.
 #>

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/host/install-terminal.sh
-# Non-destructive Live Setup of Windows Terminal on Windows Core Guest
+# Non-destructive Live Setup of Windows Terminal on Windows CoreOS (WCOS) Guest
 # ==============================================================================
 set -euo pipefail
 
@@ -77,7 +77,7 @@ main() {
     run_scp "${REPO_ROOT}/scripts/guest/Install-WindowsTerminal.ps1" "C:/Provisioning/scripts/Install-WindowsTerminal.ps1"
 
     # 4. Execute Guest Installation Script
-    log_info "Executing Install-WindowsTerminal.ps1 on Windows Core..."
+    log_info "Executing Install-WindowsTerminal.ps1 on Windows CoreOS (WCOS)..."
     run_ssh "powershell -ExecutionPolicy Bypass -File 'C:\\Provisioning\\scripts\\Install-WindowsTerminal.ps1'"
 
     # 5. Verification

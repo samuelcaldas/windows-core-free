@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Windows Core - Dan Pollock Zero-Route Hosts Blocklist Deployment (Host Bash)
+# Windows CoreOS (WCOS) - Dan Pollock Zero-Route Hosts Blocklist Deployment (Host Bash)
 # ==============================================================================
 set -euo pipefail
 
@@ -45,7 +45,7 @@ run_scp() {
 
 main() {
     echo "=============================================================================="
-    echo "  Windows Core - Dan Pollock Hosts Blocklist Deployment"
+    echo "  Windows CoreOS (WCOS) - Dan Pollock Zero-Route Hosts Blocklist"
     echo "=============================================================================="
 
     # 1. Update / verify local repository cache
@@ -77,7 +77,7 @@ main() {
         (Get-Content C:\Windows\System32\drivers\etc\hosts).Count
     "'
 
-    log_success "Dan Pollock hosts blocklist deployed successfully."
+    log_success "Dan Pollock hosts blocklist deployed successfully on Windows CoreOS (WCOS)."
 }
 
 main

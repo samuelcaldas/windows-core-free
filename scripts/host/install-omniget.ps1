@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Host Script (PowerShell 7): Deploy & Run OmniGet (og) Universal Package Manager on Windows Core Guest.
+    Host Script (PowerShell 7): Deploy & Run OmniGet (og) Universal Package Manager on Windows CoreOS (WCOS) Guest.
 .DESCRIPTION
     Transfers external/omniget submodule and Install-OmniGet.ps1 to guest and orchestrates execution over SSH.
 #>
@@ -27,7 +27,7 @@ function Write-Success { param([string]$Msg) Write-Host "[SUCCESS] $Msg" -Foregr
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core - OmniGet (og) Orchestrator (PowerShell 7)"
+    Write-Host "  Windows CoreOS (WCOS) - OmniGet (og) Orchestrator (PowerShell 7)"
     Write-Host "=============================================================================="
 
     Write-Step "Creating remote directories..."

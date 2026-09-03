@@ -3,7 +3,7 @@
 .SYNOPSIS
     Phase 4 & 5: Synchronize SSH Keys/Config & Orchestrate Remote Toolchains (PowerShell 7)
 .DESCRIPTION
-    Deploys Ubuntu host's SSH keys, configs, and guest provisioning scripts to the Windows Core VM.
+    Deploys Ubuntu host's SSH keys, configs, and guest provisioning scripts to the Windows CoreOS (WCOS) VM.
     Executes toolchain installations (Git, Node.js, Python, Claude CLI, Antigravity Daemon).
 #>
 [CmdletBinding()]
@@ -135,7 +135,7 @@ function Verify-RemoteEnvironment {
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core Headless Host - Remote Provisioning (PowerShell 7)"
+    Write-Host "  Windows CoreOS (WCOS) - Remote Provisioning (PowerShell 7)"
     Write-Host "=============================================================================="
     Assert-VmConnectivity
     Sync-SshKeysAndConfig

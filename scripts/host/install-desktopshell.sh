@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # scripts/host/install-desktopshell.sh
-# Non-destructive Live Setup of Desktop Shell (WinXShell/ReactShell) and File Manager on Windows Core
+# Non-destructive Live Setup of Desktop Shell (WinXShell/ReactShell) and File Manager on Windows CoreOS (WCOS)
 # ==============================================================================
 set -euo pipefail
 
@@ -121,7 +121,7 @@ main() {
     run_scp "${REPO_ROOT}/scripts/guest/Install-DesktopShell.ps1" "C:/Provisioning/scripts/Install-DesktopShell.ps1"
 
     # 3. Execute Guest Installation Script
-    log_info "Executing Install-DesktopShell.ps1 on Windows Core..."
+    log_info "Executing Install-DesktopShell.ps1 on Windows CoreOS (WCOS)..."
     run_ssh "powershell -ExecutionPolicy Bypass -File 'C:\\Provisioning\\scripts\\Install-DesktopShell.ps1' -ShellProvider '${SHELL_PROVIDER}' -FileManager '${FILE_MANAGER}'"
 
     # 4. Verification

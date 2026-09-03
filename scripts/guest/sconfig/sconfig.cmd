@@ -1,5 +1,5 @@
 @echo off
-title Windows Core Developer Edition - Server Control Center
+title Windows CoreOS (WCOS) - Server Configuration Center
 color 17
 cls
 

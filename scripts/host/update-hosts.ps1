@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Windows Core - Dan Pollock Zero-Route Hosts Blocklist Deployment (PowerShell 7)
+    Windows CoreOS (WCOS) - Dan Pollock Zero-Route Hosts Blocklist Deployment (PowerShell 7)
 #>
 
 [CmdletBinding()]
@@ -24,7 +24,7 @@ function Write-ErrMsg { param([string]$Msg) Write-Host "[ERROR] $Msg" -Foregroun
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core - Dan Pollock Hosts Blocklist Deployment (PowerShell)"
+    Write-Host "  Windows CoreOS (WCOS) - Dan Pollock Hosts Blocklist Deployment (PowerShell)"
     Write-Host "=============================================================================="
 
     if (-not (Test-Path $ConfigDir)) {
@@ -51,7 +51,7 @@ function Main {
     Write-Step "Verifying DNS resolution..."
     & ssh -p $VmPort -o StrictHostKeyChecking=accept-new "$VmUser@$VmHost" "powershell -Command `"(Get-Content 'C:\Windows\System32\drivers\etc\hosts').Count`""
 
-    Write-Success "Dan Pollock hosts blocklist deployed successfully."
+    Write-Success "Dan Pollock hosts blocklist deployed successfully on Windows CoreOS (WCOS)."
 }
 
 Main

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Guest Script: Installs AI Agent Stack (Claude CLI, Antigravity CLI & Daemon).
+    Guest Script: Installs AI Agent Stack (Claude CLI, Antigravity CLI & Daemon) on Windows CoreOS (WCOS).
 .DESCRIPTION
     Installs @anthropic-ai/claude-code (claude-cli), configures persistent .claude directory,
     and sets up Antigravity Remote Control daemon as a persistent service/scheduled task.
@@ -139,7 +139,7 @@ function Verify-Installation {
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core Guest - AI Agent & Claude CLI Setup"
+    Write-Host "  Windows CoreOS (WCOS) Guest - AI Agent & Claude CLI Setup"
     Write-Host "=============================================================================="
     Install-ClaudeCli
     Setup-AntigravityDaemon

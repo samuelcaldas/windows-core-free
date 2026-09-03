@@ -90,8 +90,8 @@ function Invoke-AsRoot {
 function Get-ServiceDefinition {
     return @"
 [Unit]
-Description=Windows Server Core Headless Development VM (QEMU/KVM)
-Documentation=https://github.com/samuelcaldas/windows-core
+Description=Windows CoreOS (WCOS) Virtual Machine (QEMU/KVM)
+Documentation=https://github.com/samuelcaldas/windows-core-free
 After=network.target network-online.target
 Wants=network-online.target
 

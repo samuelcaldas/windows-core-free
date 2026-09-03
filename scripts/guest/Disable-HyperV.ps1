@@ -2,7 +2,7 @@
 .SYNOPSIS
     Guest Script: Deactivates Hyper-V hypervisor roles, services, and boot launch.
 .DESCRIPTION
-    Since Windows Core operates as a virtualized guest on Linux KVM, nested Hyper-V
+    Since Windows CoreOS (WCOS) operates as a virtualized guest on Linux KVM, nested Hyper-V
     roles and services are decommissioned to save RAM/CPU and prevent hypervisor conflicts.
 #>
 [CmdletBinding()]

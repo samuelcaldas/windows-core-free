@@ -1,0 +1,58 @@
+MIT License
+
+Copyright (c) 2026 Samuel Caldas and contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+LEGAL NOTICE & THIRD-PARTY TRADEMARKS DISCLAIMER
+-------------------------------------------------------------------------------
+
+1. NON-AFFILIATION DISCLAIMER
+   "Windows CoreOS" (WCOS) is an independent, community-driven open-source
+   automation, customization, and orchestration framework. This project is NOT
+   affiliated with, endorsed by, sponsored by, or associated with Microsoft
+   Corporation in any way.
+
+2. TRADEMARKS
+   Microsoft, Windows, Windows Server, Windows Server Core, Hyper-V, PowerShell,
+   and Win32 are registered trademarks or trademarks of Microsoft Corporation in
+   the United States and/or other countries. All other trademarks, registered
+   trademarks, product names, and company names or logos mentioned in this
+   project are the property of their respective owners. Reference to them does
+   not imply any affiliation with or endorsement by them.
+
+3. NO REDISTRIBUTION OF PROPRIETARY MEDIA
+   This repository and its maintainers strictly DO NOT host, mirror, republish,
+   or distribute any proprietary Microsoft Windows operating system installation
+   media, binary ISO disk images, proprietary product keys, or activation
+   bypass mechanisms.
+
+4. USER RESPONSIBILITY & COMPLIANCE
+   Users of this software are solely responsible for obtaining their own
+   legitimate, officially licensed or evaluation installation media (such as
+   Microsoft Hyper-V Server 2019 or Windows Server 2019) directly from official
+   Microsoft distribution channels. Users must read, accept, and comply with all
+   applicable Microsoft End User License Agreements (EULA) and terms of service.
+
+5. THIRD-PARTY PACKAGES & RECIPES
+   Components, runtimes, drivers (e.g., Red Hat VirtIO), tools, and packages
+   downloaded, automated, or deployed through scripts in this repository
+   remain under the copyright and license terms of their respective upstream
+   authors and vendors.

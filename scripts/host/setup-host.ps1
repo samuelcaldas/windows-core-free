@@ -7,7 +7,10 @@
     downloads stable VirtIO Windows drivers, and validates acceptance criteria.
 #>
 [CmdletBinding()]
-param()
+param(
+    [Alias('d')]
+    [switch]$DownloadIso
+)
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -17,6 +20,12 @@ $RepoRoot  = (Resolve-Path "$ScriptDir/../..").Path
 $IsoDir    = Join-Path $RepoRoot "iso"
 $VirtioIso = Join-Path $IsoDir "virtio-win.iso"
 $VirtioUrl = "https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso"
+
+# Official Microsoft Hyper-V Server 2019 OEM ISO
+$MsIsoName   = "17763.737.190906-2324.rs5_release_svc_refresh_SERVERHYPERCORE_OEM_x64FRE_en-us_1.iso"
+$MsIsoPath   = Join-Path $IsoDir $MsIsoName
+$MsIsoUrl    = "https://software-download.microsoft.com/download/pr/$MsIsoName"
+$MsIsoSha256 = "48e9b944518e5bbc80876a9a7ff99716f386f404f4be48dca47e16a66ae7872c"
 
 function Write-Step {
     param([string]$Message)
@@ -95,8 +104,39 @@ function Get-VirtIoIso {
     Write-Success "VirtIO ISO downloaded successfully ($VirtioIso)."
 }
 
+function Get-MicrosoftIso {
+    if (-not (Test-Path $IsoDir)) { New-Item -ItemType Directory -Path $IsoDir -Force | Out-Null }
+    if (Test-Path $MsIsoPath) {
+        Write-Step "Verifying existing official Microsoft ISO checksum..."
+        $actualHash = (Get-FileHash -Path $MsIsoPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($actualHash -eq $MsIsoSha256.ToLowerInvariant()) {
+            Write-Success "Official Microsoft ISO verified (SHA256: $actualHash)."
+            return
+        }
+        else {
+            Write-WarnMessage "Checksum mismatch on existing ISO. Re-downloading from Microsoft..."
+        }
+    }
+
+    Write-Step "Downloading official Microsoft Hyper-V Server 2019 OEM ISO (~2.8GB)..."
+    Write-Step "Source: $MsIsoUrl"
+    $tmpIso = "$MsIsoPath.tmp"
+    & curl -L --fail --retry 5 --retry-delay 3 -C - -o $tmpIso $MsIsoUrl
+
+    Write-Step "Verifying downloaded ISO integrity..."
+    $downloadedHash = (Get-FileHash -Path $tmpIso -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($downloadedHash -ne $MsIsoSha256.ToLowerInvariant()) {
+        Remove-Item -Path $tmpIso -Force -ErrorAction SilentlyContinue
+        throw "SHA256 verification failed! Expected $MsIsoSha256, got $downloadedHash."
+    }
+
+    Move-Item -Path $tmpIso -Destination $MsIsoPath -Force
+    Write-Success "Official Microsoft ISO downloaded and verified successfully."
+}
+
 function Test-Phase1Environment {
-    Write-Step "Verifying Phase 1 acceptance criteria..."
+    Write-Step "Verifying host acceptance criteria..."
+
     $commands = @("qemu-system-x86_64", "qemu-img", "xorriso", "wimlib-imagex", "pwsh")
     $missing = 0
 
@@ -125,22 +165,37 @@ function Test-Phase1Environment {
         $missing++
     }
 
-    if ($missing -eq 0) {
-        Write-Success "Phase 1 Host Setup successfully verified and complete!"
+    if (Test-Path $MsIsoPath) {
+        Write-Host "  - Microsoft Windows Core 2019 ISO: " -NoNewline
+        Write-Host "OK" -ForegroundColor Green -NoNewline
+        Write-Host " ($MsIsoPath)"
     }
     else {
-        Write-ErrorMessage "Phase 1 verification failed with $missing missing requirement(s)."
+        Write-Host "  - Microsoft Windows Core 2019 ISO: " -NoNewline
+        Write-Host "NOT FOUND (Run with -DownloadIso)" -ForegroundColor Yellow
+    }
+
+    if ($missing -eq 0) {
+        Write-Success "Host Setup successfully verified and operational!"
+    }
+    else {
+        Write-ErrorMessage "Host verification failed with $missing missing requirement(s)."
         exit 1
     }
 }
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core Headless Host - Phase 1 Setup (PowerShell 7)"
+    Write-Host "  Windows CoreOS (WCOS) - Host Environment & Virtualization Setup (PowerShell 7)"
     Write-Host "=============================================================================="
     Assert-KvmSupport
     Install-HostPackages
     Get-VirtIoIso
+
+    if ($DownloadIso) {
+        Get-MicrosoftIso
+    }
+
     Test-Phase1Environment
 }
 

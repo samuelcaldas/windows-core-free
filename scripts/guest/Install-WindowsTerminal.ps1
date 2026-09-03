@@ -2,7 +2,7 @@
 .SYNOPSIS
     Guest Script: Windows Terminal (microsoft/terminal) Installation.
 .DESCRIPTION
-    Installs portable Windows Terminal on Windows Server Core:
+    Installs portable Windows Terminal on Windows CoreOS (WCOS):
     - Installs Visual C++ 2015-2022 Redistributable prerequisite.
     - Extracts 64-bit Windows Terminal release to C:\Program Files\WindowsTerminal.
     - Registers Cascadia Code and Cascadia Mono fonts.
@@ -299,7 +299,7 @@ function Install-TerminalPackage {
 
 function Main {
     Write-Host "=============================================================================="
-    Write-Host "  Windows Core Guest - Windows Terminal (microsoft/terminal) Installer"
+    Write-Host "  Windows CoreOS (WCOS) Guest - Windows Terminal Installer"
     Write-Host "=============================================================================="
     Install-VCRedist
     Install-TerminalPackage
