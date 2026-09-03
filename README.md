@@ -11,6 +11,7 @@
   <a href="https://github.com/PowerShell/PowerShell"><img src="https://img.shields.io/badge/PowerShell-7%2B-blue.svg?logo=powershell" alt="PowerShell 7"></a>
   <a href="docs/branding/MANUAL.md"><img src="docs/branding/assets/wcos-badge.svg" alt="Windows CoreOS Distro"></a>
   <a href="https://github.com/samuelcaldas/windows-core-free/releases"><img src="https://img.shields.io/github/v/release/samuelcaldas/windows-core-free?include_prereleases&label=Release&color=brightgreen" alt="GitHub Release"></a>
+  <a href="https://samuelcaldas.github.io/windows-core-free/"><img src="https://img.shields.io/badge/Website-GitHub%20Pages-00F5D4.svg?logo=githubpages&logoColor=black" alt="GitHub Pages"></a>
   <a href="docs/README.md"><img src="https://img.shields.io/badge/Docs-Wiki%20%26%20Guides-00D2FF.svg?logo=gitbook" alt="Documentation"></a>
   <a href="https://microsoft.com/windows"><img src="https://img.shields.io/badge/Base%20Kernel-Windows%20Server%20Core%20RS5%20(17763)-0078D6?logo=windows" alt="Windows Server Core 2019"></a>
 </p>
