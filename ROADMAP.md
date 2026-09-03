@@ -114,10 +114,10 @@ test -f iso/virtio-win.iso && echo "VirtIO ISO present"
 ### Acceptance Criteria & Verification
 ```bash
 # Test SSH connectivity to guest after initial boot
-ssh -p 2222 samuelcaldas@localhost "Get-ComputerInfo | Select-Object WindowsProductName, OsArchitecture"
+ssh -p 2222 username@localhost "Get-ComputerInfo | Select-Object WindowsProductName, OsArchitecture"
 
 # Verify Hyper-V is disabled
-ssh -p 2222 samuelcaldas@localhost "Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All | Select-Object State"
+ssh -p 2222 username@localhost "Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V-All | Select-Object State"
 # Expected State: Disabled
 ```
 
@@ -146,7 +146,7 @@ ssh -p 2222 samuelcaldas@localhost "Get-WindowsOptionalFeature -Online -FeatureN
 ./scripts/host/provision-remote.sh
 
 # Verify all developer runtimes via passwordless SSH
-ssh -p 2222 samuelcaldas@localhost "pwsh -Command 'git --version; node -v; npm -v; python --version'"
+ssh -p 2222 username@localhost "pwsh -Command 'git --version; node -v; npm -v; python --version'"
 ```
 
 ---
@@ -170,7 +170,7 @@ ssh -p 2222 samuelcaldas@localhost "pwsh -Command 'git --version; node -v; npm -
 ### Acceptance Criteria & Verification
 ```bash
 # Run remote AI CLI verification
-ssh -p 2222 samuelcaldas@localhost "claude --version; git --version; node -v"
+ssh -p 2222 username@localhost "claude --version; git --version; node -v"
 ```
 
 ---
@@ -203,7 +203,7 @@ docker compose up -d
 # Verify container health and port access
 docker compose ps
 curl -I http://localhost:8006  # Web VNC console
-ssh -p 2222 samuelcaldas@localhost "hostname"
+ssh -p 2222 username@localhost "hostname"
 ```
 
 ---

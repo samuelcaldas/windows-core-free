@@ -47,7 +47,7 @@ ls -la /dev/kvm
 
 **Resolution**: Re-run the ACL hardening command on the guest:
 ```powershell
-ssh -p 2222 samuelcaldas@127.0.0.1 "powershell -Command \"
+ssh -p 2222 username@127.0.0.1 "powershell -Command \"
     \$path = 'C:\ProgramData\ssh\administrators_authorized_keys'
     \$acl = Get-Acl \$path
     \$acl.SetAccessRuleProtection(\$true, \$false)

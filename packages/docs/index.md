@@ -44,21 +44,79 @@ features:
 
 ## 📊 Live RAM Footprint Benchmark
 
-```
-Stock Windows Server 2019 Core (Fresh Boot)
-[████████████████████████████████████████] ~2,100 MB RAM
+<div class="dashboard-widget">
+<div class="benchmark-grid">
+<div class="stat-card">
+<div class="stat-header">
+<span class="stat-title">Stock Windows Server 2019 Core</span>
+<span class="badge-stock">Stock OS</span>
+</div>
+<div class="stat-value">
+~2,100 <span class="stat-unit">MB RAM</span>
+</div>
+<div class="progress-track">
+<div class="progress-fill stock" style="width: 100%;"></div>
+</div>
+</div>
+<div class="stat-card highlight">
+<div class="stat-header">
+<span class="stat-title">Windows CoreOS (WCOS)</span>
+<span class="badge-optimized">75% Reduction</span>
+</div>
+<div class="stat-value text-neon">
+~530 <span class="stat-unit">MB RAM</span>
+</div>
+<div class="progress-track">
+<div class="progress-fill optimized" style="width: 25.2%;"></div>
+</div>
+</div>
+</div>
 
-Windows CoreOS (WCOS) after Optimization
-[██████████] ~530 MB RAM (75% RAM Reduction!)
-```
-
-| Component | Stock Windows Server 2019 | Windows CoreOS (WCOS) | Reclaimed RAM |
-| :--- | :--- | :--- | :--- |
-| **Windows Defender** (`MsMpEng.exe`) | Active (real-time disk scan) | Removed via DISM | ~250 MB |
-| **Nested Hyper-V Roles** (`vmms.exe`) | Enabled by default | Decommissioned | ~220 MB |
-| **Superfetch / SysMain** | Active | Disabled | ~100 MB |
-| **Telemetry & Error Reporting** | Active | Disabled & Blocked | ~80 MB |
-| **Svchost Splitting** | ~60 split processes | Consolidated | ~250 MB |
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Component / Service</th>
+<th>Stock Windows Server 2019</th>
+<th>Windows CoreOS (WCOS)</th>
+<th>Reclaimed Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Windows Defender</strong> (<code>MsMpEng.exe</code>)</td>
+<td>Active (Real-time disk scanner)</td>
+<td>Removed via DISM</td>
+<td><code>~250 MB</code></td>
+</tr>
+<tr>
+<td><strong>Nested Hyper-V Roles</strong> (<code>vmms.exe</code>)</td>
+<td>Enabled by default</td>
+<td>Decommissioned</td>
+<td><code>~220 MB</code></td>
+</tr>
+<tr>
+<td><strong>Superfetch / SysMain</strong></td>
+<td>Active background caching</td>
+<td>Disabled</td>
+<td><code>~100 MB</code></td>
+</tr>
+<tr>
+<td><strong>Telemetry & Error Reporting</strong></td>
+<td>Active background collection</td>
+<td>Disabled & Blocked</td>
+<td><code>~80 MB</code></td>
+</tr>
+<tr>
+<td><strong>Svchost Splitting</strong></td>
+<td>~60 split processes</td>
+<td>Consolidated</td>
+<td><code>~250 MB</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 ---
 
@@ -80,19 +138,51 @@ cd windows-coreos && ./scripts/host/setup-host.sh --download-iso
 
 Connect via SSH once installed:
 ```bash
-ssh -p 2222 samuelcaldas@127.0.0.1
+ssh -p 2222 username@127.0.0.1
 ```
 
 ---
 
 ## 🌐 Network Topology & Port Map
 
-| Service | Guest Port | Forwarded Port | Purpose |
-| :--- | :--- | :--- | :--- |
-| **OpenSSH Server** | `22` | `2222` | Direct CLI access & agent orchestration |
-| **WinRM (HTTP/HTTPS)** | `5985` / `5986` | `5985` / `5986` | PowerShell Remoting (`Enter-PSSession`, Ansible) |
-| **Antigravity Daemon** | `9090` | `9090` | Headless Remote Control (`agy-daemon`) |
-| **RDP Console (Optional)** | `3389` | `3389` | Fallback graphical debugging |
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Guest Port</th>
+        <th>Forwarded Host Port</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>OpenSSH Server</strong></td>
+        <td><code>22</code></td>
+        <td><code>2222</code></td>
+        <td>Direct CLI access & autonomous agent orchestration</td>
+      </tr>
+      <tr>
+        <td><strong>WinRM (HTTP/HTTPS)</strong></td>
+        <td><code>5985</code> / <code>5986</code></td>
+        <td><code>5985</code> / <code>5986</code></td>
+        <td>PowerShell Remoting (<code>Enter-PSSession</code>, Ansible)</td>
+      </tr>
+      <tr>
+        <td><strong>Antigravity Daemon</strong></td>
+        <td><code>9090</code></td>
+        <td><code>9090</code></td>
+        <td>Headless Remote Control (<code>agy-daemon</code>)</td>
+      </tr>
+      <tr>
+        <td><strong>RDP Console (Optional)</strong></td>
+        <td><code>3389</code></td>
+        <td><code>3389</code></td>
+        <td>Fallback graphical debugging & recovery</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ---
 

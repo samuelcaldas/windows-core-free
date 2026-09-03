@@ -102,7 +102,7 @@ During first boot:
 Once provisioning completes, OpenSSH Server is active on port `2222`. Connect directly from your Linux host:
 
 ```bash
-ssh -p 2222 samuelcaldas@127.0.0.1
+ssh -p 2222 username@127.0.0.1
 ```
 *Default password during first boot: `windows`*
 

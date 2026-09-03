@@ -37,7 +37,7 @@ WCOS is designed from the ground up to act as a **Developer Workstation**, **Dev
 | **Windows Defender** | **Pruned & Disabled** (`MsMpEng` disabled) | Consumes ~250MB RAM constantly |
 | **Package Manager** | **OmniGet (`og`)** pre-installed | None / manual downloads |
 | **Desktop Environment** | **WinXShell (~15MB RAM)** + WinFile | Full heavy Explorer (~400MB RAM) |
-| **AI Agent Support** | Native Google Antigravity & Claude Code | Manual manual setup |
+| **AI Agent Support** | Native Google Antigravity & Claude Code | Manual multi-step configuration |
 | **Linux Host Supervision** | Systemd native service (`windows-core.service`) | Manual virtualization scripts |
 | **DNS Privacy & Adblock** | Dan Pollock zero-route (`0.0.0.0`) 13k+ rules | Unfiltered Windows telemetry |
 

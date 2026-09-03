@@ -49,12 +49,12 @@ Before declaring any task or feature complete, agents must verify execution agai
 
 ### 1. SSH Connectivity Check
 ```bash
-ssh -p 2222 samuelcaldas@127.0.0.1 -T "pwsh -v; whoami"
+ssh -p 2222 username@127.0.0.1 -T "pwsh -v; whoami"
 ```
 
 ### 2. Package Manager Check
 ```bash
-ssh -p 2222 samuelcaldas@127.0.0.1 -T "og version"
+ssh -p 2222 username@127.0.0.1 -T "og version"
 ```
 
 ### 3. Syntax Verification

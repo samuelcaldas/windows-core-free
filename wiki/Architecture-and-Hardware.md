@@ -113,7 +113,7 @@ WCOS maps guest services to host loopback ports using QEMU user networking:
 
 | Guest Service | Guest Port | Host Forwarded Port | Purpose | Command Example |
 | :--- | :--- | :--- | :--- | :--- |
-| **OpenSSH** | `22` | `2222` | Direct CLI access & agent orchestration | `ssh -p 2222 samuelcaldas@127.0.0.1` |
+| **OpenSSH** | `22` | `2222` | Direct CLI access & agent orchestration | `ssh -p 2222 username@127.0.0.1` |
 | **WinRM (HTTP)** | `5985` | `5985` | PowerShell Remoting & Ansible | `Enter-PSSession -ComputerName 127.0.0.1 -Port 5985` |
 | **WinRM (HTTPS)**| `5986` | `5986` | Secure PowerShell Remoting | `Enter-PSSession -UseSSL -Port 5986` |
 | **Antigravity** | `9090` | `9090` | Headless Remote Control Daemon (`agy-daemon`) | `curl http://127.0.0.1:9090/health` |
