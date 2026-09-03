@@ -4,10 +4,13 @@ Welcome to the comprehensive documentation index for **Windows CoreOS (WCOS)**: 
 
 ---
 
-## 📚 Core Documentation & Guides
+## 📚 Core Documentation & Technical Wiki
+
+Full documentation is published in the **[Windows CoreOS Wiki](https://github.com/samuelcaldas/windows-core-free/wiki)** (and stored locally in [`../wiki/`](../wiki/Home.md)):
 
 | Document | Description |
 | :--- | :--- |
+| **[Technical Wiki](../wiki/Home.md)** | Complete 15-page knowledge base covering architecture, installation, tuning, and AI agents. |
 | **[Brand Identity Manual](branding/MANUAL.md)** | Visual identity, logo guidelines, official color palette, typography, and vector assets. |
 | **[Agent Operating Guidelines](../AGENTS.md)** | Architecture, development conventions, and testing protocols for autonomous AI agents. |
 | **[Versioning & Release Guide](VERSIONING.md)** | Semantic Versioning 2.0.0 policy, Git tag bumping steps, and GitHub Actions release automation. |
