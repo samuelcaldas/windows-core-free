@@ -227,14 +227,25 @@ Manage the VM as a native background system service on your Linux host:
 
 ---
 
-## 📚 Documentation Index
+## 📚 Documentation & Technical Wiki
 
-- 🎨 **[Brand Identity Manual](docs/branding/MANUAL.md)**: Visual identity guidelines, official palette, typography, vector assets, and logo usage.
-- 🤖 **[Agent Operating Guidelines](AGENTS.md)**: Workflows, conventions, and testing protocols for autonomous AI agents.
-- 🏷️ **[Versioning & Release Guide](docs/VERSIONING.md)**: SemVer 2.0.0 conventions, Git tag bumping, and GitHub Actions automation.
-- 🔑 **[SSH Configuration Guide](docs/ssh-configuration.md)**: Detailed ProxyJump, port forwarding, and key exchange tutorials.
-- ⚙️ **[System Architecture Reference](GEMINI.md)**: Comprehensive architectural blueprint and hardware optimization reference.
-- 📦 **[OmniGet Package Manager Docs](external/omniget/wiki/Home.md)**: Complete OmniGet Wiki and provider specifications.
+Full documentation is available in the **[Windows CoreOS Wiki](https://github.com/samuelcaldas/windows-core-free/wiki)** (and mirrored offline in [`wiki/`](wiki/Home.md)):
+
+- 📖 **[Wiki Home](wiki/Home.md)**: Main wiki portal, overview, and specifications.
+- 🚀 **[Getting Started Guide](wiki/Getting-Started.md)**: Step-by-step installation, automated ISO download, and initial boot.
+- 🏗️ **[Architecture & Hardware](wiki/Architecture-and-Hardware.md)**: QEMU/KVM emulation, VirtIO device stack, UEFI OVMF, and port topology.
+- 📦 **[Unattended Installation](wiki/Unattended-Installation.md)**: Dual-drive ISO architecture, `autounattend.xml`, and bootstrap scripts.
+- 📉 **[System Optimization & Memory Pruning](wiki/System-Optimization-and-Memory-Pruning.md)**: Achieving ~530MB idle RAM, Defender removal, and Dan Pollock hosts blocklist.
+- 🔑 **[Remote Access & OpenSSH](wiki/Remote-Access-and-SSH.md)**: Key authentication, PowerShell 7 default shell, ProxyJump, and WinRM remoting.
+- 🖥️ **[Desktop Shells & GUI](wiki/Desktop-Shells-and-UI.md)**: WinXShell, Microsoft WinFile, Explorer++, and WezTerm GPU terminal.
+- 🛠️ **[Package Management with OmniGet](wiki/Package-Management-with-OmniGet.md)**: OmniGet (`og`) CLI reference, presets, and zero-downtime hot-swapping.
+- 🤖 **[Autonomous AI Agent Workstation](wiki/Autonomous-AI-Agent-Workstation.md)**: Google Antigravity daemon, Claude Code CLI, and agent sandboxing.
+- 🔄 **[Host Systemd Autostart](wiki/Host-Systemd-Autostart.md)**: Automatic startup on Ubuntu boot, crash recovery, and ACPI shutdown.
+- 🌐 **[Proxmox & Docker Portability](wiki/Proxmox-and-Docker-Portability.md)**: Migrating to Proxmox VE clusters and containerized execution.
+- 🎨 **[Brand Identity Manual](docs/branding/MANUAL.md)** / **[Wiki Summary](wiki/Brand-Identity-and-Assets.md)**: Visual identity guidelines, official palette, typography, and vector assets.
+- 🤖 **[Agent Operating Guidelines](AGENTS.md)** / **[Wiki Guide](wiki/Agent-Operating-Guidelines.md)**: Operating rules and coding standards for autonomous AI agents.
+- 🏷️ **[Versioning & Release Guide](docs/VERSIONING.md)** / **[Wiki Guide](wiki/Release-and-Versioning-Guide.md)**: SemVer 2.0.0 conventions, Git tags, and CI/CD release pipeline.
+- 🔧 **[Troubleshooting & FAQ](wiki/Troubleshooting-and-FAQ.md)**: Solutions to common questions, KVM permissions, and connection issues.
 
 ---
 

@@ -1,0 +1,54 @@
+name: Sync Wiki to GitHub
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'wiki/**'
+      - '.github/workflows/wiki-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Push to GitHub Wiki
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Syncing wiki pages to GitHub Wiki..."
+          WIKI_REPO="https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.wiki.git"
+          TMP_DIR=$(mktemp -d /tmp/wiki-sync.XXXXXX)
+          
+          # Clone or initialize
+          if git clone "$WIKI_REPO" "$TMP_DIR" 2>/dev/null; then
+            echo "Existing wiki cloned."
+          else
+            echo "Initializing fresh wiki branch..."
+            git -C "$TMP_DIR" init -b master
+            git -C "$TMP_DIR" remote add origin "$WIKI_REPO"
+          fi
+          
+          # Copy pages
+          cp -r wiki/* "$TMP_DIR/"
+          
+          # Configure Git author
+          git -C "$TMP_DIR" config user.name "github-actions[bot]"
+          git -C "$TMP_DIR" config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git -C "$TMP_DIR" add .
+          if git -C "$TMP_DIR" diff --staged --quiet; then
+            echo "No changes in wiki to synchronize."
+            exit 0
+          fi
+          
+          git -C "$TMP_DIR" commit -m "docs(wiki): sync pages from master [skip ci]"
+          git -C "$TMP_DIR" push origin master || git -C "$TMP_DIR" push origin HEAD:master
+          echo "Wiki sync completed successfully."
