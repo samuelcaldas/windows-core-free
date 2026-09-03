@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 180" width="760" height="180">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B132B" />
+      <stop offset="100%" stop-color="#070D1E" />
+    </linearGradient>
+    <linearGradient id="coreGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D2FF" />
+      <stop offset="100%" stop-color="#0078D4" />
+    </linearGradient>
+    <linearGradient id="coreGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0078D4" />
+      <stop offset="100%" stop-color="#004E92" />
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00D2FF" />
+      <stop offset="100%" stop-color="#00F5D4" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="760" height="180" rx="24" fill="url(#bgGrad)" />
+  <rect width="758" height="178" x="1" y="1" rx="23" fill="none" stroke="#00D2FF" stroke-width="1.5" stroke-opacity="0.3" />
+
+  <!-- Icon Container (Left) -->
+  <g transform="translate(90, 90)">
+    <!-- Hexagon Core -->
+    <polygon points="0,-48 40,-25 0,-2 -40,-25" fill="url(#coreGrad1)" opacity="0.95" />
+    <polygon points="-40,-25 0,-2 0,44 -40,21" fill="url(#coreGrad2)" opacity="0.85" />
+    <polygon points="0,-2 40,-25 40,21 0,44" fill="#005A9E" opacity="0.9" />
+
+    <!-- Grid lines -->
+    <line x1="0" y1="-2" x2="0" y2="44" stroke="#00F5D4" stroke-width="1.5" stroke-opacity="0.6" />
+    <line x1="-40" y1="-25" x2="0" y2="-2" stroke="#00F5D4" stroke-width="1.5" stroke-opacity="0.4" />
+    <line x1="0" y1="-2" x2="40" y2="-25" stroke="#00F5D4" stroke-width="1.5" stroke-opacity="0.4" />
+
+    <!-- Stylized W / Terminal Prompt -->
+    <path d="M-26,-11 L-14,12 L0,-5 L14,12 L26,-11" 
+          fill="none" 
+          stroke="url(#accentGrad)" 
+          stroke-width="5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          filter="url(#glow)" />
+  </g>
+
+  <!-- Typography (Right) -->
+  <g transform="translate(170, 0)">
+    <!-- Brand Title -->
+    <text x="0" y="82" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="44" font-weight="800" fill="url(#textGrad)" letter-spacing="-0.5">
+      Windows <tspan fill="url(#accentGrad)">CoreOS</tspan>
+    </text>
+
+    <!-- Version / Badge Pill -->
+    <rect x="365" y="52" width="70" height="26" rx="6" fill="#1E293B" stroke="#00D2FF" stroke-width="1" stroke-opacity="0.4" />
+    <text x="400" y="69" font-family="'Cascadia Code', 'Fira Code', 'Consolas', monospace" font-size="13" font-weight="700" fill="#00F5D4" text-anchor="middle">WCOS</text>
+
+    <!-- Tagline -->
+    <text x="0" y="118" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="500" fill="#94A3B8" letter-spacing="0.2">
+      Free Windows Server Core Distribution for Developers &amp; AI Agents
+    </text>
+
+    <!-- Subtitle Meta -->
+    <text x="0" y="142" font-family="'Cascadia Code', 'Consolas', monospace" font-size="12" font-weight="400" fill="#64748B">
+      Headless-First &bull; OpenSSH &bull; OmniGet &bull; 0-Downtime Hot-Swap
+    </text>
+  </g>
+
+  <!-- Online Node Indicator -->
+  <circle cx="720" cy="35" r="5" fill="#10B981" filter="url(#glow)" />
+  <circle cx="720" cy="35" r="8" fill="none" stroke="#10B981" stroke-width="1" stroke-opacity="0.4" />
+</svg>
