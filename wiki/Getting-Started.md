@@ -23,8 +23,8 @@ This guide walks you through setting up a headless **Windows CoreOS (WCOS)** vir
 
 ### Step 1: Clone Repository & Submodules
 ```bash
-git clone --recurse-submodules https://github.com/samuelcaldas/windows-core-free.git
-cd windows-core-free
+git clone --recurse-submodules https://github.com/samuelcaldas/windows-coreos.git
+cd windows-coreos
 ```
 
 ### Step 2: Host Environment Preparation

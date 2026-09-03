@@ -2,10 +2,10 @@
 
 <div align="center">
 
-![Windows CoreOS](https://raw.githubusercontent.com/samuelcaldas/windows-core-free/master/docs/branding/assets/wcos-logo-horizontal.svg)
+![Windows CoreOS](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-horizontal.svg)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/samuelcaldas/windows-core-free/blob/master/LICENSE)
-[![Latest Release](https://img.shields.io/github/v/release/samuelcaldas/windows-core-free?color=00F5D4&label=release)](https://github.com/samuelcaldas/windows-core-free/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/samuelcaldas/windows-coreos/blob/master/LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/samuelcaldas/windows-coreos?color=00F5D4&label=release)](https://github.com/samuelcaldas/windows-coreos/releases)
 [![Architecture: x86_64](https://img.shields.io/badge/arch-x86__64-informational.svg)](#)
 [![RAM Idle](https://img.shields.io/badge/RAM%20Idle-~530%20MB-success.svg)](#)
 [![Default Shell](https://img.shields.io/badge/Shell-PowerShell%207.6.5-0078D4.svg)](#)

@@ -130,7 +130,7 @@ Displayed on SSH login and terminal launch:
  ==================================================================================
   • Shell: PowerShell 7 (pwsh)              • Remote Access: OpenSSH / WinRM
   • Store: OmniGet (og)                     • Kernel: Windows Server Core RS5 (17763)
-  • Docs: https://github.com/samuelcaldas/windows-core-free
+  • Docs: https://github.com/samuelcaldas/windows-coreos
  ----------------------------------------------------------------------------------
   Quick Commands:
     og search <pkg>      Search packages across Ninite, GitHub, Direct, Distro

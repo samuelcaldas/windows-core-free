@@ -7,7 +7,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$WikiGitUrl = "git@github.com:samuelcaldas/windows-core-free.wiki.git"
+    [string]$WikiGitUrl = "git@github.com:samuelcaldas/windows-coreos.wiki.git"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -79,7 +79,7 @@ function Main {
         else {
             Write-ErrMsg "Failed to push to GitHub Wiki."
             Write-WarnMsg "Note: GitHub requires the first wiki page to be initialized via the web UI."
-            Write-WarnMsg "Visit https://github.com/samuelcaldas/windows-core-free/wiki and click 'Create the first page' once, then re-run this script."
+            Write-WarnMsg "Visit https://github.com/samuelcaldas/windows-coreos/wiki and click 'Create the first page' once, then re-run this script."
         }
     }
     finally {

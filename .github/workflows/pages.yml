@@ -36,7 +36,7 @@ jobs:
       - name: Build VitePress Documentation Portal
         run: npm run docs:build
         env:
-          VITEPRESS_BASE: /windows-core-free/
+          VITEPRESS_BASE: /windows-coreos/
 
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4

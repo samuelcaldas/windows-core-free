@@ -1,6 +1,6 @@
 # Brand Identity & Visual Assets
 
-This document summarizes the brand guidelines, visual identity standards, color palettes, and vector assets of **Windows CoreOS (WCOS)**. For the exhaustive manual, refer to [`docs/branding/MANUAL.md`](https://github.com/samuelcaldas/windows-core-free/blob/master/docs/branding/MANUAL.md).
+This document summarizes the brand guidelines, visual identity standards, color palettes, and vector assets of **Windows CoreOS (WCOS)**. For the exhaustive manual, refer to [`docs/branding/MANUAL.md`](https://github.com/samuelcaldas/windows-coreos/blob/master/docs/branding/MANUAL.md).
 
 ---
 
@@ -23,10 +23,10 @@ The WCOS color scheme combines dark server aesthetics with modern neon cyan acce
 
 | Asset | Preview / Link | Description | Primary Use Case |
 | :--- | :--- | :--- | :--- |
-| **Horizontal Logo** | [`wcos-logo-horizontal.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-core-free/master/docs/branding/assets/wcos-logo-horizontal.svg) | Master horizontal logo with icon, logotype, badge, and tagline | Documentation headers, README banners |
-| **Square Logo** | [`wcos-logo-square.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-core-free/master/docs/branding/assets/wcos-logo-square.svg) | 1:1 square icon | Profile avatars, app icons |
-| **Hex Core Icon** | [`wcos-icon.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-core-free/master/docs/branding/assets/wcos-icon.svg) | Isometric server cube inside hexagon with neon `W` prompt | Favicons, bullet points, system trays |
-| **Distro Badge** | [`wcos-badge.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-core-free/master/docs/branding/assets/wcos-badge.svg) | Dual-tone status shield badge | README header shields |
+| **Horizontal Logo** | [`wcos-logo-horizontal.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-horizontal.svg) | Master horizontal logo with icon, logotype, badge, and tagline | Documentation headers, README banners |
+| **Square Logo** | [`wcos-logo-square.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-logo-square.svg) | 1:1 square icon | Profile avatars, app icons |
+| **Hex Core Icon** | [`wcos-icon.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-icon.svg) | Isometric server cube inside hexagon with neon `W` prompt | Favicons, bullet points, system trays |
+| **Distro Badge** | [`wcos-badge.svg`](https://raw.githubusercontent.com/samuelcaldas/windows-coreos/master/docs/branding/assets/wcos-badge.svg) | Dual-tone status shield badge | README header shields |
 
 ---
 
@@ -51,7 +51,7 @@ Windows CoreOS renders an ASCII/ANSI brand banner upon user login via OpenSSH an
   • Kernel : Windows Server Core RS5 x64 (Headless)
   • Host   : Linux KVM / QEMU Virtual Machine
   • Shell  : PowerShell 7.6.5 Core (Default)
-  • Docs   : https://github.com/samuelcaldas/windows-core-free
+  • Docs   : https://github.com/samuelcaldas/windows-coreos
 ```
 
 This banner is stored in `C:\ProgramData\ssh\banner.txt` and invoked by PowerShell 7's global profile (`profile.ps1`).

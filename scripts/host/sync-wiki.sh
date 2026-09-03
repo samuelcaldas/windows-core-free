@@ -20,8 +20,8 @@ log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-WIKI_GIT_URL="${WIKI_GIT_URL:-git@github.com:samuelcaldas/windows-core-free.wiki.git}"
-WIKI_HTTPS_URL="https://github.com/samuelcaldas/windows-core-free.wiki.git"
+WIKI_GIT_URL="${WIKI_GIT_URL:-git@github.com:samuelcaldas/windows-coreos.wiki.git}"
+WIKI_HTTPS_URL="https://github.com/samuelcaldas/windows-coreos.wiki.git"
 
 main() {
     echo "=============================================================================="
@@ -69,7 +69,7 @@ main() {
     else
         log_error "Failed to push to GitHub Wiki."
         log_warn "Note: GitHub requires the first wiki page to be initialized via the web UI."
-        log_warn "Visit https://github.com/samuelcaldas/windows-core-free/wiki and click 'Create the first page' once, then re-run this script."
+        log_warn "Visit https://github.com/samuelcaldas/windows-coreos/wiki and click 'Create the first page' once, then re-run this script."
         exit 1
     fi
 }

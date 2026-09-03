@@ -610,7 +610,7 @@ function Deploy-DistroBranding {
     }
     Set-ItemProperty -Path $oemKey -Name "Manufacturer" -Value "Windows CoreOS (WCOS)" -Force
     Set-ItemProperty -Path $oemKey -Name "Model" -Value "Free Windows Server Core Distribution" -Force
-    Set-ItemProperty -Path $oemKey -Name "SupportURL" -Value "https://github.com/samuelcaldas/windows-core-free" -Force
+    Set-ItemProperty -Path $oemKey -Name "SupportURL" -Value "https://github.com/samuelcaldas/windows-coreos" -Force
     if (Test-Path "$env:WINDIR\System32\oemlogo.bmp") {
         Set-ItemProperty -Path $oemKey -Name "Logo" -Value "$env:WINDIR\System32\oemlogo.bmp" -Force
     }

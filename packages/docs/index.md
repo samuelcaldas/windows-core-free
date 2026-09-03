@@ -17,7 +17,7 @@ hero:
       link: /guides/Architecture-and-Hardware
     - theme: alt
       text: GitHub Releases
-      link: https://github.com/samuelcaldas/windows-core-free/releases
+      link: https://github.com/samuelcaldas/windows-coreos/releases
 
 features:
   - icon: 📉
@@ -68,8 +68,8 @@ From any headless Ubuntu/Debian host:
 
 ```bash
 # 1. Clone with submodules & prepare host environment
-git clone --recurse-submodules https://github.com/samuelcaldas/windows-core-free.git
-cd windows-core-free && ./scripts/host/setup-host.sh --download-iso
+git clone --recurse-submodules https://github.com/samuelcaldas/windows-coreos.git
+cd windows-coreos && ./scripts/host/setup-host.sh --download-iso
 
 # 2. Build unattended boot media & assemble VirtIO drivers
 ./scripts/host/build-iso.sh
