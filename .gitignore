@@ -12,3 +12,10 @@ iso/
 
 # Git worktrees
 .worktrees/
+
+# Node.js & VitePress
+node_modules/
+dist/
+packages/docs/.vitepress/dist/
+packages/docs/.vitepress/cache/
+packages/docs/guides/

@@ -1,0 +1,87 @@
+:root {
+  --vp-c-brand-1: #0078d4;
+  --vp-c-brand-2: #00a4ef;
+  --vp-c-brand-3: #00f5d4;
+  --vp-c-brand-soft: rgba(0, 120, 212, 0.14);
+
+  --vp-font-family-base: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Inter', Roboto, sans-serif;
+  --vp-font-family-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, 'Fira Code', monospace;
+}
+
+.dark {
+  --vp-c-bg: #0b132b;
+  --vp-c-bg-alt: #101b38;
+  --vp-c-bg-elv: #162447;
+  --vp-c-bg-soft: #142040;
+
+  --vp-c-brand-1: #00f5d4;
+  --vp-c-brand-2: #00d2ff;
+  --vp-c-brand-3: #0078d4;
+  --vp-c-brand-soft: rgba(0, 245, 212, 0.16);
+
+  --vp-c-border: #1e293b;
+  --vp-c-divider: #1e293b;
+}
+
+/* Hero Section Customizations */
+.VPHero .name {
+  background: linear-gradient(135deg, #00f5d4 0%, #00d2ff 50%, #0078d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.VPHero .tagline {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+.VPButton.brand {
+  background-color: #0078d4 !important;
+  border-color: #0078d4 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.dark .VPButton.brand {
+  background-color: #00f5d4 !important;
+  border-color: #00f5d4 !important;
+  color: #0b132b !important;
+}
+
+.VPButton.brand:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 20px rgba(0, 245, 212, 0.4);
+}
+
+/* Feature Cards Glow */
+.VPFeature {
+  border: 1px solid var(--vp-c-border) !important;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.VPFeature:hover {
+  border-color: var(--vp-c-brand-1) !important;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 245, 212, 0.08);
+}
+
+/* Code blocks styling */
+.vp-doc pre {
+  border: 1px solid var(--vp-c-border);
+}
+
+/* Badge accents */
+.badge-neon {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  background: rgba(0, 245, 212, 0.15);
+  color: #00f5d4;
+  border: 1px solid rgba(0, 245, 212, 0.3);
+}

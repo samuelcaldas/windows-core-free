@@ -1,0 +1,16 @@
+{
+  "name": "@wcos/docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Windows CoreOS (WCOS) Documentation Portal & Landing Page",
+  "scripts": {
+    "predev": "node scripts/sync-docs.js",
+    "prebuild": "node scripts/sync-docs.js",
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}

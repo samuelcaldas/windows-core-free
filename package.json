@@ -1,0 +1,24 @@
+{
+  "name": "windows-core-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Windows CoreOS (WCOS) Workspace & Documentation",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "docs:dev": "npm run dev --workspace=packages/docs",
+    "docs:build": "npm run build --workspace=packages/docs",
+    "docs:preview": "npm run preview --workspace=packages/docs"
+  },
+  "keywords": [
+    "windows-core",
+    "wcos",
+    "kvm",
+    "qemu",
+    "hyper-v-server",
+    "vitepress"
+  ],
+  "author": "Samuel Caldas",
+  "license": "MIT"
+}
